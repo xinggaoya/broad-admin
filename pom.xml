@@ -33,6 +33,7 @@
         <druid.version>1.2.8</druid.version>
         <mybatis-plus.version>3.5.2</mybatis-plus.version>
         <satoken-version>1.30.0</satoken-version>
+        <dynamic.version>3.5.0</dynamic.version>
     </properties>
 
     <dependencyManagement>
@@ -62,6 +63,13 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-data-redis</artifactId>
             </dependency>
+            <!--     多数据源        -->
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>dynamic-datasource-spring-boot-starter</artifactId>
+                <version>${dynamic.version}</version>
+            </dependency>
+
             <!-- SpringBoot集成mybatis-plus框架 -->
             <dependency>
                 <groupId>com.baomidou</groupId>
@@ -95,29 +103,29 @@
                 <version>${broad.version}</version>
             </dependency>
             <!-- 管理模块  -->
-<!--            <dependency>-->
-<!--                <groupId>com.broad</groupId>-->
-<!--                <artifactId>broad-admin</artifactId>-->
-<!--                <version>${broad.version}</version>-->
-<!--            </dependency>-->
-<!--            &lt;!&ndash; 框架模块  &ndash;&gt;-->
-<!--            <dependency>-->
-<!--                <groupId>com.broad</groupId>-->
-<!--                <artifactId>broad-framework</artifactId>-->
-<!--                <version>${broad.version}</version>-->
-<!--            </dependency>-->
-<!--            &lt;!&ndash; 生成模块  &ndash;&gt;-->
-<!--            <dependency>-->
-<!--                <groupId>com.broad</groupId>-->
-<!--                <artifactId>broad-generator</artifactId>-->
-<!--                <version>${broad.version}</version>-->
-<!--            </dependency>-->
-<!--            &lt;!&ndash; 定时任务模块  &ndash;&gt;-->
-<!--            <dependency>-->
-<!--                <groupId>com.broad</groupId>-->
-<!--                <artifactId>broad-quartz</artifactId>-->
-<!--                <version>${broad.version}</version>-->
-<!--            </dependency>-->
+            <!--            <dependency>-->
+            <!--                <groupId>com.broad</groupId>-->
+            <!--                <artifactId>broad-admin</artifactId>-->
+            <!--                <version>${broad.version}</version>-->
+            <!--            </dependency>-->
+            <!-- 框架模块  -->
+            <dependency>
+                <groupId>com.broad</groupId>
+                <artifactId>broad-framework</artifactId>
+                <version>${broad.version}</version>
+            </dependency>
+            <!--            &lt;!&ndash; 生成模块  &ndash;&gt;-->
+            <!--            <dependency>-->
+            <!--                <groupId>com.broad</groupId>-->
+            <!--                <artifactId>broad-generator</artifactId>-->
+            <!--                <version>${broad.version}</version>-->
+            <!--            </dependency>-->
+            <!--            &lt;!&ndash; 定时任务模块  &ndash;&gt;-->
+            <!--            <dependency>-->
+            <!--                <groupId>com.broad</groupId>-->
+            <!--                <artifactId>broad-quartz</artifactId>-->
+            <!--                <version>${broad.version}</version>-->
+            <!--            </dependency>-->
 
         </dependencies>
     </dependencyManagement>

@@ -1,5 +1,5 @@
 server:
-  port: 9000
+  port: 8000
   servlet:
     context-path: /
   tomcat:
@@ -54,3 +54,5 @@ mybatis-plus:
     auto-convert: true
     configuration:
       log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+

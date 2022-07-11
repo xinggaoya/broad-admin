@@ -1,5 +1,7 @@
 package com.broad.web.controller.system;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
+import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.broad.common.core.entity.ResultData;
@@ -34,6 +36,7 @@ public class SysAdminController {
      * @return 所有数据
      */
     @GetMapping
+    @SaCheckPermission("list")
     public ResultData selectAll(Page<SysAdmin> page, SysAdmin sysAdmin) {
         return ResultData.success(this.sysAdminService.page(page, new QueryWrapper<>(sysAdmin)));
     }
