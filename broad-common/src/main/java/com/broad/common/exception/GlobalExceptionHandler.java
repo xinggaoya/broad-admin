@@ -37,7 +37,22 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(value = NotLoginException.class)
     public SaResult handlerNotLoginException(NotLoginException e) {
-        return SaResult.error("无权限,请先登录");
+        // 判断场景值，定制化异常信息
+        String message = "";
+        if (e.getType().equals(NotLoginException.NOT_TOKEN)) {
+            message = "无权限，请登录后操作";
+        } else if (e.getType().equals(NotLoginException.INVALID_TOKEN)) {
+            message = "登录无效，请重新登录";
+        } else if (e.getType().equals(NotLoginException.TOKEN_TIMEOUT)) {
+            message = "登录已过期，请重新登录";
+        } else if (e.getType().equals(NotLoginException.BE_REPLACED)) {
+            message = "账户已在其他地方登录，请重新登录";
+        } else if (e.getType().equals(NotLoginException.KICK_OUT)) {
+            message = "账户已被踢下线，请联系管理员";
+        } else {
+            message = "当前会话未登录";
+        }
+        return SaResult.error(message);
     }
 
     /**

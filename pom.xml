@@ -34,7 +34,8 @@
         <mybatis-plus.version>3.5.2</mybatis-plus.version>
         <satoken-version>1.30.0</satoken-version>
         <dynamic.version>3.5.0</dynamic.version>
-        <swagger-version>3.0.0</swagger-version>
+        <swagger-version>3.0.3</swagger-version>
+        <kaptcha.version>2.3.2</kaptcha.version>
     </properties>
 
     <dependencyManagement>
@@ -84,13 +85,33 @@
                 <artifactId>sa-token-spring-boot-starter</artifactId>
                 <version>${satoken-version}</version>
             </dependency>
-            <!--  Swagger3    -->
+            <!-- Sa-Token 整合 Redis （使用 jackson 序列化方式） -->
             <dependency>
-                <groupId>io.springfox</groupId>
-                <artifactId>springfox-boot-starter</artifactId>
-                <version>${swagger-version}</version>
+                <groupId>cn.dev33</groupId>
+                <artifactId>sa-token-dao-redis-jackson</artifactId>
+                <version>${satoken-version}</version>
             </dependency>
 
+            <!--    kaptcha图片验证码        -->
+            <dependency>
+                <groupId>com.github.penggle</groupId>
+                <artifactId>kaptcha</artifactId>
+                <version>${kaptcha.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>javax.servlet-api</artifactId>
+                        <groupId>javax.servlet</groupId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+
+            <!--  Swagger3 美化版本    -->
+            <dependency>
+                <groupId>com.github.xiaoymin</groupId>
+                <artifactId>knife4j-spring-boot-starter</artifactId>
+                <version>${swagger-version}</version>
+            </dependency>
 
             <!-- 表单效验-->
             <dependency>

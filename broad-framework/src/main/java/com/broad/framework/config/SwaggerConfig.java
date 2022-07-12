@@ -1,6 +1,6 @@
 package com.broad.framework.config;
 
-import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -32,7 +32,7 @@ public class SwaggerConfig {
         return new Docket(DocumentationType.OAS_30)
                 .apiInfo(apiInfo())
                 .select()
-                .apis(RequestHandlerSelectors.withMethodAnnotation(Operation.class))
+                .apis(RequestHandlerSelectors.withMethodAnnotation(ApiOperation.class))
                 .paths(PathSelectors.any())
                 .build()
                 .globalRequestParameters(getGlobalRequestParameters())

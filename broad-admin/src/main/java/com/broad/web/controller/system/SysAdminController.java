@@ -8,6 +8,9 @@ import com.broad.common.enums.BusinessType;
 import com.broad.framework.annotation.Log;
 import com.broad.system.entity.SysAdmin;
 import com.broad.system.service.SysAdminService;
+import com.google.code.kaptcha.servlet.KaptchaServlet;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,12 +25,14 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("sysAdmin")
+@Api(tags = "管理员表")
 public class SysAdminController {
     /**
      * 服务对象
      */
     @Autowired
     private SysAdminService sysAdminService;
+
 
     /**
      * 分页查询所有数据
@@ -37,7 +42,7 @@ public class SysAdminController {
      * @return 所有数据
      */
     @GetMapping
-    @Log(description = "查询管理员表(SysAdmin)表", businessType = BusinessType.EXPORT)
+    @ApiOperation("分页查询所有数据")
     public ResultData selectAll(Page<SysAdmin> page, SysAdmin sysAdmin) {
         return ResultData.success(this.sysAdminService.page(page, new QueryWrapper<>(sysAdmin)));
     }
@@ -49,6 +54,7 @@ public class SysAdminController {
      * @return 单条数据
      */
     @GetMapping("{id}")
+    @ApiOperation("通过主键查询单条数据")
     @SaCheckPermission("sysAdmin:info")
     public ResultData selectOne(@PathVariable Serializable id) {
         return ResultData.success(this.sysAdminService.getById(id));
@@ -62,6 +68,7 @@ public class SysAdminController {
      */
     @PostMapping
     @SaCheckPermission("sysAdmin:save")
+    @Log(description = "新增管理员表(SysAdmin)表", businessType = BusinessType.INSERT)
     public ResultData insert(@RequestBody SysAdmin sysAdmin) {
         return ResultData.success(this.sysAdminService.save(sysAdmin));
     }
@@ -74,6 +81,7 @@ public class SysAdminController {
      */
     @PutMapping
     @SaCheckPermission("sysAdmin:update")
+    @Log(description = "修改管理员表(SysAdmin)表", businessType = BusinessType.UPDATE)
     public ResultData update(@RequestBody SysAdmin sysAdmin) {
         return ResultData.success(this.sysAdminService.updateById(sysAdmin));
     }
@@ -86,8 +94,25 @@ public class SysAdminController {
      */
     @DeleteMapping
     @SaCheckPermission("sysAdmin:delete")
+    @Log(description = "删除管理员表(SysAdmin)表", businessType = BusinessType.DELETE)
     public ResultData delete(@RequestParam("idList") List<Long> idList) {
         return ResultData.success(this.sysAdminService.removeByIds(idList));
+    }
+    /**
+     * 管理员登录
+     *
+     * @param sysAdmin
+     * @return 删除结果
+     */
+    @PostMapping("/login")
+    @ApiOperation("登录")
+    public ResultData login(@RequestBody SysAdmin sysAdmin) {
+        return ResultData.success("登录成功", this.sysAdminService.administratorLogin(sysAdmin));
+    }
+
+
+    @GetMapping("/getImageVerificationCode")
+    public void getImageVerificationCode(){
     }
 }
 
