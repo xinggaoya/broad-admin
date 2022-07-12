@@ -42,7 +42,11 @@
             <artifactId>lombok</artifactId>
         </dependency>
 
-
+        <!--   表单效验    -->
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

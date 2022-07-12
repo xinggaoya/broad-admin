@@ -39,4 +39,16 @@ public class GlobalExceptionHandler {
     public SaResult handlerNotLoginException(NotLoginException e) {
         return SaResult.error("无权限,请先登录");
     }
+
+    /**
+     * 服务异常处理
+     *
+     * @param e
+     * @return
+     */
+
+    @ExceptionHandler(value = ServiceException.class)
+    public SaResult handlerServiceException(ServiceException e) {
+        return SaResult.error(e.getMessage());
+    }
 }

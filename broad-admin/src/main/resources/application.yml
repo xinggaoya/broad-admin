@@ -12,6 +12,9 @@ server:
 
 # Spring配置
 spring:
+  mvc:
+    pathmatch:
+      matching-strategy: AntPathMatcher
   # 资源信息
   messages:
     # 国际化资源文件路径
@@ -46,13 +49,18 @@ sa-token:
   # 是否输出操作日志
   is-log: true
 
-
+# mybatis配置
 mybatis-plus:
-    # 是否启用驼峰命名规则
-    camel-case-name: true
-    # 是否启用驼峰命名规则
-    auto-convert: true
-    configuration:
-      log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  # 是否启用驼峰命名规则
+  camel-case-name: true
+  # 是否启用驼峰命名规则
+  auto-convert: true
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+springfox:
+  documentation:
+    swagger-ui:
+      enabled: true
 
 

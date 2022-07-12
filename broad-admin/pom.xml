@@ -28,11 +28,6 @@
 
         <dependency>
             <groupId>com.broad</groupId>
-            <artifactId>broad-system</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.broad</groupId>
             <artifactId>broad-framework</artifactId>
         </dependency>
 

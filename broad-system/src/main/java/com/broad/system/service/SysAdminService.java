@@ -11,5 +11,6 @@ import com.broad.system.entity.SysAdmin;
  */
 public interface SysAdminService extends IService<SysAdmin> {
 
+    Object administratorLogin(SysAdmin sysAdmin);
 }
 

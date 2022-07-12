@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import lombok.*;
 
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 /**
@@ -23,6 +24,7 @@ import java.util.Date;
 @EqualsAndHashCode(callSuper = false)
 @TableName("sys_admin")
 public class SysAdmin extends Model<SysAdmin> {
+
     /**
      * ID
      */
@@ -33,6 +35,7 @@ public class SysAdmin extends Model<SysAdmin> {
      * 用户名
      */
     @TableField(value = "user_name")
+    @NotNull(message = "用户名不能为空")
     private String userName;
 
     /**
