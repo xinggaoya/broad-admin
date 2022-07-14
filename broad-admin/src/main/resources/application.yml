@@ -1,8 +1,17 @@
 broad:
+  # 名称
+  name: Broad
+  # 版本
+  version: 1.0.0
+  # 开发者
+  author: XingGao
+  # 开启图片验证码
+  captchaEnabled: true
+  # 验证码类型 math 计算 char 字母
   captchaType: math
 
 
-
+# YAML data
 server:
   port: 8000
   servlet:
@@ -25,7 +34,7 @@ spring:
     # 国际化资源文件路径
     basename: i18n/messages
   profiles:
-    active: druid
+    active: druid,dev
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8
@@ -46,7 +55,7 @@ sa-token:
   # token 临时有效期 (指定时间内无操作就视为token过期) 单位: 秒
   activity-timeout: -1
   # 是否允许同一账号并发登录 (为true时允许一起登录, 为false时新登录挤掉旧登录)
-  is-concurrent: true
+  is-concurrent: false
   # 在多人登录同一账号时，是否共用一个token (为true时所有登录共用一个token, 为false时每次登录新建一个token)
   is-share: false
   # token风格
@@ -60,6 +69,7 @@ mybatis-plus:
   camel-case-name: true
   # 是否启用驼峰命名规则
   auto-convert: true
+  mapper-locations: classpath:mapper/*.xml
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
@@ -67,5 +77,10 @@ springfox:
   documentation:
     swagger-ui:
       enabled: true
+
+
+# 日志记录
+logging:
+#  config: classpath:log4j2-spring.xml
 
 

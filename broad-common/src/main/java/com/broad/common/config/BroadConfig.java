@@ -16,5 +16,13 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "broad")
 public class BroadConfig {
 
+    private String name;
+
+    private String version;
+
+    private String author;
+
+    private String captchaEnabled;
+
     private String captchaType;
 }

@@ -36,6 +36,7 @@
         <dynamic.version>3.5.0</dynamic.version>
         <swagger-version>3.0.3</swagger-version>
         <kaptcha.version>2.3.2</kaptcha.version>
+        <log4j.version>2.6.7</log4j.version>
     </properties>
 
     <dependencyManagement>
@@ -43,7 +44,25 @@
 
             <dependency>
                 <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-web</artifactId>
+                <artifactId>spring-boot-starter</artifactId>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>spring-boot-starter-logging</artifactId>
+                        <groupId>org.springframework.boot</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>log4j</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.apache.logging.log4j</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
                 <version>${boot.version}</version>
             </dependency>
             <!-- springboot 测试 -->
@@ -60,6 +79,7 @@
                 <artifactId>druid-spring-boot-starter</artifactId>
                 <version>${druid.version}</version>
             </dependency>
+
 
             <dependency>
                 <groupId>org.springframework.boot</groupId>
@@ -91,6 +111,13 @@
                 <artifactId>sa-token-dao-redis-jackson</artifactId>
                 <version>${satoken-version}</version>
             </dependency>
+
+            <!-- 日志管理log4j2 -->
+<!--            <dependency>-->
+<!--                <groupId>org.springframework.boot</groupId>-->
+<!--                <artifactId>spring-boot-starter-log4j2</artifactId>-->
+<!--                <version>${log4j.version}</version>-->
+<!--            </dependency>-->
 
             <!--    kaptcha图片验证码        -->
             <dependency>

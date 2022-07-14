@@ -18,6 +18,8 @@ import static com.google.code.kaptcha.Constants.*;
  */
 @Component
 public class KaptchaConfig {
+
+
     @Bean(name = "captchaProducer")
     public DefaultKaptcha getKaptchaBean() {
         DefaultKaptcha defaultKaptcha = new DefaultKaptcha();

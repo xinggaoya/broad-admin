@@ -134,5 +134,15 @@ public class SysAdmin extends Model<SysAdmin> {
     @ApiModelProperty(value = "状态:0=禁用,1=启用")
     private Integer status;
 
+
+    @TableField(exist = false)
+    private String codeId;
+
+    @TableField(exist = false)
+    private String codeValue;
+
+    @TableField(exist = false)
+    private String tokenValue;
+
 }
 

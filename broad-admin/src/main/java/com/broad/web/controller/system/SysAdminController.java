@@ -110,9 +110,5 @@ public class SysAdminController {
         return ResultData.success("登录成功", this.sysAdminService.administratorLogin(sysAdmin));
     }
 
-
-    @GetMapping("/getImageVerificationCode")
-    public void getImageVerificationCode(){
-    }
 }
 

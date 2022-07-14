@@ -44,7 +44,7 @@ public class CaptchaController {
      * 生成验证码
      */
     @GetMapping("/captchaImage")
-    public ResultData getCode(HttpServletResponse response) throws IOException {
+    public ResultData getCode() {
         LinkedHashMap<String, String> linkedHashMap = new LinkedHashMap<>();
         // 保存验证码信息
         String uuid = UUID.randomUUID().toString();
@@ -74,8 +74,9 @@ public class CaptchaController {
             return ResultData.error(e.getMessage());
         }
 
-        linkedHashMap.put("uuid", uuid);
-        linkedHashMap.put("img", Base64.encode(os.toByteArray()));
+        linkedHashMap.put("captcha", uuid);
+        linkedHashMap.put("captchaUrl", Base64.encode(os.toByteArray()));
+        linkedHashMap.put("showCaptcha", broadConfig.getCaptchaEnabled());
         return ResultData.success(linkedHashMap);
     }
 }
