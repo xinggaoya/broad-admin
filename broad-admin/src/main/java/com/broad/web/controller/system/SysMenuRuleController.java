@@ -16,7 +16,7 @@ import java.util.List;
  * 菜单和权限规则表(SysMenuRule)表控制层
  *
  * @author XingGao
- * @since 2022-07-13 11:18:52
+ * @since 2022 -07-13 11:18:52
  */
 @RestController
 @RequestMapping("sysMenuRule")
@@ -30,7 +30,7 @@ public class SysMenuRuleController {
     /**
      * 查询动态路由菜单
      *
-     * @return 所有数据
+     * @return 所有数据 result data
      */
     @GetMapping
     @SaCheckLogin
@@ -42,7 +42,7 @@ public class SysMenuRuleController {
      * 通过主键查询单条数据
      *
      * @param id 主键
-     * @return 单条数据
+     * @return 单条数据 result data
      */
     @GetMapping("{id}")
     @SaCheckLogin
@@ -54,7 +54,7 @@ public class SysMenuRuleController {
      * 新增数据
      *
      * @param sysMenuRule 实体对象
-     * @return 新增结果
+     * @return 新增结果 result data
      */
     @PostMapping
     @SaCheckPermission("sysMenuRule:add")
@@ -66,7 +66,7 @@ public class SysMenuRuleController {
      * 修改数据
      *
      * @param sysMenuRule 实体对象
-     * @return 修改结果
+     * @return 修改结果 result data
      */
     @PutMapping
     @SaCheckPermission("sysMenuRule:edit")
@@ -78,7 +78,7 @@ public class SysMenuRuleController {
      * 删除数据
      *
      * @param idList 主键结合
-     * @return 删除结果
+     * @return 删除结果 result data
      */
     @DeleteMapping
     @SaCheckPermission("sysMenuRule:delete")

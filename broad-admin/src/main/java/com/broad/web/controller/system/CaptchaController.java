@@ -23,7 +23,7 @@ import java.util.UUID;
  * Created with IntelliJ IDEA.
  *
  * @Author: XingGao
- * @Date: 2022/07/12 14:34
+ * @Date: 2022 /07/12 14:34
  * @Description:
  */
 @RestController
@@ -42,6 +42,8 @@ public class CaptchaController {
 
     /**
      * 生成验证码
+     *
+     * @return the code
      */
     @GetMapping("/captchaImage")
     public ResultData getCode() {

@@ -1,3 +1,4 @@
 */target/
 /logs/
 /.idea/
+/broad-admin-ui/node_modules/

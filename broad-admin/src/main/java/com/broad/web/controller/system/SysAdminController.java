@@ -20,7 +20,7 @@ import java.util.List;
  * 管理员表(SysAdmin)表控制层
  *
  * @author XingGao
- * @since 2022-07-09 17:19:39
+ * @since 2022 -07-09 17:19:39
  */
 @RestController
 @RequestMapping("sysAdmin")
@@ -39,7 +39,7 @@ public class SysAdminController {
      *
      * @param page     分页对象
      * @param sysAdmin 查询实体
-     * @return 所有数据
+     * @return 所有数据 result data
      */
     @GetMapping
     @ApiOperation("分页查询所有数据")
@@ -51,7 +51,7 @@ public class SysAdminController {
      * 通过主键查询单条数据
      *
      * @param id 主键
-     * @return 单条数据
+     * @return 单条数据 result data
      */
     @GetMapping("{id}")
     @ApiOperation("通过主键查询单条数据")
@@ -64,7 +64,7 @@ public class SysAdminController {
      * 新增数据
      *
      * @param sysAdmin 实体对象
-     * @return 新增结果
+     * @return 新增结果 result data
      */
     @PostMapping
     @SaCheckPermission("sysAdmin:save")
@@ -77,7 +77,7 @@ public class SysAdminController {
      * 修改数据
      *
      * @param sysAdmin 实体对象
-     * @return 修改结果
+     * @return 修改结果 result data
      */
     @PutMapping
     @SaCheckPermission("sysAdmin:update")
@@ -90,7 +90,7 @@ public class SysAdminController {
      * 删除数据
      *
      * @param idList 主键结合
-     * @return 删除结果
+     * @return 删除结果 result data
      */
     @DeleteMapping
     @SaCheckPermission("sysAdmin:delete")
@@ -98,11 +98,12 @@ public class SysAdminController {
     public ResultData delete(@RequestParam("idList") List<Long> idList) {
         return ResultData.success(this.sysAdminService.removeByIds(idList));
     }
+
     /**
      * 管理员登录
      *
-     * @param sysAdmin
-     * @return 删除结果
+     * @param sysAdmin the sys admin
+     * @return 删除结果 result data
      */
     @PostMapping("/login")
     @ApiOperation("登录")
