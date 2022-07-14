@@ -8,7 +8,6 @@ import com.broad.common.enums.BusinessType;
 import com.broad.framework.annotation.Log;
 import com.broad.system.entity.SysAdmin;
 import com.broad.system.service.SysAdminService;
-import com.google.code.kaptcha.servlet.KaptchaServlet;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +26,7 @@ import java.util.List;
 @RequestMapping("sysAdmin")
 @Api(tags = "管理员表")
 public class SysAdminController {
+
     /**
      * 服务对象
      */

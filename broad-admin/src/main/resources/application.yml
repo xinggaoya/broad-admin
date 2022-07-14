@@ -73,14 +73,11 @@ mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
+# swagger配置
 springfox:
   documentation:
     swagger-ui:
       enabled: true
 
-
-# 日志记录
-logging:
-#  config: classpath:log4j2-spring.xml
 
 

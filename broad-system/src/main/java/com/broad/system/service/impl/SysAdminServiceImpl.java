@@ -8,7 +8,6 @@ import com.broad.common.config.BroadConfig;
 import com.broad.common.exception.ServiceException;
 import com.broad.system.entity.SysAdmin;
 import com.broad.system.mapper.SysAdminMapper;
-import com.broad.system.service.SysAdminGroupService;
 import com.broad.system.service.SysAdminService;
 import com.broad.system.service.SysMenuRuleService;
 import com.google.code.kaptcha.Constants;
@@ -16,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
-import java.util.LinkedHashMap;
 
 /**
  * 管理员表(SysAdmin)表服务实现类
@@ -54,10 +52,7 @@ public class SysAdminServiceImpl extends ServiceImpl<SysAdminMapper, SysAdmin> i
         // 标记登录状态
         StpUtil.login(admin.getId());
         admin.setTokenValue(StpUtil.getTokenValue());
-        LinkedHashMap<String, Object> map = new LinkedHashMap<>();
-        map.put("userInfo", admin);
-        map.put("menus", menuRuleService.getRouteMenu());
-        return map;
+        return admin;
     }
 
 }
