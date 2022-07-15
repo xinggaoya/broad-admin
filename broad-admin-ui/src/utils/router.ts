@@ -119,6 +119,7 @@ export const getMenuPaths = (menus: any): any[] => {
 const handleMenuRule = (routes: any, pathPrefix = '/', parent = '/', module = 'admin') => {
     let menuRule = []
     let authNode = []
+
     for (const key in routes) {
         if (routes[key].extend == 'add_rules_only') {
             continue

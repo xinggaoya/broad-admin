@@ -8,7 +8,6 @@
             :quick-search-placeholder="t('quick Search Placeholder', { fields: t('auth.group.GroupName') })"
             @action="baTable.onTableHeaderAction"
         />
-
         <!-- 表格 -->
         <!-- 要使用`el-table`组件原有的属性，直接加在Table标签上即可 -->
         <Table ref="tableRef" :pagination="false" @action="baTable.onTableAction" />
@@ -34,7 +33,6 @@ import { ElForm } from 'element-plus'
 const formRef = ref()
 const tableRef = ref()
 const { t } = useI18n()
-
 const baTable = new baTableClass(
     new baTableApi(authGroup),
     {
@@ -52,8 +50,8 @@ const baTable = new baTableClass(
                 custom: { '0': 'danger', '1': 'success' },
                 replaceValue: { '0': t('Disable'), '1': t('Enable') },
             },
-            { label: t('updatetime'), prop: 'updatetime', align: 'center', width: '160', render: 'datetime' },
-            { label: t('createtime'), prop: 'createtime', align: 'center', width: '160', render: 'datetime' },
+            { label: t('updatetime'), prop: 'updateTime', align: 'center', width: '160', render: 'datetime' },
+            { label: t('createtime'), prop: 'createTime', align: 'center', width: '160', render: 'datetime' },
             {
                 label: t('operate'),
                 align: 'center',

@@ -32,10 +32,10 @@ const refresh = () => {
     router.go(0)
 }
 // console.log(navTabs.state.tabsViewRoutes)
-// if (navTabs.state.tabsViewRoutes) {
-//     let firstRoute = getFirstRoute(navTabs.state.tabsViewRoutes)
-//     if (firstRoute) routePush(firstRoute.name)
-// }
+if (navTabs.state.tabsViewRoutes) {
+    let firstRoute = getFirstRoute(navTabs.state.tabsViewRoutes)
+    if (firstRoute) routePush(firstRoute.name)
+}
 
 timer = setTimeout(() => {
     state.showReload = true

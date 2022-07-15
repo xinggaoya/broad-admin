@@ -3,7 +3,7 @@ import {authMenu} from '/@/api/controllerUrls'
 
 export function getMenuRules() {
     return createAxios({
-        url: authMenu + 'index',
+        url: authMenu,
         method: 'get',
     })
 }

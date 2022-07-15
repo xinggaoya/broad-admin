@@ -159,11 +159,11 @@ export class baTableApi {
     constructor(controllerUrl: string) {
         this.controllerUrl = controllerUrl
         this.actionUrl = new Map([
-            ['index', controllerUrl + 'index'],
-            ['add', controllerUrl + 'add'],
-            ['edit', controllerUrl + 'edit'],
-            ['del', controllerUrl + 'del'],
-            ['sortable', controllerUrl + 'sortable'],
+            ['index', controllerUrl],
+            ['add', controllerUrl],
+            ['edit', controllerUrl],
+            ['del', controllerUrl],
+            ['sortable', controllerUrl],
         ])
     }
 
@@ -177,9 +177,8 @@ export class baTableApi {
 
     edit(params: anyObj) {
         return createAxios({
-            url: this.actionUrl.get('edit'),
+            url: this.actionUrl.get('edit')+'/'+params.id,
             method: 'get',
-            params: params,
         })
     }
 

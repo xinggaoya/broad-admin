@@ -59,8 +59,14 @@
                         />
                     </el-form-item>
                     <el-form-item :label="t('state')">
-                        <el-radio v-model="baTable.form.items!.status" label="0" :border="true">{{ t('Disable') }}</el-radio>
-                        <el-radio v-model="baTable.form.items!.status" label="1" :border="true">{{ t('Enable') }}</el-radio>
+                        <el-radio v-model="baTable.form.items!.status" label="0" :border="true">{{
+                                t('Disable')
+                            }}
+                        </el-radio>
+                        <el-radio v-model="baTable.form.items!.status" label="1" :border="true">{{
+                                t('Enable')
+                            }}
+                        </el-radio>
                     </el-form-item>
                 </el-form>
             </div>
@@ -68,8 +74,11 @@
         <template #footer>
             <div :style="'width: calc(100% - ' + baTable.form.labelWidth! / 1.8 + 'px)'">
                 <el-button @click="baTable.toggleForm('')">{{ t('Cancel') }}</el-button>
-                <el-button v-blur :loading="baTable.form.submitLoading" @click="baTable.onSubmit(formRef)" type="primary">
-                    {{ baTable.form.operateIds && baTable.form.operateIds.length > 1 ? t('Save and edit next item') : t('Save') }}
+                <el-button v-blur :loading="baTable.form.submitLoading" @click="baTable.onSubmit(formRef)"
+                           type="primary">
+                    {{
+                        baTable.form.operateIds && baTable.form.operateIds.length > 1 ? t('Save and edit next item') : t('Save')
+                    }}
                 </el-button>
             </div>
         </template>
@@ -77,13 +86,13 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, watch, inject } from 'vue'
-import { useI18n } from 'vue-i18n'
+import {reactive, ref, watch, inject} from 'vue'
+import {useI18n} from 'vue-i18n'
 import type baTableClass from '/@/utils/baTable'
 import FormItem from '/@/components/formItem/index.vue'
-import { getMenuRules } from '/@/api/backend/auth/group'
-import type { ElForm, ElTree, FormItemRule } from 'element-plus'
-import { uuid } from '/@/utils/random'
+import {getMenuRules} from '/@/api/backend/auth/group'
+import type {ElForm, ElTree, FormItemRule} from 'element-plus'
+import {uuid} from '/@/utils/random'
 import type Node from 'element-plus/es/components/tree/src/model/node'
 
 interface MenuRules {
@@ -96,7 +105,7 @@ const treeRef = ref<InstanceType<typeof ElTree>>()
 const formRef = ref<InstanceType<typeof ElForm>>()
 const baTable = inject('baTable') as baTableClass
 
-const { t } = useI18n()
+const {t} = useI18n()
 
 const state: {
     treeKey: string
@@ -112,7 +121,7 @@ const rules: Partial<Record<string, FormItemRule[]>> = reactive({
     name: [
         {
             required: true,
-            message: t('Please input field', { field: t('auth.group.Group name') }),
+            message: t('Please input field', {field: t('auth.group.Group name')}),
             trigger: 'blur',
         },
     ],
@@ -121,7 +130,7 @@ const rules: Partial<Record<string, FormItemRule[]>> = reactive({
             validator: (rule: any, val: string, callback: Function) => {
                 let ids = getCheckeds()
                 if (ids.length <= 0) {
-                    return callback(new Error(t('Please select field', { field: t('auth.group.jurisdiction') })))
+                    return callback(new Error(t('Please select field', {field: t('auth.group.jurisdiction')})))
                 }
                 return callback()
             },
@@ -130,7 +139,7 @@ const rules: Partial<Record<string, FormItemRule[]>> = reactive({
 })
 
 getMenuRules().then((res) => {
-    state.menuRules = res.data.list
+    state.menuRules = res.data
 })
 
 const getCheckeds = () => {
@@ -184,12 +193,15 @@ watch(
         padding-left: 60px;
         white-space: pre-wrap;
         line-height: 12px;
+
         .el-tree-node {
             display: inline-block;
         }
+
         .el-tree-node__content {
             padding-left: 5px !important;
             padding-right: 5px;
+
             .el-tree-node__expand-icon {
                 display: none;
             }

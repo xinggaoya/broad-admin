@@ -116,9 +116,9 @@ export default class baTable {
         return this.api
             .index(this.table.filter)
             .then((res) => {
-                this.table.data = res.data.list
+                this.table.data = res.data.records
                 this.table.total = res.data.total
-                this.table.remark = res.data.remark
+                this.table.msg = res.data.msg
                 this.table.loading = false
                 this.runAfter('getIndex', { res })
             })
@@ -128,7 +128,7 @@ export default class baTable {
     }
     // 删除
     postDel = (ids: string[]) => {
-        if (this.runBefore('postDel', { ids }) === false) return
+        if (!this.runBefore('postDel', {ids})) return
         this.api.del(ids).then((res) => {
             this.onTableHeaderAction('refresh', {})
             this.runAfter('postDel', { res })
@@ -136,7 +136,7 @@ export default class baTable {
     }
     // 编辑
     requestEdit = (id: string) => {
-        if (this.runBefore('requestEdit', { id }) === false) return
+        if (!this.runBefore('requestEdit', {id})) return
         this.form.loading = true
         this.form.items = {}
         return this.api
@@ -145,7 +145,7 @@ export default class baTable {
             })
             .then((res) => {
                 this.form.loading = false
-                this.form.items = res.data.row
+                this.form.items = res.data
                 this.runAfter('requestEdit', { res })
             })
     }
@@ -156,7 +156,7 @@ export default class baTable {
      */
     onTableDblclick = (row: TableRow, column: any) => {
         if (this.table.dblClickNotEditColumn!.indexOf('all') === -1 && this.table.dblClickNotEditColumn!.indexOf(column.property) === -1) {
-            if (this.runBefore('onTableDblclick', { row, column }) === false) return
+            if (!this.runBefore('onTableDblclick', {row, column})) return
             this.toggleForm('edit', [row[this.table.pk!]])
             this.runAfter('onTableDblclick', {
                 row,

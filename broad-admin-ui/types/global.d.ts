@@ -25,8 +25,8 @@ interface anyObj {
 }
 
 interface TableDefaultData<T = any> {
-    list: T
-    remark: string
+    records: T
+    msg: string
     total: number
 }
 

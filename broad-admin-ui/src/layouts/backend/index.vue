@@ -45,7 +45,6 @@ onUnmounted(() => {
 
 const init = () => {
     index().then((res) => {
-        console.log(res)
         siteConfig.$state = res.data.siteConfig
         terminal.changePort('1818')
         terminal.changePackageManager('npm')

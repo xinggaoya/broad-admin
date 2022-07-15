@@ -6,7 +6,7 @@ declare global {
         ref?: typeof Table
         pk?: string
         data?: TableRow[]
-        remark?: string | null
+        msg?: string | null
         loading?: boolean
         expandAll?: boolean
         selection?: TableRow[]

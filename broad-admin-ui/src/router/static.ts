@@ -13,6 +13,7 @@ const staticRoutes: Array<RouteRecordRaw> = [
         path: '/',
         name: '/',
         component: () => import('/@/views/frontend/index.vue'),
+        redirect:'/admin',
         meta: {
             title: pageTitle('home'),
         },
