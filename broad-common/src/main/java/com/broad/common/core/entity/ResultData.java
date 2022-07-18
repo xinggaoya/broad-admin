@@ -1,169 +1,118 @@
 package com.broad.common.core.entity;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.util.ObjectUtils;
-
-import java.util.Date;
-import java.util.HashMap;
+import java.io.Serializable;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
- * 
+ * <p>
  * 操作消息提醒
- * 
+ *
  * @Author: XingGao
  * @Date: 2022/07/09 17:08
  * @Description:
  */
-public class ResultData extends HashMap<String, Object> {
-
+public class ResultData extends LinkedHashMap<String, Object> implements Serializable {
     private static final long serialVersionUID = 1L;
+    public static final int CODE_SUCCESS = 200;
+    public static final int CODE_ERROR = 500;
 
-    /**
-     * 状态码
-     */
-    public static final String CODE_TAG = "code";
-
-    /**
-     * 返回内容
-     */
-    public static final String MSG_TAG = "msg";
-
-    /**
-     * 数据对象
-     */
-    public static final String DATA_TAG = "data";
-
-    /**
-     * 操作时间
-     */
-    public static final Date TIME_STAMP = new Date();
-
-    /**
-     * 初始化一个新创建的 ResultData 对象，使其表示一个空消息。
-     */
     public ResultData() {
     }
 
-    /**
-     * 初始化一个新创建的 ResultData 对象
-     *
-     * @param code 状态码
-     * @param msg  返回内容
-     */
-    public ResultData(int code, String msg) {
-        super.put(CODE_TAG, code);
-        super.put(MSG_TAG, msg);
-        super.put("timestamp",TIME_STAMP);
-    }
-
-    /**
-     * 初始化一个新创建的 ResultData 对象
-     *
-     * @param code 状态码
-     * @param msg  返回内容
-     * @param data 数据对象
-     */
     public ResultData(int code, String msg, Object data) {
-        super.put(CODE_TAG, code);
-        super.put(MSG_TAG, msg);
-        if (!ObjectUtils.isEmpty(data)) {
-            super.put(DATA_TAG, data);
+        this.setCode(code);
+        this.setMsg(msg);
+        this.setData(data);
+    }
+
+    public ResultData(Map<String, Object> map) {
+        Iterator var2 = map.keySet().iterator();
+
+        while (var2.hasNext()) {
+            String key = (String) var2.next();
+            this.set(key, map.get(key));
         }
-        super.put("timestamp",TIME_STAMP);
+
     }
 
-    /**
-     * 返回成功消息
-     *
-     * @return 成功消息
-     */
-    public static ResultData success() {
-        return ResultData.success("操作成功");
+    public Integer getCode() {
+        return (Integer) this.get("code");
     }
 
-    /**
-     * 返回成功数据
-     *
-     * @return 成功消息
-     */
-    public static ResultData success(Object data) {
-        return ResultData.success("操作成功", data);
+    public String getMsg() {
+        return (String) this.get("msg");
     }
 
-    /**
-     * 返回成功消息
-     *
-     * @param msg 返回内容
-     * @return 成功消息
-     */
-    public static ResultData success(String msg) {
-        return ResultData.success(msg, null);
+    public Object getData() {
+        return this.get("data");
     }
 
-    /**
-     * 返回成功消息
-     *
-     * @param msg  返回内容
-     * @param data 数据对象
-     * @return 成功消息
-     */
-    public static ResultData success(String msg, Object data) {
-        return new ResultData(HttpStatus.OK.value(), msg, data);
-    }
-
-    /**
-     * 返回错误消息
-     *
-     * @return
-     */
-    public static ResultData error() {
-        return ResultData.error("操作失败");
-    }
-
-    /**
-     * 返回错误消息
-     *
-     * @param msg 返回内容
-     * @return 警告消息
-     */
-    public static ResultData error(String msg) {
-        return ResultData.error(msg, null);
-    }
-
-    /**
-     * 返回错误消息
-     *
-     * @param msg  返回内容
-     * @param data 数据对象
-     * @return 警告消息
-     */
-    public static ResultData error(String msg, Object data) {
-        return new ResultData(HttpStatus.INTERNAL_SERVER_ERROR.value(), msg, data);
-    }
-
-    /**
-     * 返回错误消息
-     *
-     * @param code 状态码
-     * @param msg  返回内容
-     * @return 警告消息
-     */
-    public static ResultData error(int code, String msg) {
-        return new ResultData(code, msg, null);
-    }
-
-    /**
-     * 方便链式调用
-     *
-     * @param key   键
-     * @param value 值
-     * @return 数据对象
-     */
-    @Override
-    public ResultData put(String key, Object value) {
-        super.put(key, value);
-        super.put("timestamp",TIME_STAMP);
+    public ResultData setCode(int code) {
+        this.put("code", code);
         return this;
     }
+
+    public ResultData setMsg(String msg) {
+        this.put("msg", msg);
+        return this;
+    }
+
+    public ResultData setData(Object data) {
+        this.put("data", data);
+        return this;
+    }
+
+    public ResultData set(String key, Object data) {
+        this.put(key, data);
+        return this;
+    }
+
+    public ResultData setMap(Map<String, ?> map) {
+
+        for (String key : map.keySet()) {
+            this.put(key, map.get(key));
+        }
+
+        return this;
+    }
+
+    public static ResultData ok() {
+        return new ResultData(CODE_SUCCESS, "操作成功", (Object) null);
+    }
+
+    public static ResultData ok(String msg) {
+        return new ResultData(CODE_SUCCESS, msg, (Object) null);
+    }
+
+    public static ResultData code(int code) {
+        return new ResultData(code, (String) null, (Object) null);
+    }
+
+    public static ResultData data(Object data) {
+        return new ResultData(CODE_SUCCESS, "操作成功", data);
+    }
+
+    public static ResultData error() {
+        return new ResultData(CODE_ERROR, "操作失败,服务异常！", (Object) null);
+    }
+
+    public static ResultData error(String msg) {
+        return new ResultData(CODE_ERROR, msg, (Object) null);
+    }
+
+    public static ResultData get(int code, String msg, Object data) {
+        return new ResultData(code, msg, data);
+    }
+
+    public String toString() {
+        return "{\"code\": " + this.getCode() + ", \"msg\": " + this.transValue(this.getMsg()) + ", \"data\": " + this.transValue(this.getData()) + "}";
+    }
+
+    private String transValue(Object value) {
+        return value instanceof String ? "\"" + value + "\"" : String.valueOf(value);
+    }
+
 }

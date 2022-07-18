@@ -4,7 +4,7 @@ import {isNavigationFailure, NavigationFailureType} from 'vue-router'
 import {ElNotification} from 'element-plus'
 import {useNavTabs} from '../stores/navTabs'
 import {useMemberCenter} from '../stores/memberCenter'
-import {adminBaseRoute, memberCenterBaseRoute} from '/@/router/static'
+import {adminBaseRoute} from '/@/router/static'
 import _ from 'lodash'
 import {i18n} from '/@/lang/index'
 
@@ -74,16 +74,6 @@ export const getFirstRoute = (viewRoutes: viewMenu[]): false | viewMenu => {
         }
     }
     return find
-}
-
-/**
- * 处理会员中心的路由
- */
-export const handleMemberCenterRoute = (routes: any) => {
-    const viewsComponent = import.meta.globEager('/src/views/frontend/**/*.vue')
-    addRouteAll(viewsComponent, routes, memberCenterBaseRoute.name as string)
-    let menuMemberCenterBaseRoute = '/' + (memberCenterBaseRoute.name as string) + '/'
-    return handleMenuRule(_.cloneDeep(routes), menuMemberCenterBaseRoute, menuMemberCenterBaseRoute)
 }
 
 /**

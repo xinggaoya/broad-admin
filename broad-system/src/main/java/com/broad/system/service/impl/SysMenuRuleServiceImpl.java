@@ -4,18 +4,17 @@ import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.broad.system.entity.SysAdminGroup;
+import com.broad.system.entity.SysMenuRule;
 import com.broad.system.entity.SysAdminGroupAccess;
 import com.broad.system.mapper.SysAdminGroupAccessMapper;
 import com.broad.system.mapper.SysAdminGroupMapper;
 import com.broad.system.mapper.SysMenuRuleMapper;
-import com.broad.system.entity.SysMenuRule;
 import com.broad.system.service.SysMenuRuleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.io.Serializable;
+import java.util.*;
 
 /**
  * 菜单和权限规则表(SysMenuRule)表服务实现类
@@ -32,8 +31,51 @@ public class SysMenuRuleServiceImpl extends ServiceImpl<SysMenuRuleMapper, SysMe
     @Autowired
     private SysAdminGroupAccessMapper sysAdminGroupAccessMapper;
 
+    /**
+     * 查询管理员拥有的路由菜单+创建树形结构
+     *
+     * @return 所有数据 result data
+     */
     @Override
-    public List<SysMenuRule> getRouteMenu() {
+    public List<SysMenuRule> getRouteMenuByAdmin() {
+        return buildTree(getRouteByAdminList());
+    }
+
+
+    /**
+     * 查询全部路由菜单
+     *
+     * @return 所有数据 result data
+     */
+    @Override
+    public List<SysMenuRule> getRouteMenuAll(SysMenuRule sysMenuRule) {
+        List<SysMenuRule> list = baseMapper.selectList(new LambdaQueryWrapper<>(sysMenuRule));
+        return buildTree(list);
+    }
+
+    /**
+     * 查询菜单详情和上级菜单
+     *
+     * @return 所有数据 result data
+     */
+    @Override
+    public SysMenuRule getRouteById(Serializable id) {
+        SysMenuRule menu = baseMapper.selectById(id);
+        if (menu.getPid() != null) {
+            SysMenuRule parentMenu = baseMapper.selectById(menu.getPid());
+            parentMenu.getChildren().add(menu);
+            return parentMenu;
+        }
+        return menu;
+    }
+
+    /**
+     * 查询管理员拥有的路由菜单
+     *
+     * @return 树形结构 result data
+     */
+    @Override
+    public List<SysMenuRule> getRouteByAdminList() {
         LambdaQueryWrapper<SysMenuRule> wrapper = new LambdaQueryWrapper<>();
         String[] menuIds;
 
@@ -45,33 +87,57 @@ public class SysMenuRuleServiceImpl extends ServiceImpl<SysMenuRuleMapper, SysMe
             wrapper.in(SysMenuRule::getId, menuIdList);
         }
         // 查询该角色的全部路由菜单
-        List<SysMenuRule> list = baseMapper.selectList(wrapper);
-        // 创建树形结构
-        return getTreeMenu(list);
+        return baseMapper.selectList(wrapper);
+    }
+
+
+    /**
+     * 构建树形结构
+     *
+     * @param list
+     * @return
+     */
+    public List<SysMenuRule> buildTree(List<SysMenuRule> list) {
+        List<SysMenuRule> treeMenus = new ArrayList<>();
+        for (SysMenuRule menuNode : getRootNode(list)) {
+            menuNode = buildChilTree(menuNode, list);
+            treeMenus.add(menuNode);
+        }
+        return treeMenus;
     }
 
     /**
-     * 创建树形结构
+     * 构建子树形结构
      *
-     * @param sysMenuRuleList
+     * @param pNode
+     * @param menuList
      * @return
      */
-    public List<SysMenuRule> getTreeMenu(List<SysMenuRule> sysMenuRuleList) {
-        List<SysMenuRule> list = sysMenuRuleList;
-        List<SysMenuRule> treeList = new ArrayList<>();
-        for (SysMenuRule menu : list) {
-            if (menu.getPid() == 0) {
-                treeList.add(menu);
+    private SysMenuRule buildChilTree(SysMenuRule pNode, List<SysMenuRule> menuList) {
+        List<SysMenuRule> chilMenus = new ArrayList<>();
+        for (SysMenuRule menuNode : menuList) {
+            if (menuNode.getPid().equals(pNode.getId())) {
+                chilMenus.add(buildChilTree(menuNode, menuList));
             }
         }
-        for (SysMenuRule menu : list) {
-            for (SysMenuRule tree : treeList) {
-                if (menu.getPid().equals(tree.getId())) {
-                    tree.addChild(menu);
-                }
+        pNode.setChildren(chilMenus);
+        return pNode;
+    }
+
+    /**
+     * 获取根节点
+     *
+     * @param menuList
+     * @return
+     */
+    private List<SysMenuRule> getRootNode(List<SysMenuRule> menuList) {
+        List<SysMenuRule> rootMenuLists = new ArrayList<>();
+        for (SysMenuRule menuNode : menuList) {
+            if (menuNode.getPid() == 0) {
+                rootMenuLists.add(menuNode);
             }
         }
-        return treeList;
+        return rootMenuLists;
     }
 
 }

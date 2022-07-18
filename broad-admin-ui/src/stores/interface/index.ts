@@ -67,6 +67,10 @@ export interface AdminInfo {
     super: boolean
 }
 
+export interface tableInfo {
+    row: anyObj
+}
+
 export interface UserInfo {
     id: number
     username: string

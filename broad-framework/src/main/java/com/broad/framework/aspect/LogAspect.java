@@ -1,5 +1,6 @@
 package com.broad.framework.aspect;
 
+import cn.dev33.satoken.stp.StpUtil;
 import com.broad.framework.annotation.Log;
 import com.broad.system.entity.SysAdminLog;
 import com.broad.system.service.SysAdminLogService;
@@ -54,8 +55,7 @@ public class LogAspect {
     public Object doAround(ProceedingJoinPoint joinPoint) throws Throwable {
         //获取请求对象
         HttpServletRequest request = getRequest();
-        SysAdminLog sysAdminLog = new SysAdminLog();
-        Object result = null;
+        Object result;
         try {
             long start = System.currentTimeMillis();
             result = joinPoint.proceed();
@@ -63,15 +63,7 @@ public class LogAspect {
             // 获取Log注解
             Log logAnnotation = getAnnotation(joinPoint);
             // 封装webLog对象
-            sysAdminLog.setLogDescription(logAnnotation.description());
-            sysAdminLog.setLogTimeCost((double) timeCost);
-            sysAdminLog.setLogIpAddress(request.getRemoteAddr());
-            sysAdminLog.setLogHttpMethod(request.getMethod());
-            sysAdminLog.setLogParams(getParams(joinPoint).toString());
-            sysAdminLog.setLogResult(result.toString());
-            sysAdminLog.setLogUrl(request.getRequestURL().toString());
-            sysAdminLog.setLogMethodType(logAnnotation.businessType().name());
-            this.setLog(sysAdminLog);
+            setLog(request, logAnnotation, timeCost, result, joinPoint);
         } catch (Throwable e) {
             throw new Throwable(e);
         } finally {
@@ -90,8 +82,18 @@ public class LogAspect {
 
 
     @Async("asyncServiceExecutor")
-    public void setLog(SysAdminLog sysAdminLog) {
+    public void setLog(HttpServletRequest request, Log logAnnotation, long timeCost, Object result, ProceedingJoinPoint joinPoint) {
         // TODO Auto-generated method stub
+        SysAdminLog sysAdminLog = new SysAdminLog();
+        sysAdminLog.setLogDescription(logAnnotation.description());
+        sysAdminLog.setLogTimeCost((double) timeCost);
+        sysAdminLog.setLogIpAddress(request.getRemoteAddr());
+        sysAdminLog.setLogHttpMethod(request.getMethod());
+        sysAdminLog.setLogParams(getParams(joinPoint).toString());
+        sysAdminLog.setLogResult(result.toString());
+        sysAdminLog.setLogUrl(request.getRequestURL().toString());
+        sysAdminLog.setLogMethodType(logAnnotation.businessType().name());
+        sysAdminLog.setAdminId(StpUtil.getLoginIdAsInt());
         sysAdminLogService.save(sysAdminLog);
     }
 

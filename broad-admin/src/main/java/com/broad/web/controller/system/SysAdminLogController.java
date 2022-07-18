@@ -1,9 +1,11 @@
 package com.broad.web.controller.system;
 
+
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.broad.common.core.entity.ResultData;
-import com.broad.system.entity.SysAdminGroup;
-import com.broad.system.service.SysAdminGroupService;
+import com.broad.system.entity.SysAdminLog;
+import com.broad.system.service.SysAdminLogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,30 +13,31 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * 管理分组表(SysAdminGroup)表控制层
+ * 管理员日志表(SysAdminLog)表控制层
  *
  * @author XingGao
- * @since 2022-07-15 11:21:45
+ * @since 2022-07-16 21:10:59
  */
 @RestController
-@RequestMapping("sysAdminGroup")
-public class SysAdminGroupController {
+@RequestMapping("sysAdminLog")
+public class SysAdminLogController {
+
     /**
      * 服务对象
      */
     @Autowired
-    private SysAdminGroupService sysAdminGroupService;
+    private SysAdminLogService sysAdminLogService;
 
     /**
      * 分页查询所有数据
      *
      * @param page 分页对象
-     * @param sysAdminGroup 查询实体
+     * @param sysAdminLog 查询实体
      * @return 所有数据
      */
     @GetMapping
-    public ResultData selectAll(Page<SysAdminGroup> page, SysAdminGroup sysAdminGroup) {
-        return ResultData.data(this.sysAdminGroupService.selectAll(page, sysAdminGroup));
+    public ResultData selectAll(Page<SysAdminLog> page, SysAdminLog sysAdminLog) {
+        return ResultData.data(this.sysAdminLogService.page(page, new QueryWrapper<>(sysAdminLog)));
     }
 
     /**
@@ -45,29 +48,29 @@ public class SysAdminGroupController {
      */
     @GetMapping("{id}")
     public ResultData selectOne(@PathVariable Serializable id) {
-        return ResultData.data(this.sysAdminGroupService.getById(id));
+        return ResultData.data(this.sysAdminLogService.getById(id));
     }
 
     /**
      * 新增数据
      *
-     * @param sysAdminGroup 实体对象
+     * @param sysAdminLog 实体对象
      * @return 新增结果
      */
     @PostMapping
-    public ResultData insert(@RequestBody SysAdminGroup sysAdminGroup) {
-        return ResultData.data(this.sysAdminGroupService.save(sysAdminGroup));
+    public ResultData insert(@RequestBody SysAdminLog sysAdminLog) {
+        return ResultData.data(this.sysAdminLogService.save(sysAdminLog));
     }
 
     /**
      * 修改数据
      *
-     * @param sysAdminGroup 实体对象
+     * @param sysAdminLog 实体对象
      * @return 修改结果
      */
     @PutMapping
-    public ResultData update(@RequestBody SysAdminGroup sysAdminGroup) {
-        return ResultData.data(this.sysAdminGroupService.updateById(sysAdminGroup));
+    public ResultData update(@RequestBody SysAdminLog sysAdminLog) {
+        return ResultData.data(this.sysAdminLogService.updateById(sysAdminLog));
     }
 
     /**
@@ -78,7 +81,7 @@ public class SysAdminGroupController {
      */
     @DeleteMapping
     public ResultData delete(@RequestParam("idList") List<Long> idList) {
-        return ResultData.data(this.sysAdminGroupService.removeByIds(idList));
+        return ResultData.data(this.sysAdminLogService.removeByIds(idList));
     }
 }
 

@@ -7,7 +7,6 @@ import { useNavTabs } from '/@/stores/navTabs'
 import { useMemberCenter } from '/@/stores/memberCenter'
 import { ElForm } from 'element-plus'
 import { useAdminInfo } from '/@/stores/adminInfo'
-import { useUserInfo } from '/@/stores/userInfo'
 import { i18n } from '../lang'
 
 export function registerIcons(app: App) {
@@ -84,16 +83,6 @@ export function getAdminToken(type: 'auth' | 'refresh' = 'auth') {
 export function removeAdminToken() {
     const adminInfo = useAdminInfo()
     adminInfo.removeToken()
-}
-
-export function getUserToken(type: 'auth' | 'refresh' = 'auth') {
-    const userInfo = useUserInfo()
-    return type == 'auth' ? userInfo.token : userInfo.refreshToken
-}
-
-export function removeUserToken() {
-    const userInfo = useUserInfo()
-    userInfo.removeToken()
 }
 
 /**

@@ -1,167 +1,88 @@
 <template>
     <div class="default-main ba-table-box">
-        <el-alert class="ba-table-alert" v-if="baTable.table.remark" :title="baTable.table.remark" type="info" show-icon />
-
-        <!-- 表格顶部菜单 -->
-        <TableHeader
-            :buttons="['refresh', 'delete', 'comSearch']"
-            :quick-search-placeholder="t('quick Search Placeholder', { fields: t('auth.adminLog.title') })"
-            @action="baTable.onTableHeaderAction"
-        />
-        <!-- 表格 -->
-        <!-- 要使用`el-table`组件原有的属性，直接加在Table标签上即可 -->
-        <Table @action="baTable.onTableAction" />
-
-        <Info />
+        <TableHeader :data="tableData" :checkbox="true" :columns="columns"/>
     </div>
 </template>
 
 <script setup lang="ts">
-import _ from 'lodash'
-import { onMounted, provide } from 'vue'
-import baTableClass from '/@/utils/baTable'
-import { authAdminLog } from '/@/api/controllerUrls'
-import Table from '/@/components/table/index.vue'
-import TableHeader from '/@/components/table/header/index.vue'
-import { defaultOptButtons } from '/@/components/table'
-import { baTableApi } from '/@/api/common'
-import useCurrentInstance from '/@/utils/useCurrentInstance'
-import { useI18n } from 'vue-i18n'
-import Info from './info.vue'
-import { buildJsonToElTreeData } from '/@/utils/common'
+import TableHeader from '/@/components/tableHeader/table.vue'
+import {h} from 'vue'
+import {ElButton, ElTag} from "element-plus";
+import {TableRenderProps} from "/@/utils/tableRender";
 
-const { t } = useI18n()
 
-let optButtons: OptButton[] = [
+const columns: TableRenderProps[] = [
     {
-        render: 'tipButton',
-        name: 'info',
-        title: 'info',
-        text: '',
-        type: 'primary',
-        icon: 'fa fa-search-plus',
-        class: 'table-row-edit',
-        disabledTip: false,
+        title: '日期',
+        key: 'date',
+        render: (row: any) => {
+            return h(ElTag, {}, row.date)
+        }
+    },
+    {
+        title: '姓名',
+        key: 'name',
+    },
+    {
+        title: '地址',
+        key: 'address',
+        align: 'center',
+
+    },
+    {
+        title: '操作',
+        key: 'action',
+        fixed: 'right',
+        width: 150,
+        align: 'center',
+        render: (row: any) => {
+            const btn = [
+                h(ElButton, {
+                    icon: 'el-icon-EditPen',
+                    onClick: () => {
+                        console.log(row)
+                    }
+                }),
+                h(ElButton, {
+                    icon: 'el-icon-Delete',
+                    onClick: () => {
+                        console.log(row)
+                    }
+                })
+            ]
+            return btn;
+        }
+    }
+]
+
+const tableData = [
+    {
+        date: '2016-05-03',
+        name: 'Tom',
+        address: 'No. 189, Grove St, Los Angeles',
+    },
+    {
+        date: '2016-05-02',
+        name: 'Tom',
+        address: 'No. 189, Grove St, Los Angeles',
+    },
+    {
+        date: '2016-05-04',
+        name: 'Tom',
+        address: 'No. 189, Grove St, Los Angeles',
+    },
+    {
+        date: '2016-05-01',
+        name: 'Tom',
+        address: 'No. 189, Grove St, Los Angeles',
     },
 ]
 
-optButtons = _.concat(optButtons, defaultOptButtons(['delete']))
-
-const baTable = new baTableClass(
-    new baTableApi(authAdminLog),
-    {
-        column: [
-            { type: 'selection', align: 'center', operator: false },
-            { label: t('id'), prop: 'id', align: 'center', operator: 'LIKE', operatorPlaceholder: t('Fuzzy query'), width: 70 },
-            {
-                label: t('auth.adminLog.admin_id'),
-                prop: 'admin_id',
-                align: 'center',
-                operator: 'LIKE',
-                operatorPlaceholder: t('Fuzzy query'),
-                width: 70,
-            },
-            {
-                label: t('auth.adminLog.userName'),
-                prop: 'username',
-                align: 'center',
-                operator: 'LIKE',
-                operatorPlaceholder: t('Fuzzy query'),
-                width: 160,
-            },
-            { label: t('auth.adminLog.title'), prop: 'title', align: 'center', operator: 'LIKE', operatorPlaceholder: t('Fuzzy query') },
-            {
-                show: false,
-                label: t('auth.adminLog.data'),
-                prop: 'data',
-                align: 'center',
-                operator: 'LIKE',
-                operatorPlaceholder: t('Fuzzy query'),
-                'show-overflow-tooltip': true,
-            },
-            {
-                label: t('auth.adminLog.url'),
-                prop: 'url',
-                align: 'center',
-                operator: 'LIKE',
-                operatorPlaceholder: t('Fuzzy query'),
-                'show-overflow-tooltip': true,
-                render: 'url',
-            },
-            { label: t('auth.adminLog.ip'), prop: 'ip', align: 'center', operator: 'LIKE', operatorPlaceholder: t('Fuzzy query'), render: 'tag' },
-            {
-                label: t('auth.adminLog.useragent'),
-                prop: 'useragent',
-                align: 'center',
-                operator: 'LIKE',
-                operatorPlaceholder: t('Fuzzy query'),
-                'show-overflow-tooltip': true,
-            },
-            {
-                label: t('auth.adminLog.createtime'),
-                prop: 'createtime',
-                align: 'center',
-                render: 'datetime',
-                sortable: 'custom',
-                operator: 'RANGE',
-                width: 160,
-            },
-            {
-                label: t('operate'),
-                align: 'center',
-                width: '100',
-                render: 'buttons',
-                buttons: optButtons,
-                operator: false,
-            },
-        ],
-        dblClickNotEditColumn: [undefined],
-    },
-    {},
-    {
-        onTableDblclick: ({ row }: { row: TableRow }) => {
-            infoButtonClick(row)
-            return false
-        },
-    }
-)
-
-baTable.mount()
-baTable.getIndex()
-
-provide('baTable', baTable)
-
-/** 点击查看详情按钮响应 */
-const infoButtonClick = (row: TableRow) => {
-    if (!row) return
-    // 数据来自表格数据,未重新请求api,深克隆,不然可能会影响表格
-    let rowClone = _.cloneDeep(row)
-    rowClone.data = rowClone.data ? [{ label: '点击展开', children: buildJsonToElTreeData(JSON.parse(rowClone.data)) }] : []
-    baTable.form.extend!['info'] = rowClone
-    baTable.form.operate = 'info'
+const x = (row: any) => {
+    console.log(row)
 }
-
-onMounted(() => {
-    const { proxy } = useCurrentInstance()
-    /**
-     * 表格内的按钮响应
-     * @param name 按钮name
-     * @param row 被操作行数据
-     */
-    proxy.eventBus.on('onTableButtonClick', (data: { name: string; row: TableRow }) => {
-        if (!baTable.activate) return
-        if (data.name == 'info') {
-            infoButtonClick(data.row)
-        }
-    })
-})
 </script>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
-export default defineComponent({
-    name: 'auth/adminLog',
-})
-</script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+</style>

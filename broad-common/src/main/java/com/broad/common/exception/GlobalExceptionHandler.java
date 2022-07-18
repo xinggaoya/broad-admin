@@ -1,9 +1,13 @@
 package com.broad.common.exception;
 
 import cn.dev33.satoken.exception.NotLoginException;
+import cn.dev33.satoken.exception.NotPermissionException;
 import cn.dev33.satoken.util.SaResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.Objects;
 
 /**
  * Created with IntelliJ IDEA.
@@ -56,6 +60,18 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * 未授权异常处理
+     *
+     * @param e
+     * @return
+     */
+    @ExceptionHandler(value = NotPermissionException.class)
+    public SaResult handlerNotPermissionException(NotPermissionException e) {
+        // 判断场景值，定制化异常信息
+        return SaResult.code(403).setMsg("无操作权限，请联系管理员");
+    }
+
+    /**
      * 服务异常处理
      *
      * @param e
@@ -66,4 +82,16 @@ public class GlobalExceptionHandler {
     public SaResult handlerServiceException(ServiceException e) {
         return SaResult.error(e.getMessage());
     }
+
+    /**
+     * 参数校验异常处理
+     *
+     * @param e
+     * @return
+     */
+    @ExceptionHandler(value = MethodArgumentNotValidException.class)
+    public SaResult handlerMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+        return SaResult.error(Objects.requireNonNull(e.getBindingResult().getFieldError()).getDefaultMessage());
+    }
+
 }

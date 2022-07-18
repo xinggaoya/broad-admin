@@ -44,7 +44,7 @@ public class SysAdminController {
     @GetMapping
     @ApiOperation("分页查询所有数据")
     public ResultData selectAll(Page<SysAdmin> page, SysAdmin sysAdmin) {
-        return ResultData.success(this.sysAdminService.page(page, new QueryWrapper<>(sysAdmin)));
+        return ResultData.data(this.sysAdminService.page(page, new QueryWrapper<>(sysAdmin)));
     }
 
     /**
@@ -57,7 +57,7 @@ public class SysAdminController {
     @ApiOperation("通过主键查询单条数据")
     @SaCheckPermission("sysAdmin:info")
     public ResultData selectOne(@PathVariable Serializable id) {
-        return ResultData.success(this.sysAdminService.getById(id));
+        return ResultData.data(this.sysAdminService.getById(id));
     }
 
     /**
@@ -68,9 +68,9 @@ public class SysAdminController {
      */
     @PostMapping
     @SaCheckPermission("sysAdmin:save")
-    @Log(description = "新增管理员表(SysAdmin)表", businessType = BusinessType.INSERT)
+    @Log(description = "新增管理员表", businessType = BusinessType.INSERT)
     public ResultData insert(@RequestBody SysAdmin sysAdmin) {
-        return ResultData.success(this.sysAdminService.save(sysAdmin));
+        return ResultData.data(this.sysAdminService.save(sysAdmin));
     }
 
     /**
@@ -81,9 +81,9 @@ public class SysAdminController {
      */
     @PutMapping
     @SaCheckPermission("sysAdmin:update")
-    @Log(description = "修改管理员表(SysAdmin)表", businessType = BusinessType.UPDATE)
+    @Log(description = "修改管理员表", businessType = BusinessType.UPDATE)
     public ResultData update(@RequestBody SysAdmin sysAdmin) {
-        return ResultData.success(this.sysAdminService.updateById(sysAdmin));
+        return ResultData.data(this.sysAdminService.updateById(sysAdmin));
     }
 
     /**
@@ -94,9 +94,9 @@ public class SysAdminController {
      */
     @DeleteMapping
     @SaCheckPermission("sysAdmin:delete")
-    @Log(description = "删除管理员表(SysAdmin)表", businessType = BusinessType.DELETE)
+    @Log(description = "删除管理员表", businessType = BusinessType.DELETE)
     public ResultData delete(@RequestParam("idList") List<Long> idList) {
-        return ResultData.success(this.sysAdminService.removeByIds(idList));
+        return ResultData.data(this.sysAdminService.removeByIds(idList));
     }
 
     /**
@@ -108,7 +108,7 @@ public class SysAdminController {
     @PostMapping("/login")
     @ApiOperation("登录")
     public ResultData login(@RequestBody SysAdmin sysAdmin) {
-        return ResultData.success("登录成功", this.sysAdminService.administratorLogin(sysAdmin));
+        return ResultData.data(this.sysAdminService.administratorLogin(sysAdmin)).setMsg("登录成功!");
     }
 
 }

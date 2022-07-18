@@ -73,11 +73,25 @@ mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
-# swagger配置
+# swagger配置 /doc.html
 springfox:
   documentation:
     swagger-ui:
       enabled: true
 
+
+# 安全配置（防XSS）
+mica:
+  xss:
+    # 是否开启防XSS
+    enabled: true
+    # 拦截路由 例如: /**
+    path-patterns:
+      - /**
+    # 是否开启防XSS
+    path-exclude-patterns:
+      - /static/**
+      - /swagger-ui/**
+      - /v2/api-docs/**
 
 

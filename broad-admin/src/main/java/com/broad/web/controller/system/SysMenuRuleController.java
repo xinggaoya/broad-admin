@@ -4,11 +4,14 @@ package com.broad.web.controller.system;
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.broad.common.core.entity.ResultData;
+import com.broad.common.enums.BusinessType;
+import com.broad.framework.annotation.Log;
 import com.broad.system.entity.SysMenuRule;
 import com.broad.system.service.SysMenuRuleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.io.Serializable;
 import java.util.List;
 
@@ -34,8 +37,19 @@ public class SysMenuRuleController {
      */
     @GetMapping
     @SaCheckLogin
-    public ResultData selectAll() {
-        return ResultData.success(this.sysMenuRuleService.getRouteMenu());
+    public ResultData selectAllByAdmin() {
+        return ResultData.data(this.sysMenuRuleService.getRouteMenuByAdmin());
+    }
+
+    /**
+     * 查询全部路由菜单
+     *
+     * @return 所有数据 result data
+     */
+    @GetMapping("getRouteMenuAll")
+    @SaCheckPermission("sysMenuRule:list")
+    public ResultData getRouteMenuAll(SysMenuRule sysMenuRule) {
+        return ResultData.data(this.sysMenuRuleService.getRouteMenuAll(sysMenuRule));
     }
 
     /**
@@ -45,9 +59,9 @@ public class SysMenuRuleController {
      * @return 单条数据 result data
      */
     @GetMapping("{id}")
-    @SaCheckLogin
+    @SaCheckPermission("sysMenuRule:info")
     public ResultData selectOne(@PathVariable Serializable id) {
-        return ResultData.success(this.sysMenuRuleService.getById(id));
+        return ResultData.data(this.sysMenuRuleService.getById(id));
     }
 
     /**
@@ -58,8 +72,9 @@ public class SysMenuRuleController {
      */
     @PostMapping
     @SaCheckPermission("sysMenuRule:add")
-    public ResultData insert(@RequestBody SysMenuRule sysMenuRule) {
-        return ResultData.success(this.sysMenuRuleService.save(sysMenuRule));
+    @Log(description = "新增菜单和权限规则表数据", businessType = BusinessType.INSERT)
+    public ResultData insert(@RequestBody @Valid SysMenuRule sysMenuRule) {
+        return ResultData.data(this.sysMenuRuleService.save(sysMenuRule));
     }
 
     /**
@@ -70,8 +85,9 @@ public class SysMenuRuleController {
      */
     @PutMapping
     @SaCheckPermission("sysMenuRule:edit")
+    @Log(description = "修改菜单和权限规则表", businessType = BusinessType.UPDATE)
     public ResultData update(@RequestBody SysMenuRule sysMenuRule) {
-        return ResultData.success(this.sysMenuRuleService.updateById(sysMenuRule));
+        return ResultData.data(this.sysMenuRuleService.updateById(sysMenuRule));
     }
 
     /**
@@ -82,8 +98,9 @@ public class SysMenuRuleController {
      */
     @DeleteMapping
     @SaCheckPermission("sysMenuRule:delete")
-    public ResultData delete(@RequestParam("idList") List<Long> idList) {
-        return ResultData.success(this.sysMenuRuleService.removeByIds(idList));
+    @Log(description = "删除菜单和权限规则表", businessType = BusinessType.DELETE)
+    public ResultData delete(@RequestParam("ids") List<Long> idList) {
+        return ResultData.data(this.sysMenuRuleService.removeByIds(idList));
     }
 }
 

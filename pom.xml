@@ -26,17 +26,18 @@
     </parent>
 
     <properties>
-        <java.version>11</java.version>
-        <validator.version>5.3.5.Final</validator.version>
-        <boot.version>2.7.1</boot.version>
-        <broad.version>2.0.0</broad.version>
-        <druid.version>1.2.8</druid.version>
+        <java-version>11</java-version>
+        <validator-version>5.3.5.Final</validator-version>
+        <boot-version>2.7.1</boot-version>
+        <broad-version>2.0.0</broad-version>
+        <druid-version>1.2.8</druid-version>
         <mybatis-plus.version>3.5.2</mybatis-plus.version>
         <satoken-version>1.30.0</satoken-version>
-        <dynamic.version>3.5.0</dynamic.version>
+        <dynamic-version>3.5.0</dynamic-version>
         <swagger-version>3.0.3</swagger-version>
-        <kaptcha.version>2.3.2</kaptcha.version>
-        <log4j.version>2.7.1</log4j.version>
+        <kaptcha-version>2.3.2</kaptcha-version>
+        <log4j-version>2.7.1</log4j-version>
+        <xss-version>2.7.0</xss-version>
     </properties>
 
     <dependencyManagement>
@@ -63,21 +64,21 @@
                         <artifactId>*</artifactId>
                     </exclusion>
                 </exclusions>
-                <version>${boot.version}</version>
+                <version>${boot-version}</version>
             </dependency>
             <!-- springboot 测试 -->
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-test</artifactId>
                 <scope>test</scope>
-                <version>${boot.version}</version>
+                <version>${boot-version}</version>
             </dependency>
 
             <!-- 阿里数据库连接池 -->
             <dependency>
                 <groupId>com.alibaba</groupId>
                 <artifactId>druid-spring-boot-starter</artifactId>
-                <version>${druid.version}</version>
+                <version>${druid-version}</version>
             </dependency>
 
             <!-- redis 数据库 -->
@@ -89,7 +90,7 @@
             <dependency>
                 <groupId>com.baomidou</groupId>
                 <artifactId>dynamic-datasource-spring-boot-starter</artifactId>
-                <version>${dynamic.version}</version>
+                <version>${dynamic-version}</version>
             </dependency>
 
             <!-- SpringBoot集成mybatis-plus框架 -->
@@ -116,14 +117,27 @@
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-log4j2</artifactId>
-                <version>${log4j.version}</version>
+                <version>${log4j-version}</version>
             </dependency>
+            <!--  防XSS攻击   -->
+            <dependency>
+                <groupId>net.dreamlu</groupId>
+                <artifactId>mica-xss</artifactId>
+                <version>${xss-version}</version>
+            </dependency>
+            <!--  防XSS攻击   -->
+            <dependency>
+                <groupId>net.dreamlu</groupId>
+                <artifactId>mica-core</artifactId>
+                <version>${xss-version}</version>
+            </dependency>
+
 
             <!--    kaptcha图片验证码        -->
             <dependency>
                 <groupId>com.github.penggle</groupId>
                 <artifactId>kaptcha</artifactId>
-                <version>${kaptcha.version}</version>
+                <version>${kaptcha-version}</version>
                 <exclusions>
                     <exclusion>
                         <artifactId>javax.servlet-api</artifactId>
@@ -144,19 +158,19 @@
             <dependency>
                 <groupId>org.hibernate</groupId>
                 <artifactId>hibernate-validator</artifactId>
-                <version>${validator.version}</version>
+                <version>${validator-version}</version>
             </dependency>
             <!-- 系统模块  -->
             <dependency>
                 <groupId>com.broad</groupId>
                 <artifactId>broad-system</artifactId>
-                <version>${broad.version}</version>
+                <version>${broad-version}</version>
             </dependency>
             <!-- 公共模块  -->
             <dependency>
                 <groupId>com.broad</groupId>
                 <artifactId>broad-common</artifactId>
-                <version>${broad.version}</version>
+                <version>${broad-version}</version>
             </dependency>
             <!-- 管理模块  -->
             <!--            <dependency>-->
@@ -168,7 +182,7 @@
             <dependency>
                 <groupId>com.broad</groupId>
                 <artifactId>broad-framework</artifactId>
-                <version>${broad.version}</version>
+                <version>${broad-version}</version>
             </dependency>
             <!--            &lt;!&ndash; 生成模块  &ndash;&gt;-->
             <!--            <dependency>-->

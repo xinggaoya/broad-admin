@@ -5,10 +5,9 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
 import lombok.*;
 
-import java.util.ArrayList;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
 
@@ -25,7 +24,7 @@ import java.util.List;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 @TableName("sys_menu_rule")
-public class SysMenuRule extends Model<SysMenuRule> {
+public class SysMenuRule {
     /**
      * ID
      */
@@ -48,12 +47,14 @@ public class SysMenuRule extends Model<SysMenuRule> {
      * 标题
      */
     @TableField(value = "title")
+    @NotNull(message = "标题不能为空")
     private String title;
 
     /**
      * 规则名称
      */
     @TableField(value = "name")
+    @NotNull(message = "规则名称不能为空")
     private String name;
 
     /**
@@ -73,6 +74,7 @@ public class SysMenuRule extends Model<SysMenuRule> {
      */
     @TableField(value = "menu_type")
     private String menuType;
+
 
     /**
      * Url
@@ -130,12 +132,7 @@ public class SysMenuRule extends Model<SysMenuRule> {
 
 
     @TableField(exist = false)
-    private List<Object> children = new ArrayList<>();
-
-
-    public void addChild(Object child) {
-        children.add(child);
-    }
+    private List<SysMenuRule> children ;
 
 }
 

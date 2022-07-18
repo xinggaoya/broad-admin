@@ -3,6 +3,7 @@ package com.broad.system.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.broad.system.entity.SysMenuRule;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -13,6 +14,13 @@ import java.util.List;
  */
 public interface SysMenuRuleService extends IService<SysMenuRule> {
 
-    List<SysMenuRule> getRouteMenu();
+    List<SysMenuRule> getRouteMenuByAdmin();
+
+
+    List<SysMenuRule> getRouteMenuAll(SysMenuRule sysMenuRule);
+
+    SysMenuRule getRouteById(Serializable id);
+
+    List<SysMenuRule> getRouteByAdminList();
 }
 

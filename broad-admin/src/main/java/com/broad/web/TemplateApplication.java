@@ -24,8 +24,9 @@ public class TemplateApplication {
      * @param args the input arguments
      */
     public static void main(String[] args) {
+        long start = System.currentTimeMillis();
         SpringApplication.run(TemplateApplication.class, args);
-        log.info("{} 启动完成,编译时间：{}","Broad-Admin", JSONUtils.toJSONString(new Date()));
+        log.info("{} 启动完成,编译时间：{},总耗时：{}ms","Broad-Admin", JSONUtils.toJSONString(new Date()), System.currentTimeMillis() - start);
     }
 
 }

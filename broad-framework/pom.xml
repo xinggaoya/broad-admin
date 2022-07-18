@@ -39,6 +39,22 @@
             <artifactId>broad-system</artifactId>
         </dependency>
 
+        <!--消息队列模块-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
+        </dependency>
+
+        <!--   防XSS攻击     -->
+        <dependency>
+            <groupId>net.dreamlu</groupId>
+            <artifactId>mica-xss</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.dreamlu</groupId>
+            <artifactId>mica-core</artifactId>
+        </dependency>
+
     </dependencies>
 
 </project>

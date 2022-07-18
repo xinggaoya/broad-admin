@@ -4,6 +4,8 @@ import cn.dev33.satoken.dao.SaTokenDaoRedisJackson;
 import com.broad.common.config.BroadConfig;
 import com.broad.common.core.entity.ResultData;
 import com.broad.common.utils.sign.Base64;
+import com.broad.framework.entity.MsgProducer;
+import com.broad.system.entity.SysAdmin;
 import com.google.code.kaptcha.Constants;
 import com.google.code.kaptcha.Producer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +41,17 @@ public class CaptchaController {
 
     @Autowired
     private BroadConfig broadConfig;
+
+    @Autowired
+    private MsgProducer msgProducer;
+
+
+    @GetMapping("/test")
+    public void test() {
+        for (int i = 0; i < 50; i++) {
+            msgProducer.sendMsg("hello " + i);
+        }
+    }
 
     /**
      * 生成验证码
@@ -79,6 +92,6 @@ public class CaptchaController {
         linkedHashMap.put("captcha", uuid);
         linkedHashMap.put("captchaUrl", Base64.encode(os.toByteArray()));
         linkedHashMap.put("showCaptcha", broadConfig.getCaptchaEnabled());
-        return ResultData.success(linkedHashMap);
+        return ResultData.data(linkedHashMap);
     }
 }

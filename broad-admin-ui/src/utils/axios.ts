@@ -1,13 +1,12 @@
-import axios, { AxiosPromise, Method } from 'axios'
-import type { AxiosRequestConfig } from 'axios'
-import { ElLoading, LoadingOptions, ElNotification } from 'element-plus'
-import { useConfig } from '/@/stores/config'
-import { getAdminToken, removeAdminToken, getUserToken, removeUserToken, isAdminApp } from './common'
+import axios, {AxiosPromise, Method} from 'axios'
+import type {AxiosRequestConfig} from 'axios'
+import {ElLoading, LoadingOptions, ElNotification} from 'element-plus'
+import {useConfig} from '/@/stores/config'
+import {getAdminToken, removeAdminToken, isAdminApp} from './common'
 import router from '/@/router/index'
-import { refreshToken } from '/@/api/common'
-import { useUserInfo } from '/@/stores/userInfo'
-import { useAdminInfo } from '/@/stores/adminInfo'
-import { i18n } from '/@/lang/index'
+import {refreshToken} from '/@/api/common'
+import {useAdminInfo} from '/@/stores/adminInfo'
+import {i18n} from '/@/lang/index'
 
 window.requests = []
 window.tokenRefreshing = false
@@ -68,7 +67,13 @@ function createAxios(axiosConfig: AxiosRequestConfig, options: Options = {}, loa
                     loadingInstance.target = ElLoading.service(loading)
                 }
             }
-
+            // get请求映射params参数
+            if (config.method === 'get' && config.params) {
+                let url = config.url + '?' + tansParams(config.params);
+                url = url.slice(0, -1);
+                config.params = {};
+                config.url = url;
+            }
             // 自动携带token
             if (config.headers) {
                 let token = useAdminInfo().tokenValue
@@ -96,14 +101,9 @@ function createAxios(axiosConfig: AxiosRequestConfig, options: Options = {}, loa
                             .then((res) => {
                                 if (res.data.type == 'admin-refresh') {
                                     const adminInfo = useAdminInfo()
-                                    adminInfo.token = res.data.token
+                                    adminInfo.tokenValue = res.data.token
                                     response.headers.batoken = `${res.data.token}`
                                     window.requests.forEach((cb) => cb(res.data.token, 'admin-refresh'))
-                                } else if (res.data.type == 'user-refresh') {
-                                    const userInfo = useUserInfo()
-                                    userInfo.token = res.data.token
-                                    response.headers['ba-user-token'] = `${res.data.token}`
-                                    window.requests.forEach((cb) => cb(res.data.token, 'user-refresh'))
                                 }
                                 window.requests = []
                                 return Axios(response.config)
@@ -112,7 +112,7 @@ function createAxios(axiosConfig: AxiosRequestConfig, options: Options = {}, loa
                                 if (isAdminApp()) {
                                     removeAdminToken()
                                     if (router.currentRoute.value.name != 'adminLogin') {
-                                        router.push({ name: 'adminLogin' })
+                                        router.push({name: 'adminLogin'})
                                         return Promise.reject(err)
                                     } else {
                                         response.headers.batoken = ''
@@ -121,9 +121,8 @@ function createAxios(axiosConfig: AxiosRequestConfig, options: Options = {}, loa
                                         return Axios(response.config)
                                     }
                                 } else {
-                                    removeUserToken()
                                     if (router.currentRoute.value.name != 'userLogin') {
-                                        router.push({ name: 'userLogin' })
+                                        router.push({name: 'userLogin'})
                                         return Promise.reject(err)
                                     } else {
                                         response.headers['ba-user-token'] = ''
@@ -157,14 +156,14 @@ function createAxios(axiosConfig: AxiosRequestConfig, options: Options = {}, loa
                 // 自动跳转到路由name或path，仅限server端返回302的情况
                 if (response.data.code == 302) {
                     if (response.data.data.routeName) {
-                        router.push({ name: response.data.data.routeName })
+                        router.push({name: response.data.data.routeName})
                     } else if (response.data.data.routePath) {
-                        router.push({ path: response.data.data.routePath })
+                        router.push({path: response.data.data.routePath})
                     }
                 }
                 // code不等于1, 页面then内的具体逻辑就不执行了
                 return Promise.reject(response.data)
-            } else if (options.showSuccessMessage && response.data && response.data.code == 1) {
+            } else if (options.showSuccessMessage && response.data && response.data.code == 200) {
                 ElNotification({
                     message: response.data.msg ? response.data.msg : i18n.global.t('axios.Operation successful'),
                     type: 'success',
@@ -287,10 +286,36 @@ function removePending(config: AxiosRequestConfig) {
 }
 
 /**
+ * 参数处理
+ * @param {*} params  参数
+ */
+function tansParams(params: any) {
+    let result = ''
+    for (const propName of Object.keys(params)) {
+        const value = params[propName];
+        var part = encodeURIComponent(propName) + "=";
+        if (value !== null && typeof (value) !== "undefined" && value !== '') {
+            if (typeof value === 'object') {
+                for (const key of Object.keys(value)) {
+                    if (value[key] !== null && typeof (value[key]) !== 'undefined') {
+                        let params = propName + '[' + key + ']';
+                        var subPart = encodeURIComponent(params) + "=";
+                        result += subPart + encodeURIComponent(value[key]) + "&";
+                    }
+                }
+            } else {
+                result += part + encodeURIComponent(value) + "&";
+            }
+        }
+    }
+    return result
+}
+
+/**
  * 生成每个请求的唯一key
  */
 function getPendingKey(config: AxiosRequestConfig) {
-    let { url, method, params, data, headers } = config
+    let {url, method, params, data, headers} = config
     if (typeof data === 'string') data = JSON.parse(data) // response里面返回的config.data是个字符串对象
     return [
         url,
@@ -318,6 +343,7 @@ interface LoadingInstance {
     target: any
     count: number
 }
+
 interface Options {
     // 是否开启取消重复请求, 默认为 true
     CancelDuplicateRequest?: boolean

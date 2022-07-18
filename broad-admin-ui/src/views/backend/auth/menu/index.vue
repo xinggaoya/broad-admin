@@ -1,100 +1,92 @@
 <template>
     <div class="default-main ba-table-box">
-        <el-alert class="ba-table-alert" v-if="baTable.table.remark" :title="baTable.table.remark" type="info" show-icon />
+        <TableHeader v-model="queryParams.title" @AddMenu="handelAdd" @RefreshMenu="getData"
+                     placeholder="请输入菜单名称"/>
+        <el-table :data="tableData" row-key="id" v-loading="tableLoading" class="ba-data-table w100">
+            <el-table-column label="菜单名称" prop="title"/>
+            <el-table-column label="菜单路径" prop="path"/>
+            <el-table-column label="组件路径" prop="component"/>
+            <el-table-column label="菜单权限" prop="name"/>
+            <el-table-column fixed="right" label="操作" width="150">
+                <template #default="scope">
+                    <el-button type="primary" :icon="Edit" size="small" @click="handelEdit(scope.row)"/>
+                    <el-button type="danger" :icon="Delete" size="small" @click="handelDelete(scope.row)"/>
+                </template>
+            </el-table-column>
+        </el-table>
 
-        <!-- 表格顶部菜单 -->
-        <TableHeader
-            :buttons="['refresh', 'add', 'edit', 'delete', 'unfold']"
-            :quick-search-placeholder="t('quick Search Placeholder', { fields: t('auth.menu.title') })"
-            @action="baTable.onTableHeaderAction"
-        />
-        <!-- 表格 -->
-        <!-- 要使用`el-table`组件原有的属性，直接加在Table标签上即可 -->
-        <Table ref="tableRef" :pagination="false" @action="baTable.onTableAction" />
-
-        <!-- 表单 -->
-        <PopupForm />
+        <FromDialog v-model="dialogVisible" :title="title" :state="state" :menuData="tableData" :menuInfo="menuInfo"
+                    @on-submit="getData"/>
     </div>
 </template>
-
 <script setup lang="ts">
-import { ref, onMounted, provide } from 'vue'
-import { authMenu } from '/@/api/controllerUrls'
-import PopupForm from './popupForm.vue'
-import Table from '/@/components/table/index.vue'
-import TableHeader from '/@/components/table/header/index.vue'
-import { defaultOptButtons } from '/@/components/table'
-import { useI18n } from 'vue-i18n'
-import { baTableApi } from '/@/api/common'
-import baTableClass from '/@/utils/baTable'
+import {
+    Edit,
+    Delete,
+} from '@element-plus/icons-vue'
+import TableHeader from '/@/components/tableHeader/index.vue'
+import FromDialog from './from.vue'
+import {ref, onMounted, reactive} from 'vue'
+import {getMenuRulesAll, delMenuRules} from '/@/api/backend/auth/menu'
+import {ElMessage, ElMessageBox} from "element-plus";
 
-const { t } = useI18n()
-const tableRef = ref()
-const baTable = new baTableClass(
-    new baTableApi(authMenu),
-    {
-        expandAll: false,
-        dblClickNotEditColumn: [undefined, 'keepalive', 'status'],
-        column: [
-            { type: 'selection', align: 'center' },
-            { label: t('auth.menu.title'), prop: 'title', align: 'left' },
-            { label: t('auth.menu.Icon'), prop: 'icon', align: 'center', width: '60', render: 'icon', default: 'el-icon-Minus' },
-            { label: t('auth.menu.name'), prop: 'name', align: 'center', 'show-overflow-tooltip': true },
-            {
-                label: t('auth.menu.type'),
-                prop: 'type',
-                align: 'center',
-                render: 'tag',
-                custom: { menu: 'danger', menu_dir: 'success', button: 'info' },
-                replaceValue: { menu: t('auth.menu.type menu'), menu_dir: t('auth.menu.type menu_dir'), button: t('auth.menu.type button') },
-            },
-            { label: t('auth.menu.cache'), prop: 'keepalive', align: 'center', width: '80', render: 'switch' },
-            { label: t('state'), prop: 'status', align: 'center', width: '80', render: 'switch' },
-            { label: t('updatetime'), prop: 'updatetime', align: 'center', width: '160', render: 'datetime' },
-            {
-                label: t('operate'),
-                align: 'center',
-                width: '130',
-                render: 'buttons',
-                buttons: defaultOptButtons(),
-            },
-        ],
-        dragSortLimitField: 'pid',
-    },
-    {
-        defaultItems: {
-            type: 'menu',
-            menuType: 'tab',
-            extend: 'none',
-            keepalive: 0,
-            status: '1',
-            icon: 'el-icon-Minus',
-        },
-    },
-    {
-        // 获得编辑数据后
-        requestEdit: () => {
-            if (baTable.form.items && !baTable.form.items.icon) baTable.form.items.icon = 'el-icon-Minus'
-        },
-    }
-)
+const tableData = ref([])
+const queryParams = reactive({
+    title: null,
+    name: null,
+    component: null,
+    permissions: null,
+})
+const title = ref('新增菜单')
+const state = ref('add')
+const menuInfo = ref({})
+const tableLoading = ref(false)
+const dialogVisible = ref(false)
 
-provide('baTable', baTable)
-
-onMounted(() => {
-    baTable.table.ref = tableRef.value
-    baTable.mount()
-    baTable.getIndex()?.then(() => {
-        baTable.dragSort()
+const getData = () => {
+    tableLoading.value = true
+    getMenuRulesAll(queryParams).then((res: any) => {
+        tableData.value = res.data
+        tableLoading.value = false
     })
+}
+
+const handelDelete = (row: any) => {
+    ElMessageBox.confirm(
+        '请再次确认删除该菜单吗?',
+        '提示',
+        {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning',
+        }
+    )
+        .then(() => {
+            delMenuRules({ids: row.id}).then((res: any) => {
+                if (res.code === 200) {
+                    ElMessage.success("删除成功！")
+                    getData()
+                }
+            })
+        })
+}
+
+const handelEdit = (row: any) => {
+    title.value = '编辑菜单'
+    menuInfo.value = row
+    state.value = 'edit'
+    dialogVisible.value = true
+}
+const handelAdd = () => {
+    title.value = '新增菜单'
+    state.value = 'add'
+    dialogVisible.value = true
+}
+onMounted(() => {
+    getData()
 })
+
 </script>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
-export default defineComponent({
-    name: 'auth/menu',
-})
-</script>
 
 <style scoped lang="scss"></style>
