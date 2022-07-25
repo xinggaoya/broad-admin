@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.broad.system.mapper.SysAdminLogMapper">
+
+    <resultMap type="com.broad.system.entity.SysAdminLog" id="SysAdminLogMap">
+        <result property="logId" column="log_id" jdbcType="INTEGER"/>
+        <result property="logDescription" column="log_description" jdbcType="VARCHAR"/>
+        <result property="logTimeCost" column="log_time_cost" jdbcType="NUMERIC"/>
+        <result property="logUrl" column="log_url" jdbcType="VARCHAR"/>
+        <result property="logHttpMethod" column="log_http_method" jdbcType="VARCHAR"/>
+        <result property="logIpAddress" column="log_ip_address" jdbcType="VARCHAR"/>
+        <result property="logParams" column="log_params" jdbcType="VARCHAR"/>
+        <result property="logResult" column="log_result" jdbcType="VARCHAR"/>
+        <result property="logMethodType" column="log_method_type" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <select id="selectAll" resultType="com.broad.system.entity.SysAdminLog">
+        SELECT *,sys_admin.user_name adminName FROM sys_admin_log
+        left join sys_admin on sys_admin.id = sys_admin_log.admin_id
+    </select>
+</mapper>
+

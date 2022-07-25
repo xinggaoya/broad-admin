@@ -3,7 +3,7 @@ package com.broad.common.utils.sign;
 /**
  * Created with IntelliJ IDEA.
  *
- * @Author: JinJun
+ * @Author: XingGao
  * @Date: 2022/07/12 14:55
  * @Description:
  */

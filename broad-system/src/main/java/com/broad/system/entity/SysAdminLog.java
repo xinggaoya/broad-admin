@@ -87,5 +87,8 @@ public class SysAdminLog extends Model<SysAdminLog> {
     @TableField(value = "admin_id")
     private Integer adminId;
 
+    @TableField(exist = false)
+    private String adminName;
+
 }
 

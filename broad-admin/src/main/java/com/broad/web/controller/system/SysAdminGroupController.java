@@ -1,7 +1,10 @@
 package com.broad.web.controller.system;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.broad.common.core.entity.ResultData;
+import com.broad.common.enums.BusinessType;
+import com.broad.framework.annotation.Log;
 import com.broad.system.entity.SysAdminGroup;
 import com.broad.system.service.SysAdminGroupService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +36,7 @@ public class SysAdminGroupController {
      * @return 所有数据
      */
     @GetMapping
+    @SaCheckPermission("sys:adminGroup:list")
     public ResultData selectAll(Page<SysAdminGroup> page, SysAdminGroup sysAdminGroup) {
         return ResultData.data(this.sysAdminGroupService.selectAll(page, sysAdminGroup));
     }
@@ -44,6 +48,7 @@ public class SysAdminGroupController {
      * @return 单条数据
      */
     @GetMapping("{id}")
+    @SaCheckPermission("sys:adminGroup:info")
     public ResultData selectOne(@PathVariable Serializable id) {
         return ResultData.data(this.sysAdminGroupService.getById(id));
     }
@@ -55,6 +60,8 @@ public class SysAdminGroupController {
      * @return 新增结果
      */
     @PostMapping
+    @SaCheckPermission("sys:adminGroup:save")
+    @Log(description = "新增管理分组", businessType = BusinessType.INSERT)
     public ResultData insert(@RequestBody SysAdminGroup sysAdminGroup) {
         return ResultData.data(this.sysAdminGroupService.save(sysAdminGroup));
     }
@@ -66,6 +73,8 @@ public class SysAdminGroupController {
      * @return 修改结果
      */
     @PutMapping
+    @SaCheckPermission("sys:adminGroup:update")
+    @Log(description = "修改管理分组", businessType = BusinessType.UPDATE)
     public ResultData update(@RequestBody SysAdminGroup sysAdminGroup) {
         return ResultData.data(this.sysAdminGroupService.updateById(sysAdminGroup));
     }
@@ -77,6 +86,8 @@ public class SysAdminGroupController {
      * @return 删除结果
      */
     @DeleteMapping
+    @SaCheckPermission("sys:adminGroup:delete")
+    @Log(description = "删除管理分组", businessType = BusinessType.DELETE)
     public ResultData delete(@RequestParam("idList") List<Long> idList) {
         return ResultData.data(this.sysAdminGroupService.removeByIds(idList));
     }

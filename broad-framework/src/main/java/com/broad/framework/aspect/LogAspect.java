@@ -26,7 +26,7 @@ import java.util.Map;
  * Created with IntelliJ IDEA.
  * 定义切面
  *
- * @Author: JinJun
+ * @Author: XingGao
  * @Date: 2022/07/11 22:46
  * @Description:
  */
@@ -63,7 +63,7 @@ public class LogAspect {
             // 获取Log注解
             Log logAnnotation = getAnnotation(joinPoint);
             // 封装webLog对象
-            setLog(request, logAnnotation, timeCost, result, joinPoint);
+            this.setLog(request, logAnnotation, timeCost, result, joinPoint);
         } catch (Throwable e) {
             throw new Throwable(e);
         } finally {
