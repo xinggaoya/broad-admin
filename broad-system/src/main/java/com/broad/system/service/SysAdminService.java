@@ -1,7 +1,12 @@
 package com.broad.system.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.broad.system.entity.SysAdmin;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.util.List;
 
 /**
  * 管理员表(SysAdmin)表服务接口
@@ -11,6 +16,14 @@ import com.broad.system.entity.SysAdmin;
  */
 public interface SysAdminService extends IService<SysAdmin> {
 
-    Object administratorLogin(SysAdmin sysAdmin);
+    Page<SysAdmin> selectAll(Page<SysAdmin> page, SysAdmin sysAdmin);
+
+    int saveAdmin(SysAdmin sysAdmin);
+
+    int updateAdmin(SysAdmin sysAdmin);
+
+    Object administratorLogin(SysAdmin sysAdmin, HttpServletRequest request) throws IOException;
+
+    void logout(SysAdmin admin);
 }
 

@@ -1,9 +1,6 @@
 package com.broad.system.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -96,6 +93,7 @@ public class SysAdmin extends Model<SysAdmin> {
      * 密码
      */
     @TableField(value = "password")
+    @NotNull(message = "密码不能为空")
     @ApiModelProperty(value = "密码")
     private String password;
 
@@ -114,26 +112,31 @@ public class SysAdmin extends Model<SysAdmin> {
     private String motto;
 
     /**
+     * 状态:1=禁用,0=启用
+     */
+    @TableField(value = "user_status")
+    @ApiModelProperty(value = "状态:1=禁用,0=启用")
+    private String userStatus;
+
+    /**
      * 创建时间
      */
-    @TableField(value = "create_time")
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     @ApiModelProperty(value = "创建时间")
     private Date createTime;
 
     /**
      * 更新时间
      */
-    @TableField(value = "update_time")
+    @TableField(value = "update_time", fill = FieldFill.INSERT_UPDATE)
     @ApiModelProperty(value = "更新时间")
     private Date updateTime;
 
-    /**
-     * 状态:0=禁用,1=启用
-     */
-    @TableField(value = "status")
-    @ApiModelProperty(value = "状态:0=禁用,1=启用")
-    private Integer status;
+    @TableField(exist = false)
+    private Integer roleId;
 
+    @TableField(exist = false)
+    private String groupName;
 
     @TableField(exist = false)
     private String codeId;

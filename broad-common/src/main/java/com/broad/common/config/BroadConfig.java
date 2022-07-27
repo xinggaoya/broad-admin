@@ -25,4 +25,6 @@ public class BroadConfig {
     private String captchaEnabled;
 
     private String captchaType;
+
+    private String systemFileDir;
 }

@@ -38,6 +38,8 @@
         <kaptcha-version>2.3.2</kaptcha-version>
         <log4j-version>2.7.1</log4j-version>
         <xss-version>2.7.0</xss-version>
+        <fastjson-version>2.0.10</fastjson-version>
+        <ip2region-version>2.6.4</ip2region-version>
     </properties>
 
     <dependencyManagement>
@@ -132,6 +134,19 @@
                 <version>${xss-version}</version>
             </dependency>
 
+            <!-- fastjson -->
+            <dependency>
+                <groupId>com.alibaba.fastjson2</groupId>
+                <artifactId>fastjson2</artifactId>
+                <version>${fastjson-version}</version>
+            </dependency>
+
+            <!-- ip2region ip归属地 -->
+            <dependency>
+                <groupId>org.lionsoul</groupId>
+                <artifactId>ip2region</artifactId>
+                <version>${ip2region-version}</version>
+            </dependency>
 
             <!--    kaptcha图片验证码        -->
             <dependency>

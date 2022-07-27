@@ -50,3 +50,37 @@
     }
 }
 /* dialog滚动条-e */
+
+/* 表格-e */
+.el-table__header-wrapper{
+    background-color: #fff;
+    border-bottom: 1px solid #ebeef5;
+}
+.el-table__header .el-table__cell{
+    background-color: #f6f6f8 !important;
+}
+
+/* 弹出消息 覆盖Message原生样式 */
+.el-message {
+    min-width: auto !important;
+    background-color: #fdfdfe;
+    color: rgb(51, 54, 57) !important;
+    border-color: #fdfdfe !important;
+
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    overflow: hidden;
+    box-shadow: 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
+}
+.el-message__icon svg {
+    min-width: 16px;
+    height: 16px;
+}
+
+.el-message__content {
+    color: rgb(51, 54, 57) !important;
+    font-size: 14px;
+    margin-right: 5px !important;
+}

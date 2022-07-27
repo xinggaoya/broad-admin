@@ -1,0 +1,13 @@
+broad:
+  # 名称
+  name: Broad
+  # 版本
+  version: 1.0.0
+  # 开发者
+  author: XingGao
+  # 开启图片验证码
+  captchaEnabled: true
+  # 验证码类型 math 计算 char 字母
+  captchaType: math
+  # 系统文件目录
+  systemFileDir: ${user.home}/.broad-admin

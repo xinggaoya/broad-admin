@@ -2,7 +2,7 @@
     <div class="default-main ba-table-box">
         <TableHeader :data="tableData"
                      :columns="columns"
-                     :btn="['add','query']"
+                     :btn-list="['add','query']"
                      :total="queryParams.total"
                      @on-add="handelAdd"
                      @on-refresh="getData"
@@ -33,6 +33,7 @@ const queryParams = reactive({
     total: 0,
 })
 
+
 const columns = [
     {
         title: '菜单名称',
@@ -41,7 +42,7 @@ const columns = [
     {
         title: '菜单图标',
         key: 'icon',
-        render: (row: object, h: any) => {
+        render: (row: any, h: any) => {
             if (row['icon']) {
                 return h(Icon, {name: row['icon']})
             }
@@ -104,7 +105,7 @@ const getData = () => {
     })
 }
 
-const handelDelete = (row: object) => {
+const handelDelete = (row: any) => {
     ElMessageBox.confirm(
         '请再次确认删除该菜单吗?',
         '提示',

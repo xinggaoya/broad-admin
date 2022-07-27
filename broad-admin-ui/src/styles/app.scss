@@ -35,9 +35,11 @@ body,
 .w100 {
     width: 100% !important;
 }
+
 .h100 {
     height: 100% !important;
 }
+
 .ba-center {
     display: flex;
     align-items: center;
@@ -47,6 +49,7 @@ body,
 .default-main {
     margin: var(--main-space) var(--main-space) 60px var(--main-space);
 }
+
 .zoom-handle {
     position: absolute;
     width: 20px;
@@ -55,6 +58,7 @@ body,
     right: -10px;
     cursor: se-resize;
 }
+
 .block-help {
     display: block;
     color: #909399;
@@ -63,10 +67,12 @@ body,
     padding-top: 5px;
 }
 
+
 /* 表格-s */
 .ba-table-box {
     border-radius: var(--el-border-radius-round);
 }
+
 .ba-table-alert {
     background-color: #e8edf0 !important;
     border: 1px solid #f6f6f6;
@@ -74,6 +80,8 @@ body,
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
 }
+
+
 /* 表格-e */
 
 /* 新增/编辑表单-s */
@@ -82,14 +90,17 @@ body,
     overflow: hidden;
     border-radius: var(--el-border-radius-base);
 }
+
 .ba-operate-dialog .el-dialog__header {
     padding-bottom: 16px;
     border-bottom: 1px solid var(--color-bg-1);
 }
+
 .ba-operate-dialog .el-dialog__body {
     padding-top: 0;
     padding-bottom: 52px;
 }
+
 .ba-operate-dialog .el-dialog__footer {
     padding: 10px var(--el-dialog-padding-primary);
     box-shadow: var(--el-box-shadow);
@@ -97,13 +108,16 @@ body,
     width: 100%;
     bottom: 0px;
 }
+
 .ba-operate-form {
     padding-top: 30px;
 }
+
 .ba-table-form-scrollbar {
     height: 60vh;
     max-height: 60vh;
 }
+
 /* 新增/编辑表单-e */
 
 /* 全局遮罩-s */
@@ -116,6 +130,7 @@ body,
     background-color: rgba(0, 0, 0, 0.5);
     z-index: 9999990;
 }
+
 /* 全局遮罩-e */
 
 /* 图片上传预览-s */
@@ -123,10 +138,12 @@ body,
     display: flex;
     align-items: center;
     justify-content: center;
+
     img {
         max-width: 100%;
     }
 }
+
 /* 图片上传预览-e */
 
 /* 页面切换动画-s */
@@ -137,34 +154,42 @@ body,
     will-change: transform;
     transition: all 0.3s ease;
 }
+
 // slide-right
 .slide-right-enter-from {
     opacity: 0;
     transform: translateX(-20px);
 }
+
 .slide-right-leave-to {
     opacity: 0;
     transform: translateX(20px);
 }
+
 // slide-left
 .slide-left-enter-from {
     @extend .slide-right-leave-to;
 }
+
 .slide-left-leave-to {
     @extend .slide-right-enter-from;
 }
+
 /* 页面切换动画-e */
 
 /* 会员中心相关-s */
 .frontend-footer-brother {
     min-height: calc(100vh - 120px);
 }
+
 .user-views {
     padding-left: 15px;
+
     .user-views-card {
         margin-bottom: 15px;
     }
 }
+
 /* 会员中心-e */
 
 /* 自适应-s */
@@ -173,15 +198,18 @@ body,
         display: none;
     }
 }
+
 @media screen and (max-width: 1000px) {
     .ba-operate-dialog .el-dialog__body {
         padding-left: 0;
         padding-right: 0;
     }
 }
+
 @media screen and (max-width: 991px) {
     .user-views {
         padding: 0;
     }
 }
+
 /* 自适应-e */

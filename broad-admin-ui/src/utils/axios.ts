@@ -74,6 +74,10 @@ function createAxios(axiosConfig: AxiosRequestConfig, options: Options = {}, loa
                 config.params = {};
                 config.url = url;
             }
+            if (config.method === 'post' && config.params) {
+                config.data = JSON.stringify(config.params);
+                config.params = {};
+            }
             // 自动携带token
             if (config.headers) {
                 let token = useAdminInfo().tokenValue
@@ -358,8 +362,3 @@ interface Options {
     // 是否开启code为0时的信息提示, 默认为false
     showSuccessMessage?: boolean
 }
-
-/*
- * 感谢掘金@橙某人提供的思路和分享
- * 本axios封装详细解释请参考：https://juejin.cn/post/6968630178163458084?share_token=7831c9e0-bea0-469e-8028-b587e13681a8#heading-27
- */

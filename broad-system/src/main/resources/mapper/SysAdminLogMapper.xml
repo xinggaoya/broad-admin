@@ -16,8 +16,10 @@
     </resultMap>
 
     <select id="selectAll" resultType="com.broad.system.entity.SysAdminLog">
-        SELECT *,sys_admin.user_name adminName FROM sys_admin_log
-        left join sys_admin on sys_admin.id = sys_admin_log.admin_id
+        SELECT *, sys_admin.user_name adminName
+        FROM sys_admin_log
+                 left join sys_admin on sys_admin.id = sys_admin_log.admin_id
+        ORDER BY sys_admin_log.create_time DESC
     </select>
 </mapper>
 

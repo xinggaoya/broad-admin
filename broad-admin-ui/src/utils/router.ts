@@ -136,7 +136,7 @@ const handleMenuRule = (routes: any, pathPrefix = '/', parent = '/', module = 'a
             menuRule.push(routes[key])
         } else {
             // 权限节点
-            authNode.push(pathPrefix + routes[key].name)
+            authNode.push(routes[key].name)
         }
     }
     if (authNode.length) {

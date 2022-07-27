@@ -1,7 +1,7 @@
-import { App, nextTick } from 'vue'
+import {App, nextTick} from 'vue'
 import horizontalScroll from '/@/utils/horizontalScroll'
 import router from '/@/router/index'
-import { useNavTabs } from '../stores/navTabs'
+import {useNavTabs} from '../stores/navTabs'
 
 export function directives(app: App) {
     // 鉴权指令
@@ -25,14 +25,21 @@ function authDirective(app: App) {
         mounted(el, binding) {
             if (!binding.value) return false
             const navTabs = useNavTabs()
+
             if (navTabs.state.authNode.has(router.currentRoute.value.path)) {
-                if (
-                    !navTabs.state.authNode
-                        .get(router.currentRoute.value.path)!
-                        .some((v: string) => v == router.currentRoute.value.path + '/' + binding.value)
-                ) {
-                    el.parentNode.removeChild(el)
-                }
+
+                binding.value.forEach((item: string) => {
+                    if (!navTabs.state.authNode.get(router.currentRoute.value.path)!.includes(item)) {
+                        el.parentNode.removeChild(el)
+                    }
+                })
+                // if (
+                //     !navTabs.state.authNode
+                //         .get(router.currentRoute.value.path)!
+                //         .some((v: string) => v == binding.value)
+                // ) {
+                //     el.parentNode.removeChild(el)
+                // }
             }
         },
     })
@@ -114,6 +121,7 @@ function zoomDirective(app: App) {
 interface downReturn {
     [key: string]: number
 }
+
 function dragDirective(app: App) {
     app.directive('drag', {
         mounted(el, binding) {
@@ -176,7 +184,7 @@ function dragDirective(app: App) {
             }
 
             function move(e: MouseEvent | TouchEvent, type: string, obj: downReturn) {
-                let { disX, disY, minDragDomLeft, maxDragDomLeft, minDragDomTop, maxDragDomTop, styL, styT } = obj
+                let {disX, disY, minDragDomLeft, maxDragDomLeft, minDragDomTop, maxDragDomTop, styL, styT} = obj
 
                 // 通过事件委托，计算移动的距离
                 let left = type === 'pc' ? (e as MouseEvent).clientX - disX : (e as TouchEvent).touches[0].clientX - disX

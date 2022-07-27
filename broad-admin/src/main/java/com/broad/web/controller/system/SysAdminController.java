@@ -1,7 +1,7 @@
 package com.broad.web.controller.system;
 
+import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckPermission;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.broad.common.core.entity.ResultData;
 import com.broad.common.enums.BusinessType;
@@ -13,6 +13,9 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
 
@@ -43,8 +46,9 @@ public class SysAdminController {
      */
     @GetMapping
     @ApiOperation("分页查询所有数据")
+    @SaCheckPermission("sys:admin:list")
     public ResultData selectAll(Page<SysAdmin> page, SysAdmin sysAdmin) {
-        return ResultData.data(this.sysAdminService.page(page, new QueryWrapper<>(sysAdmin)));
+        return ResultData.data(this.sysAdminService.selectAll(page, sysAdmin));
     }
 
     /**
@@ -55,7 +59,7 @@ public class SysAdminController {
      */
     @GetMapping("{id}")
     @ApiOperation("通过主键查询单条数据")
-    @SaCheckPermission("sysAdmin:info")
+    @SaCheckPermission("sys:admin:info")
     public ResultData selectOne(@PathVariable Serializable id) {
         return ResultData.data(this.sysAdminService.getById(id));
     }
@@ -67,10 +71,10 @@ public class SysAdminController {
      * @return 新增结果 result data
      */
     @PostMapping
-    @SaCheckPermission("sysAdmin:save")
+    @SaCheckPermission("sys:admin:save")
     @Log(description = "新增管理员表", businessType = BusinessType.INSERT)
-    public ResultData insert(@RequestBody SysAdmin sysAdmin) {
-        return ResultData.data(this.sysAdminService.save(sysAdmin));
+    public ResultData insert(@RequestBody @Valid SysAdmin sysAdmin) {
+        return ResultData.data(this.sysAdminService.saveAdmin(sysAdmin));
     }
 
     /**
@@ -80,7 +84,7 @@ public class SysAdminController {
      * @return 修改结果 result data
      */
     @PutMapping
-    @SaCheckPermission("sysAdmin:update")
+    @SaCheckPermission("sys:admin:update")
     @Log(description = "修改管理员表", businessType = BusinessType.UPDATE)
     public ResultData update(@RequestBody SysAdmin sysAdmin) {
         return ResultData.data(this.sysAdminService.updateById(sysAdmin));
@@ -93,7 +97,7 @@ public class SysAdminController {
      * @return 删除结果 result data
      */
     @DeleteMapping
-    @SaCheckPermission("sysAdmin:delete")
+    @SaCheckPermission("sys:admin:delete")
     @Log(description = "删除管理员表", businessType = BusinessType.DELETE)
     public ResultData delete(@RequestParam("idList") List<Long> idList) {
         return ResultData.data(this.sysAdminService.removeByIds(idList));
@@ -107,8 +111,16 @@ public class SysAdminController {
      */
     @PostMapping("/login")
     @ApiOperation("登录")
-    public ResultData login(@RequestBody SysAdmin sysAdmin) {
-        return ResultData.data(this.sysAdminService.administratorLogin(sysAdmin)).setMsg("登录成功!");
+    public ResultData login(@RequestBody SysAdmin sysAdmin, HttpServletRequest request) throws IOException {
+        return ResultData.data(this.sysAdminService.administratorLogin(sysAdmin, request)).setMsg("登录成功!");
+    }
+
+    @GetMapping("/logout")
+    @SaCheckLogin
+    @ApiOperation("退出登录")
+    public ResultData logout(SysAdmin admin) {
+        this.sysAdminService.logout(admin);
+        return ResultData.ok();
     }
 
 }

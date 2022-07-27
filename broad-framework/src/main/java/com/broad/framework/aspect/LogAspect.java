@@ -1,6 +1,9 @@
 package com.broad.framework.aspect;
 
 import cn.dev33.satoken.stp.StpUtil;
+import com.alibaba.druid.support.json.JSONUtils;
+import com.alibaba.fastjson2.JSON;
+import com.broad.common.utils.sign.IpAddressUtil;
 import com.broad.framework.annotation.Log;
 import com.broad.system.entity.SysAdminLog;
 import com.broad.system.service.SysAdminLogService;
@@ -62,12 +65,10 @@ public class LogAspect {
             long timeCost = System.currentTimeMillis() - start;
             // 获取Log注解
             Log logAnnotation = getAnnotation(joinPoint);
-            // 封装webLog对象
+            // 写入数据库
             this.setLog(request, logAnnotation, timeCost, result, joinPoint);
         } catch (Throwable e) {
             throw new Throwable(e);
-        } finally {
-            log.info("=================后置通知=====================");
         }
         return result;
     }
@@ -87,10 +88,10 @@ public class LogAspect {
         SysAdminLog sysAdminLog = new SysAdminLog();
         sysAdminLog.setLogDescription(logAnnotation.description());
         sysAdminLog.setLogTimeCost((double) timeCost);
-        sysAdminLog.setLogIpAddress(request.getRemoteAddr());
+        sysAdminLog.setLogIpAddress(IpAddressUtil.getIpAddress(request));
         sysAdminLog.setLogHttpMethod(request.getMethod());
-        sysAdminLog.setLogParams(getParams(joinPoint).toString());
-        sysAdminLog.setLogResult(result.toString());
+        sysAdminLog.setLogParams(JSON.toJSONString(getParams(joinPoint)));
+        sysAdminLog.setLogResult(JSON.toJSONString(result));
         sysAdminLog.setLogUrl(request.getRequestURL().toString());
         sysAdminLog.setLogMethodType(logAnnotation.businessType().name());
         sysAdminLog.setAdminId(StpUtil.getLoginIdAsInt());

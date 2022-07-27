@@ -2,6 +2,7 @@
     <el-config-provider :locale="lang">
         <router-view></router-view>
     </el-config-provider>
+
 </template>
 <script setup lang="ts">
 import { onMounted, watch } from 'vue'
@@ -32,3 +33,4 @@ watch(
     }
 )
 </script>
+

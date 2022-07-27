@@ -1,14 +1,11 @@
 package com.broad.system.service.impl;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.broad.system.mapper.SysAdminLogMapper;
 import com.broad.system.entity.SysAdminLog;
+import com.broad.system.mapper.SysAdminLogMapper;
 import com.broad.system.service.SysAdminLogService;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 /**
  * 管理员日志表(SysAdminLog)表服务实现类
