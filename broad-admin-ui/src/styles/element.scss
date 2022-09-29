@@ -1,0 +1,86 @@
+/* 修复 Chrome 浏览器输入框内选中字符行高异常的bug-s */
+.el-input .el-input__inner {
+    line-height: 29px;
+}
+/* 修复 Chrome 浏览器输入框内选中字符行高异常的bug-e */
+
+.datetime-picker {
+    height: 32px;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+.el-divider__text.is-center {
+    transform: translateX(-50%) translateY(-62%);
+}
+
+.el-menu {
+    user-select: none;
+}
+
+.el-table {
+    --el-table-border-color: #f6f6f6;
+}
+
+.el-card {
+    border: none;
+}
+.el-card__header {
+    border-bottom: 1px solid var(--color-sub-4);
+}
+.el-textarea__inner {
+    padding: 5px 11px;
+}
+
+/* dialog滚动条-s */
+.el-overlay-dialog {
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+        width: 5px;
+    }
+    &::-webkit-scrollbar-thumb {
+        background: #eaeaea;
+        border-radius: var(--el-border-radius-base);
+        box-shadow: none;
+        -webkit-box-shadow: none;
+    }
+    &:hover {
+        &::-webkit-scrollbar-thumb:hover {
+            background: #c8c9cc;
+        }
+    }
+}
+/* dialog滚动条-e */
+
+/* 表格-e */
+.el-table__header-wrapper{
+    background-color: #fff;
+    border-bottom: 1px solid #ebeef5;
+}
+.el-table__header .el-table__cell{
+    background-color: #f6f6f8 !important;
+}
+
+/* 弹出消息 覆盖Message原生样式 */
+.el-message {
+    min-width: auto !important;
+    background-color: #fdfdfe;
+    color: rgb(51, 54, 57) !important;
+    border-color: #fdfdfe !important;
+
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    overflow: hidden;
+    box-shadow: 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
+}
+.el-message__icon svg {
+    min-width: 16px;
+    height: 16px;
+}
+
+.el-message__content {
+    color: rgb(51, 54, 57) !important;
+    font-size: 14px;
+    margin-right: 5px !important;
+}
