@@ -12,9 +12,8 @@ import lombok.*;
  * 管理权限分组表(SysAdminGroupAccess)实体类
  *
  * @author XingGao
- * @since 2022-07-13 10:13:11
+ * @since 2022 -07-13 10:13:11
  */
-
 @Data
 @Builder
 @NoArgsConstructor
@@ -34,6 +33,13 @@ public class SysAdminGroupAccess extends Model<SysAdminGroupAccess> {
      */
     @TableField(value = "group_id")
     private Integer groupId;
+
+    /**
+     * 权限字符
+     */
+    @TableField(exist = false)
+    private String rules;
+
 
 }
 

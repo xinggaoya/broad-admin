@@ -32,7 +32,7 @@ public class StpInterfaceImpl implements StpInterface {
         // 本list仅做模拟，实际项目中要根据具体业务逻辑来查询权限
         List<String> list = new ArrayList<>();
 
-        List<SysMenuRule> menuList = sysMenuRuleService.getRouteByAdminList();
+        List<SysMenuRule> menuList = sysMenuRuleService.getRouteByAdminList(loginId);
         for (SysMenuRule menu : menuList) {
             list.add(menu.getName());
         }

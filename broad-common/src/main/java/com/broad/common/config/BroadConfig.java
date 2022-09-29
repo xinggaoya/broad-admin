@@ -22,7 +22,7 @@ public class BroadConfig {
 
     private String author;
 
-    private String captchaEnabled;
+    private Boolean captchaEnabled;
 
     private String captchaType;
 

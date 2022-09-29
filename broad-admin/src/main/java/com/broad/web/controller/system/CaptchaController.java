@@ -1,16 +1,11 @@
 package com.broad.web.controller.system;
 
 import cn.dev33.satoken.dao.SaTokenDaoRedisJackson;
-import cn.dev33.satoken.secure.SaSecureUtil;
 import com.broad.common.config.BroadConfig;
-import com.broad.common.core.entity.ResultData;
+import com.broad.common.constant.Constants;
 import com.broad.common.utils.sign.Base64;
-import com.broad.common.utils.sign.HomeAddressUtil;
-import com.broad.common.utils.sign.IpAddressUtil;
-import com.broad.framework.entity.MsgProducer;
-import com.google.code.kaptcha.Constants;
+import com.broad.framework.web.entity.ResultData;
 import com.google.code.kaptcha.Producer;
-import org.lionsoul.ip2region.xdb.Searcher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.FastByteArrayOutputStream;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,14 +13,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.imageio.ImageIO;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created with IntelliJ IDEA.
@@ -48,20 +39,6 @@ public class CaptchaController {
     @Autowired
     private BroadConfig broadConfig;
 
-    @Autowired
-    private MsgProducer msgProducer;
-
-    @Autowired
-    private HomeAddressUtil homeAddressUtil;
-
-
-    @GetMapping("/test")
-    public String test() {
-        String s = UUID.randomUUID().toString();
-        System.out.println(s);
-        return SaSecureUtil.md5BySalt("123456", s);
-    }
-
 
     /**
      * 生成验证码
@@ -70,10 +47,10 @@ public class CaptchaController {
      */
     @GetMapping("/captchaImage")
     public ResultData getCode() {
-        LinkedHashMap<String, String> linkedHashMap = new LinkedHashMap<>();
+        LinkedHashMap<String, Object> linkedHashMap = new LinkedHashMap<>();
         // 保存验证码信息
         String uuid = UUID.randomUUID().toString();
-        String verifyKey = Constants.KAPTCHA_SESSION_KEY + uuid;
+        String verifyKey = Constants.CAPTCHA_CODE_KEY + uuid;
 
         String capStr = null, code = null;
         BufferedImage image = null;

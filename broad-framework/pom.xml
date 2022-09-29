@@ -39,6 +39,11 @@
             <artifactId>broad-system</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.github.pagehelper</groupId>
+            <artifactId>pagehelper-spring-boot-starter</artifactId>
+        </dependency>
+
 
         <!--   防XSS攻击     -->
         <dependency>

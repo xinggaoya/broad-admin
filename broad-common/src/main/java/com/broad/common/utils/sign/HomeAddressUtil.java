@@ -25,13 +25,12 @@ public class HomeAddressUtil {
     private BroadConfig broadConfig;
 
 
-
     public String getHomeAddressToRegion(String ip) throws IOException {
         return getHomeAddress(ip).get("region").toString();
     }
 
     /**
-     *  获取客户端ip地址
+     * 获取客户端ip地址
      *
      * @param ip
      * @return
@@ -39,7 +38,7 @@ public class HomeAddressUtil {
      */
     public HashMap<String, Object> getHomeAddress(String ip) throws IOException {
 
-        String dbPath =broadConfig.getSystemFileDir()+"/ip2region/ip2region.xdb";
+        String dbPath = broadConfig.getSystemFileDir() + "/ip2region/ip2region.xdb";
 
         HashMap<String, Object> map = new HashMap<>();
 

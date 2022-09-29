@@ -1,4 +1,5 @@
 package com.broad.common.utils.sign;
+
 import javax.servlet.http.HttpServletRequest;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -33,7 +34,7 @@ public class IpAddressUtil {
             ip = request.getRemoteAddr();
         }
         // 本机访问
-        if ("localhost".equalsIgnoreCase(ip) || "127.0.0.1".equalsIgnoreCase(ip) || "0:0:0:0:0:0:0:1".equalsIgnoreCase(ip)){
+        if ("localhost".equalsIgnoreCase(ip) || "127.0.0.1".equalsIgnoreCase(ip) || "0:0:0:0:0:0:0:1".equalsIgnoreCase(ip)) {
             // 根据网卡取本机配置的IP
             InetAddress inet;
             try {

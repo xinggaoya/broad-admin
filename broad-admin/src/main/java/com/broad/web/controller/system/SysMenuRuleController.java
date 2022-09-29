@@ -3,9 +3,10 @@ package com.broad.web.controller.system;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckPermission;
-import com.broad.common.core.entity.ResultData;
 import com.broad.common.enums.BusinessType;
 import com.broad.framework.annotation.Log;
+import com.broad.framework.web.controller.BaseController;
+import com.broad.framework.web.entity.ResultData;
 import com.broad.system.entity.SysMenuRule;
 import com.broad.system.service.SysMenuRuleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("sysMenuRule")
-public class SysMenuRuleController {
+public class SysMenuRuleController extends BaseController {
     /**
      * 服务对象
      */
@@ -42,14 +43,15 @@ public class SysMenuRuleController {
     }
 
     /**
-     * 查询全部路由菜单
+     * 分页查询全部数据
      *
+     * @param sysMenuRule the sys menu rule
      * @return 所有数据 result data
      */
     @GetMapping("getRouteMenuAll")
     @SaCheckPermission("sysMenuRule:list")
     public ResultData getRouteMenuAll(SysMenuRule sysMenuRule) {
-        return ResultData.data(this.sysMenuRuleService.getRouteMenuAll(sysMenuRule));
+        return ResultData.ok().setData(this.sysMenuRuleService.getRouteMenuAll(sysMenuRule));
     }
 
     /**
@@ -65,6 +67,18 @@ public class SysMenuRuleController {
     }
 
     /**
+     * 通过管理员ID查询对应权限码
+     *
+     * @param adminId 管理员ID
+     * @return result roleList
+     */
+    @GetMapping("getRoleMenu")
+    @SaCheckLogin
+    public List<String> getRoleByAdmin(@RequestParam Object adminId) {
+        return this.sysMenuRuleService.getRoleByAdmin(adminId);
+    }
+
+    /**
      * 新增数据
      *
      * @param sysMenuRule 实体对象
@@ -74,7 +88,7 @@ public class SysMenuRuleController {
     @SaCheckPermission("sysMenuRule:add")
     @Log(description = "新增菜单和权限规则表数据", businessType = BusinessType.INSERT)
     public ResultData insert(@RequestBody @Valid SysMenuRule sysMenuRule) {
-        return ResultData.data(this.sysMenuRuleService.save(sysMenuRule));
+        return ResultData.data(this.sysMenuRuleService.saveMenuRule(sysMenuRule));
     }
 
     /**
@@ -87,7 +101,7 @@ public class SysMenuRuleController {
     @SaCheckPermission("sysMenuRule:edit")
     @Log(description = "修改菜单和权限规则表", businessType = BusinessType.UPDATE)
     public ResultData update(@RequestBody SysMenuRule sysMenuRule) {
-        return ResultData.data(this.sysMenuRuleService.updateById(sysMenuRule));
+        return ResultData.data(this.sysMenuRuleService.updateMenuRule(sysMenuRule));
     }
 
     /**
@@ -100,7 +114,7 @@ public class SysMenuRuleController {
     @SaCheckPermission("sysMenuRule:delete")
     @Log(description = "删除菜单和权限规则表", businessType = BusinessType.DELETE)
     public ResultData delete(@RequestParam("ids") List<Long> idList) {
-        return ResultData.data(this.sysMenuRuleService.removeByIds(idList));
+        return ResultData.data(this.sysMenuRuleService.removeMenuRule(idList));
     }
 }
 

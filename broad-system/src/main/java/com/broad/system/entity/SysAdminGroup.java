@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.annotation.*;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import lombok.*;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -13,9 +12,8 @@ import java.util.List;
  * 管理分组表(SysAdminGroup)实体类
  *
  * @author XingGao
- * @since 2022-07-13 09:53:11
+ * @since 2022 -07-13 09:53:11
  */
-
 @Data
 @Builder
 @NoArgsConstructor
@@ -70,8 +68,11 @@ public class SysAdminGroup extends Model<SysAdminGroup> {
      * 状态:0=禁用,1=启用
      */
     @TableField(value = "status")
-    private Integer status;
+    private String status;
 
+    /**
+     * The Children.
+     */
     @TableField(exist = false)
     public List<SysAdminGroup> children;
 

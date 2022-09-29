@@ -26,6 +26,11 @@
             <artifactId>broad-framework</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.broad</groupId>
+            <artifactId>broad-quartz</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>

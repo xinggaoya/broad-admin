@@ -1,11 +1,9 @@
 package com.broad.common.utils.sign;
 
 /**
- * Created with IntelliJ IDEA.
+ * Base64工具类
  *
- * @Author: XingGao
- * @Date: 2022/07/12 14:55
- * @Description:
+ * @author XingGao
  */
 public final class Base64 {
     static private final int BASELENGTH = 128;

@@ -11,9 +11,8 @@ import java.util.Date;
  * 管理员日志表(SysAdminLog)实体类
  *
  * @author XingGao
- * @since 2022-07-11 22:32:40
+ * @since 2022 -07-11 22:32:40
  */
-
 @Data
 @Builder
 @NoArgsConstructor
@@ -50,6 +49,12 @@ public class SysAdminLog extends Model<SysAdminLog> {
      */
     @TableField(value = "log_http_method")
     private String logHttpMethod;
+
+    /**
+     * IP
+     */
+    @TableField(value = "log_ip")
+    private String logIp;
 
     /**
      * IP地址

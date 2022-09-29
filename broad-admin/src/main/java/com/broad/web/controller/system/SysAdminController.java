@@ -2,14 +2,13 @@ package com.broad.web.controller.system;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckPermission;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.broad.common.core.entity.ResultData;
 import com.broad.common.enums.BusinessType;
 import com.broad.framework.annotation.Log;
+import com.broad.framework.web.controller.BaseController;
+import com.broad.framework.web.entity.ResultData;
+import com.broad.framework.web.page.TableDataInfo;
 import com.broad.system.entity.SysAdmin;
 import com.broad.system.service.SysAdminService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,8 +26,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("sysAdmin")
-@Api(tags = "管理员表")
-public class SysAdminController {
+public class SysAdminController extends BaseController {
 
     /**
      * 服务对象
@@ -40,15 +38,14 @@ public class SysAdminController {
     /**
      * 分页查询所有数据
      *
-     * @param page     分页对象
      * @param sysAdmin 查询实体
      * @return 所有数据 result data
      */
     @GetMapping
-    @ApiOperation("分页查询所有数据")
     @SaCheckPermission("sys:admin:list")
-    public ResultData selectAll(Page<SysAdmin> page, SysAdmin sysAdmin) {
-        return ResultData.data(this.sysAdminService.selectAll(page, sysAdmin));
+    public TableDataInfo selectAll(SysAdmin sysAdmin) {
+        startPage();
+        return getDataTable(this.sysAdminService.selectAll(sysAdmin));
     }
 
     /**
@@ -58,7 +55,6 @@ public class SysAdminController {
      * @return 单条数据 result data
      */
     @GetMapping("{id}")
-    @ApiOperation("通过主键查询单条数据")
     @SaCheckPermission("sys:admin:info")
     public ResultData selectOne(@PathVariable Serializable id) {
         return ResultData.data(this.sysAdminService.getById(id));
@@ -87,7 +83,7 @@ public class SysAdminController {
     @SaCheckPermission("sys:admin:update")
     @Log(description = "修改管理员表", businessType = BusinessType.UPDATE)
     public ResultData update(@RequestBody SysAdmin sysAdmin) {
-        return ResultData.data(this.sysAdminService.updateById(sysAdmin));
+        return ResultData.data(this.sysAdminService.updateAdmin(sysAdmin));
     }
 
     /**
@@ -98,7 +94,7 @@ public class SysAdminController {
      */
     @DeleteMapping
     @SaCheckPermission("sys:admin:delete")
-    @Log(description = "删除管理员表", businessType = BusinessType.DELETE)
+    @Log(description = "删除管理员", businessType = BusinessType.DELETE)
     public ResultData delete(@RequestParam("idList") List<Long> idList) {
         return ResultData.data(this.sysAdminService.removeByIds(idList));
     }
@@ -107,17 +103,23 @@ public class SysAdminController {
      * 管理员登录
      *
      * @param sysAdmin the sys admin
+     * @param request  the request
      * @return 删除结果 result data
+     * @throws IOException the io exception
      */
     @PostMapping("/login")
-    @ApiOperation("登录")
     public ResultData login(@RequestBody SysAdmin sysAdmin, HttpServletRequest request) throws IOException {
         return ResultData.data(this.sysAdminService.administratorLogin(sysAdmin, request)).setMsg("登录成功!");
     }
 
+    /**
+     * Logout result data.
+     *
+     * @param admin the admin
+     * @return the result data
+     */
     @GetMapping("/logout")
     @SaCheckLogin
-    @ApiOperation("退出登录")
     public ResultData logout(SysAdmin admin) {
         this.sysAdminService.logout(admin);
         return ResultData.ok();

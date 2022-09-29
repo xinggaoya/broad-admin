@@ -2,34 +2,41 @@ package com.broad.system.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.broad.system.entity.SysAdminGroup;
-import com.broad.system.entity.SysMenuRule;
+import com.broad.common.constant.CacheConstants;
+import com.broad.common.constant.SecurityConstants;
+import com.broad.common.service.RedisService;
 import com.broad.system.entity.SysAdminGroupAccess;
+import com.broad.system.entity.SysMenuRule;
 import com.broad.system.mapper.SysAdminGroupAccessMapper;
 import com.broad.system.mapper.SysAdminGroupMapper;
 import com.broad.system.mapper.SysMenuRuleMapper;
 import com.broad.system.service.SysMenuRuleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * 菜单和权限规则表(SysMenuRule)表服务实现类
  *
  * @author XingGao
- * @since 2022-07-13 09:36:33
+ * @since 2022 -07-13 09:36:33
  */
 @Service("sysMenuRuleService")
 public class SysMenuRuleServiceImpl extends ServiceImpl<SysMenuRuleMapper, SysMenuRule> implements SysMenuRuleService {
 
     @Autowired
     private SysAdminGroupMapper sysAdminGroupMapper;
-
     @Autowired
     private SysAdminGroupAccessMapper sysAdminGroupAccessMapper;
+    @Autowired
+    private RedisService redisService;
 
     /**
      * 查询管理员拥有的路由菜单+创建树形结构
@@ -38,12 +45,30 @@ public class SysMenuRuleServiceImpl extends ServiceImpl<SysMenuRuleMapper, SysMe
      */
     @Override
     public List<SysMenuRule> getRouteMenuByAdmin() {
-        return buildTree(getRouteByAdminList());
+        return buildTree(getRouteByAdminList(StpUtil.getLoginIdAsInt()));
     }
 
 
     /**
-     * 查询全部路由菜单
+     * 处理菜单数据 筛选权限标识
+     *
+     * @return 所有数据 result data
+     */
+
+    @Override
+    public List<String> getRoleByAdmin(Object adminId) {
+        List<String> roleList = new ArrayList<>();
+        // 查询管理员所属组
+        List<SysMenuRule> sysMenuRules = getRouteByAdminList(adminId);
+        sysMenuRules.forEach(menuRule -> {
+            roleList.add(menuRule.getName());
+        });
+        return roleList;
+    }
+
+
+    /**
+     * 分页查询全部数据
      *
      * @return 所有数据 result data
      */
@@ -75,29 +100,44 @@ public class SysMenuRuleServiceImpl extends ServiceImpl<SysMenuRuleMapper, SysMe
      * @return 树形结构 result data
      */
     @Override
-    public List<SysMenuRule> getRouteByAdminList() {
-        LambdaQueryWrapper<SysMenuRule> wrapper = new LambdaQueryWrapper<>();
-        String[] menuIds;
+    public List<SysMenuRule> getRouteByAdminList(Object adminId) {
+        List<SysMenuRule> sysMenuRulesList = new ArrayList<>();
+        List<SysMenuRule> redisServiceCacheList = redisService.getCacheList(CacheConstants.ROUTE_KEY);
+        List<String> menuIds;
 
-        SysAdminGroupAccess access = sysAdminGroupAccessMapper.selectById(StpUtil.getLoginIdAsInt());
-        SysAdminGroup group = sysAdminGroupMapper.selectById(access.getGroupId());
-        if (!"*".equals(group.getRules())) {
-            menuIds = group.getRules().split(",");
-            List<String> menuIdList = new ArrayList<>(Arrays.asList(menuIds));
-            wrapper.in(SysMenuRule::getId, menuIdList);
+        SysAdminGroupAccess groupAccess = sysAdminGroupAccessMapper.selectByAdminId(adminId);
+
+        // 检查缓存
+        if (redisServiceCacheList.isEmpty()) {
+            redisServiceCacheList = baseMapper.selectList(null);
+            redisService.setCacheList(CacheConstants.ROUTE_KEY, redisServiceCacheList, CacheConstants.ROUTE_TIME);
         }
-        // 查询该角色的全部路由菜单
-        return baseMapper.selectList(wrapper);
+        // 判断是否是超级管理员
+        if (!SecurityConstants.ADMIN_KEY.equals(groupAccess.getRules())) {
+            menuIds = Arrays.asList(groupAccess.getRules().split(","));
+            for (SysMenuRule sysMenuRule : redisServiceCacheList) {
+                for (String menuId : menuIds) {
+                    if (sysMenuRule.getId().equals(Integer.valueOf(menuId))) {
+                        sysMenuRulesList.add(sysMenuRule);
+                    }
+                }
+            }
+        } else {
+            sysMenuRulesList = redisServiceCacheList;
+        }
+
+
+        return sysMenuRulesList;
     }
 
 
     /**
      * 构建树形结构
      *
-     * @param list
-     * @return
+     * @param list the list
+     * @return list
      */
-    public List<SysMenuRule> buildTree(List<SysMenuRule> list) {
+    private List<SysMenuRule> buildTree(List<SysMenuRule> list) {
         List<SysMenuRule> treeMenus = new ArrayList<>();
         for (SysMenuRule menuNode : getRootNode(list)) {
             menuNode = buildChilTree(menuNode, list);
@@ -138,6 +178,54 @@ public class SysMenuRuleServiceImpl extends ServiceImpl<SysMenuRuleMapper, SysMe
             }
         }
         return rootMenuLists;
+    }
+
+    /**
+     * 新增菜单
+     *
+     * @param menuRule SysMenuRule
+     * @return boolean
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean saveMenuRule(SysMenuRule menuRule) {
+        clearPermissionCache();
+        return this.save(menuRule);
+    }
+
+    /**
+     * 更新菜单信息
+     *
+     * @param menuRule SysMenuRule
+     * @return boolean
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean updateMenuRule(SysMenuRule menuRule) {
+        clearPermissionCache();
+        return this.updateById(menuRule);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean removeMenuRule(List<Long> idList) {
+        List<Integer> pidList = new ArrayList<>();
+        List<SysMenuRule> menuRuleList = baseMapper.selectList(new LambdaQueryWrapper<SysMenuRule>().in(SysMenuRule::getId, idList));
+        // 删除子菜单
+        menuRuleList.forEach(menuRule -> {
+            if (menuRule.getPid() == 0) {
+                pidList.add(menuRule.getId());
+            }
+        });
+        // 删除菜单
+        this.baseMapper.delete(new LambdaUpdateWrapper<SysMenuRule>().in(SysMenuRule::getPid, pidList));
+        this.baseMapper.deleteBatchIds(idList);
+        return clearPermissionCache();
+    }
+
+
+    private boolean clearPermissionCache() {
+        return redisService.deleteObject(CacheConstants.ROUTE_KEY);
     }
 
 }
