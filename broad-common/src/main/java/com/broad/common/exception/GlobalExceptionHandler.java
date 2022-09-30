@@ -56,7 +56,7 @@ public class GlobalExceptionHandler {
         } else {
             message = "当前会话未登录";
         }
-        return SaResult.error(message);
+        return SaResult.code(401).setMsg(message);
     }
 
     /**

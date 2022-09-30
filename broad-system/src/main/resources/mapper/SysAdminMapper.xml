@@ -22,7 +22,7 @@
 
     <sql id="item">
         id
-        ,user_name,nick_name,avatar,email,mobile,login_failure,last_logintime,last_loginip,password,salt,motto,create_time,update_time,status as userStatus
+        ,user_name,nick_name,avatar,email,mobile,login_failure,last_logintime,last_loginip,password,salt,motto,create_time,update_time,user_status
     </sql>
 
     <select id="selectAll" resultType="com.broad.system.entity.SysAdmin">
