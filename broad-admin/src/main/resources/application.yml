@@ -1,4 +1,3 @@
-
 # YAML data
 server:
   port: 8000
@@ -10,7 +9,6 @@ server:
     threads:
       max: 800
       min-spare: 100
-
 
 # Spring配置
 spring:
@@ -72,7 +70,8 @@ mybatis-plus:
   camel-case-name: true
   # 是否启用驼峰命名规则
   auto-convert: true
-  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.broad.**.entity
+  mapper-locations: classpath*:mapper/**/*Mapper.xml
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 

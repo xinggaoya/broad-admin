@@ -26,13 +26,12 @@
     </parent>
 
     <properties>
-        <java-version>11</java-version>
         <validator-version>5.3.5.Final</validator-version>
         <boot-version>2.7.1</boot-version>
         <broad-version>2.0.0</broad-version>
         <druid-version>1.2.8</druid-version>
         <mybatis-plus.version>3.5.2</mybatis-plus.version>
-        <satoken-version>1.30.0</satoken-version>
+        <satoken-version>1.31.0</satoken-version>
         <dynamic-version>3.5.0</dynamic-version>
         <swagger-version>3.0.3</swagger-version>
         <kaptcha-version>2.3.2</kaptcha-version>

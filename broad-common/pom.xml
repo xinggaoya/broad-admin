@@ -29,12 +29,6 @@
             <artifactId>sa-token-dao-redis-jackson</artifactId>
         </dependency>
 
-        <!--消息队列模块-->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-amqp</artifactId>
-        </dependency>
-
         <dependency>
             <groupId>com.alibaba.fastjson2</groupId>
             <artifactId>fastjson2</artifactId>

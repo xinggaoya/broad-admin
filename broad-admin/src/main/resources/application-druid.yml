@@ -66,11 +66,11 @@ spring:
     # Redis数据库索引（默认为0）
     database: 1
     # Redis服务器地址
-    host: 127.0.0.1
+    host: xinggaoya.com
     # Redis服务器连接端口
     port: 6379
     # Redis服务器连接密码（默认为空）
-    # password:
+    password: xinggaocode
     # 连接超时时间
     timeout: 10s
     lettuce:
@@ -83,14 +83,13 @@ spring:
         max-idle: 10
         # 连接池中的最小空闲连接
         min-idle: 0
-
   # Rabbitmq配置
   rabbitmq:
-    host: localhost
+    host: xinggaoya.com
     port: 5672
     username: root
     password: xinggaocode
-    vhost: admin
+    virtual-host: admin
     listener:
       simple:
         concurrency: 5
