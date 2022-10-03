@@ -1,10 +1,10 @@
 package com.broad.system.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
 import lombok.*;
 
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -19,7 +19,9 @@ import java.util.Date;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 @TableName("sys_admin")
-public class SysAdmin extends Model<SysAdmin> {
+public class SysAdmin implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     /**
      * ID
@@ -39,6 +41,12 @@ public class SysAdmin extends Model<SysAdmin> {
      */
     @TableField(value = "nick_name")
     private String nickName;
+
+    /**
+     * 部门ID
+     */
+    @TableField(value = "dept_id")
+    private Integer deptId;
 
     /**
      * 头像
@@ -99,7 +107,7 @@ public class SysAdmin extends Model<SysAdmin> {
      * 状态:1=禁用,0=启用
      */
     @TableField(value = "user_status")
-    private Integer userStatus;
+    private String userStatus;
 
     /**
      * 创建时间
@@ -126,6 +134,9 @@ public class SysAdmin extends Model<SysAdmin> {
 
     @TableField(exist = false)
     private String tokenValue;
+
+    @TableField(exist = false)
+    private String deptName;
 
 }
 

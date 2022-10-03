@@ -79,6 +79,6 @@ public class CaptchaController {
         linkedHashMap.put("captcha", uuid);
         linkedHashMap.put("captchaUrl", Base64.encode(os.toByteArray()));
         linkedHashMap.put("showCaptcha", broadConfig.getCaptchaEnabled());
-        return ResultData.data(linkedHashMap);
+        return ResultData.success(linkedHashMap);
     }
 }

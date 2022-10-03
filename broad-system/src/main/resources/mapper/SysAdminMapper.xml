@@ -2,34 +2,21 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.broad.system.mapper.SysAdminMapper">
 
-    <resultMap type="com.broad.system.entity.SysAdmin" id="SysAdminMap">
-        <result property="id" column="id" jdbcType="INTEGER"/>
-        <result property="userName" column="user_name" jdbcType="VARCHAR"/>
-        <result property="nickName" column="nick_name" jdbcType="VARCHAR"/>
-        <result property="avatar" column="avatar" jdbcType="VARCHAR"/>
-        <result property="email" column="email" jdbcType="VARCHAR"/>
-        <result property="mobile" column="mobile" jdbcType="VARCHAR"/>
-        <result property="loginFailure" column="login_failure" jdbcType="INTEGER"/>
-        <result property="lastLogintime" column="last_logintime" jdbcType="TIMESTAMP"/>
-        <result property="lastLoginip" column="last_loginip" jdbcType="VARCHAR"/>
-        <result property="password" column="password" jdbcType="VARCHAR"/>
-        <result property="salt" column="salt" jdbcType="VARCHAR"/>
-        <result property="motto" column="motto" jdbcType="VARCHAR"/>
-        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
-        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
-        <result property="userStatus" column="status" jdbcType="INTEGER"/>
-    </resultMap>
 
     <sql id="item">
         id
-        ,user_name,nick_name,avatar,email,mobile,login_failure,last_logintime,last_loginip,password,salt,motto,create_time,update_time,user_status
+        ,user_name,nick_name,avatar,email,mobile,login_failure,last_logintime,dept_id,last_loginip,password,salt,motto,create_time,update_time,user_status
     </sql>
 
     <select id="selectAll" resultType="com.broad.system.entity.SysAdmin">
-        select
-               ad.*,acc.group_id roleId,ag.name as groupName from sys_admin ad
-        left join sys_admin_group_access acc on ad.id = acc.uid
-        left join sys_admin_group ag on acc.group_id = ag.id
+        select ad.*,
+               acc.group_id as roleId,
+               ag.name      as groupName,
+               sd.dept_name as deptName
+        from sys_admin ad
+                 left join sys_admin_group_access acc on ad.id = acc.uid
+                 left join sys_admin_group ag on acc.group_id = ag.id
+                 left join sys_dept sd on ad.dept_id = sd.dept_id
     </select>
 
     <!-- 批量插入 -->

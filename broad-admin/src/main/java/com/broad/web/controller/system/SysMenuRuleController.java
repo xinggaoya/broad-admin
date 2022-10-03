@@ -39,7 +39,7 @@ public class SysMenuRuleController extends BaseController {
     @GetMapping
     @SaCheckLogin
     public ResultData selectAllByAdmin() {
-        return ResultData.data(this.sysMenuRuleService.getRouteMenuByAdmin());
+        return ResultData.success(this.sysMenuRuleService.getRouteMenuByAdmin());
     }
 
     /**
@@ -63,7 +63,7 @@ public class SysMenuRuleController extends BaseController {
     @GetMapping("{id}")
     @SaCheckPermission("sysMenuRule:info")
     public ResultData selectOne(@PathVariable Serializable id) {
-        return ResultData.data(this.sysMenuRuleService.getById(id));
+        return ResultData.success(this.sysMenuRuleService.getById(id));
     }
 
     /**
@@ -88,7 +88,7 @@ public class SysMenuRuleController extends BaseController {
     @SaCheckPermission("sysMenuRule:add")
     @Log(description = "新增菜单和权限规则表数据", businessType = BusinessType.INSERT)
     public ResultData insert(@RequestBody @Valid SysMenuRule sysMenuRule) {
-        return ResultData.data(this.sysMenuRuleService.saveMenuRule(sysMenuRule));
+        return ResultData.success(this.sysMenuRuleService.saveMenuRule(sysMenuRule));
     }
 
     /**
@@ -101,7 +101,7 @@ public class SysMenuRuleController extends BaseController {
     @SaCheckPermission("sysMenuRule:edit")
     @Log(description = "修改菜单和权限规则表", businessType = BusinessType.UPDATE)
     public ResultData update(@RequestBody SysMenuRule sysMenuRule) {
-        return ResultData.data(this.sysMenuRuleService.updateMenuRule(sysMenuRule));
+        return ResultData.success(this.sysMenuRuleService.updateMenuRule(sysMenuRule));
     }
 
     /**
@@ -114,7 +114,7 @@ public class SysMenuRuleController extends BaseController {
     @SaCheckPermission("sysMenuRule:delete")
     @Log(description = "删除菜单和权限规则表", businessType = BusinessType.DELETE)
     public ResultData delete(@RequestParam("ids") List<Long> idList) {
-        return ResultData.data(this.sysMenuRuleService.removeMenuRule(idList));
+        return ResultData.success(this.sysMenuRuleService.removeMenuRule(idList));
     }
 }
 

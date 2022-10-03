@@ -1,9 +1,10 @@
 package com.broad.framework.aspect;
 
 import cn.dev33.satoken.stp.StpUtil;
-import com.alibaba.druid.support.json.JSONUtils;
 import com.alibaba.fastjson2.JSON;
-import com.broad.common.utils.sign.IpAddressUtil;
+import com.broad.common.constant.ExecutorConstant;
+import com.broad.common.utils.ip.IpAddressUtils;
+import com.broad.common.utils.ip.IpUtils;
 import com.broad.framework.annotation.Log;
 import com.broad.system.entity.SysAdminLog;
 import com.broad.system.service.SysAdminLogService;
@@ -82,13 +83,16 @@ public class LogAspect {
     }
 
 
-    @Async("asyncServiceExecutor")
+    @Async(ExecutorConstant.SERVICE_EXECUTOR)
     public void setLog(HttpServletRequest request, Log logAnnotation, long timeCost, Object result, ProceedingJoinPoint joinPoint) {
         // TODO Auto-generated method stub
+        // 获取ip地址
+        String ip = IpUtils.getIpAddr(request);
         SysAdminLog sysAdminLog = new SysAdminLog();
         sysAdminLog.setLogDescription(logAnnotation.description());
         sysAdminLog.setLogTimeCost((double) timeCost);
-        sysAdminLog.setLogIpAddress(IpAddressUtil.getIpAddress(request));
+        sysAdminLog.setLogIp(ip);
+        sysAdminLog.setLogIpAddress(IpAddressUtils.getHome(ip));
         sysAdminLog.setLogHttpMethod(request.getMethod());
         sysAdminLog.setLogParams(JSON.toJSONString(getParams(joinPoint)));
         sysAdminLog.setLogResult(JSON.toJSONString(result));

@@ -1,6 +1,5 @@
 package com.broad.web.controller.system;
 
-
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.broad.common.enums.BusinessType;
@@ -54,7 +53,7 @@ public class SysAdminLogController extends BaseController {
     @GetMapping("{id}")
     @SaCheckPermission("sys:adminLog:list")
     public ResultData selectOne(@PathVariable Serializable id) {
-        return ResultData.data(this.sysAdminLogService.getById(id));
+        return ResultData.success(this.sysAdminLogService.getById(id));
     }
 
     /**
@@ -79,7 +78,7 @@ public class SysAdminLogController extends BaseController {
     @SaCheckPermission("sys:adminLog:update")
     @Log(description = "修改管理员日志", businessType = BusinessType.UPDATE)
     public ResultData update(@RequestBody SysAdminLog sysAdminLog) {
-        return ResultData.data(this.sysAdminLogService.updateById(sysAdminLog));
+        return ResultData.success(this.sysAdminLogService.updateById(sysAdminLog));
     }
 
     /**
@@ -92,7 +91,7 @@ public class SysAdminLogController extends BaseController {
     @SaCheckPermission("sys:adminLog:delete")
     @Log(description = "删除管理员日志", businessType = BusinessType.DELETE)
     public ResultData delete(@RequestParam("idList") List<Long> idList) {
-        return ResultData.data(this.sysAdminLogService.removeByIds(idList));
+        return ResultData.success(this.sysAdminLogService.removeByIds(idList));
     }
 }
 

@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.*;
 
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -24,7 +25,9 @@ import java.util.List;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 @TableName("sys_menu_rule")
-public class SysMenuRule {
+public class SysMenuRule implements Serializable {
+
+    private static final long serialVersionUID = 1L;
     /**
      * ID
      */

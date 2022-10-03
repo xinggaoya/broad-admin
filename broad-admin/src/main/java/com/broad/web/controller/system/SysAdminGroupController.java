@@ -51,7 +51,7 @@ public class SysAdminGroupController extends BaseController {
     @GetMapping("{id}")
     @SaCheckPermission("sys:adminGroup:info")
     public ResultData selectOne(@PathVariable Serializable id) {
-        return ResultData.data(this.sysAdminGroupService.getById(id));
+        return ResultData.success(this.sysAdminGroupService.getById(id));
     }
 
     /**
@@ -64,7 +64,7 @@ public class SysAdminGroupController extends BaseController {
     @SaCheckPermission("sys:adminGroup:save")
     @Log(description = "新增管理分组", businessType = BusinessType.INSERT)
     public ResultData insert(@RequestBody SysAdminGroup sysAdminGroup) {
-        return ResultData.data(this.sysAdminGroupService.saveAdminGroup(sysAdminGroup));
+        return ResultData.success(this.sysAdminGroupService.saveAdminGroup(sysAdminGroup));
     }
 
     /**
@@ -77,7 +77,7 @@ public class SysAdminGroupController extends BaseController {
     @SaCheckPermission("sys:adminGroup:update")
     @Log(description = "修改管理分组", businessType = BusinessType.UPDATE)
     public ResultData update(@RequestBody SysAdminGroup sysAdminGroup) {
-        return ResultData.data(this.sysAdminGroupService.updateById(sysAdminGroup));
+        return ResultData.success(this.sysAdminGroupService.updateById(sysAdminGroup));
     }
 
     /**
@@ -90,7 +90,7 @@ public class SysAdminGroupController extends BaseController {
     @SaCheckPermission("sys:adminGroup:delete")
     @Log(description = "删除管理分组", businessType = BusinessType.DELETE)
     public ResultData delete(@RequestParam("idList") List<Long> idList) {
-        return ResultData.data(this.sysAdminGroupService.removeByIds(idList));
+        return ResultData.success(this.sysAdminGroupService.removeByIds(idList));
     }
 }
 

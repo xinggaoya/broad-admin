@@ -56,9 +56,8 @@ public class ResultData extends LinkedHashMap<String, Object> implements Seriali
         return this;
     }
 
-    public ResultData setMsg(String msg) {
-        this.put("msg", msg);
-        return this;
+    public static ResultData success(Object data) {
+        return new ResultData(CODE_SUCCESS, "操作成功", data);
     }
 
     public ResultData setData(Object data) {
@@ -92,8 +91,9 @@ public class ResultData extends LinkedHashMap<String, Object> implements Seriali
         return new ResultData(code, (String) null, (Object) null);
     }
 
-    public static ResultData data(Object data) {
-        return new ResultData(CODE_SUCCESS, "操作成功", data);
+    public ResultData setMsg(String msg) {
+        this.put("message", msg);
+        return this;
     }
 
     public static ResultData error() {

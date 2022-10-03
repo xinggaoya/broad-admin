@@ -1,7 +1,5 @@
 package com.broad.common.utils.ip;
 
-
-
 import com.broad.common.utils.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;

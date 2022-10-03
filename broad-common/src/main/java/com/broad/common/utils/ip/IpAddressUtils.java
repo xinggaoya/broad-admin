@@ -28,7 +28,7 @@ public class IpAddressUtils {
         try {
             cBuff = Searcher.loadContentFromFile(dbPath);
         } catch (Exception e) {
-            log.error("无法加载ip2region.xdb文件");
+            log.error("无法加载ip2region.xdb文件,请检查ip2region.xdb文件是否存在于 {}", dbPath);
         }
 
         // 2、使用上述的 cBuff 创建一个完全基于内存的查询对象。

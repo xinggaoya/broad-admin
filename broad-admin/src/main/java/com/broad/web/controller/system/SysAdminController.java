@@ -57,7 +57,7 @@ public class SysAdminController extends BaseController {
     @GetMapping("{id}")
     @SaCheckPermission("sys:admin:info")
     public ResultData selectOne(@PathVariable Serializable id) {
-        return ResultData.data(this.sysAdminService.getById(id));
+        return ResultData.success(this.sysAdminService.getById(id));
     }
 
     /**
@@ -70,7 +70,7 @@ public class SysAdminController extends BaseController {
     @SaCheckPermission("sys:admin:save")
     @Log(description = "新增管理员表", businessType = BusinessType.INSERT)
     public ResultData insert(@RequestBody @Valid SysAdmin sysAdmin) {
-        return ResultData.data(this.sysAdminService.saveAdmin(sysAdmin));
+        return ResultData.success(this.sysAdminService.saveAdmin(sysAdmin));
     }
 
     /**
@@ -83,7 +83,7 @@ public class SysAdminController extends BaseController {
     @SaCheckPermission("sys:admin:update")
     @Log(description = "修改管理员表", businessType = BusinessType.UPDATE)
     public ResultData update(@RequestBody SysAdmin sysAdmin) {
-        return ResultData.data(this.sysAdminService.updateAdmin(sysAdmin));
+        return ResultData.success(this.sysAdminService.updateAdmin(sysAdmin));
     }
 
     /**
@@ -96,7 +96,7 @@ public class SysAdminController extends BaseController {
     @SaCheckPermission("sys:admin:delete")
     @Log(description = "删除管理员", businessType = BusinessType.DELETE)
     public ResultData delete(@RequestParam("idList") List<Long> idList) {
-        return ResultData.data(this.sysAdminService.removeByIds(idList));
+        return ResultData.success(this.sysAdminService.removeByIds(idList));
     }
 
     /**
@@ -109,7 +109,7 @@ public class SysAdminController extends BaseController {
      */
     @PostMapping("/login")
     public ResultData login(@RequestBody SysAdmin sysAdmin, HttpServletRequest request) throws IOException {
-        return ResultData.data(this.sysAdminService.administratorLogin(sysAdmin, request)).setMsg("登录成功!");
+        return ResultData.success(this.sysAdminService.administratorLogin(sysAdmin, request)).setMsg("登录成功!");
     }
 
     /**
