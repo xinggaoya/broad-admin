@@ -67,10 +67,10 @@ public class SysAdmin implements Serializable {
     private String mobile;
 
     /**
-     * 登录失败次数
+     * 登录IP
      */
-    @TableField(value = "login_failure")
-    private Integer loginFailure;
+    @TableField(value = "last_ip")
+    private String lastIp;
 
     /**
      * 登录时间

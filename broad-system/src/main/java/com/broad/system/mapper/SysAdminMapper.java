@@ -34,12 +34,19 @@ public interface SysAdminMapper extends BaseMapper<SysAdmin> {
     int insertOrUpdateBatch(@Param("entities") List<SysAdmin> entities);
 
     /**
-     * Select all page.
+     * 查询所有.
      *
      * @param sysAdmin the sys admin
      * @return the page
      */
     List<SysAdmin> selectAll(SysAdmin sysAdmin);
+
+    /**
+     * 通过ids批量查询
+     *
+     * @return 单条数据 SysAdmin
+     */
+    List<SysAdmin> selectAllByIds(@Param("ids") List<Long> ids);
 
 }
 

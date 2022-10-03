@@ -3,7 +3,6 @@ package com.broad.system.service.impl;
 import cn.dev33.satoken.dao.SaTokenDaoRedisJackson;
 import cn.dev33.satoken.secure.SaSecureUtil;
 import cn.dev33.satoken.stp.StpUtil;
-
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -67,6 +66,11 @@ public class SysAdminServiceImpl extends ServiceImpl<SysAdminMapper, SysAdmin> i
         return res ? 1 : 0;
     }
 
+    @Override
+    public List<SysAdmin> getAdminByIds(List<Long> ids) {
+        return this.baseMapper.selectAllByIds(ids);
+    }
+
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -113,8 +117,10 @@ public class SysAdminServiceImpl extends ServiceImpl<SysAdminMapper, SysAdmin> i
         if (!admin.getPassword().equals(SaSecureUtil.md5BySalt(sysAdmin.getPassword(), admin.getSalt()))) {
             throw new ServiceException("密码错误");
         }
+        String ip = IpUtils.getIpAddr(request);
         admin.setLastLogintime(new Date());
-        admin.setLastLoginip(IpAddressUtils.getHome(IpUtils.getIpAddr(request)));
+        admin.setLastLoginip(IpAddressUtils.getHome(ip));
+        admin.setLastIp(ip);
         baseMapper.updateById(admin);
         // 标记登录状态
         StpUtil.login(admin.getId());

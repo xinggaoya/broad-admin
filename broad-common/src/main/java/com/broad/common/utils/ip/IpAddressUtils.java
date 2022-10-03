@@ -38,6 +38,9 @@ public class IpAddressUtils {
         } catch (Exception e) {
             log.error("未能创建内容缓存搜索器");
         }
+        if ("127.0.0.1".equals(ip)) {
+            return "内网IP";
+        }
 
         // 3、查询
         try {
@@ -46,7 +49,14 @@ public class IpAddressUtils {
             String region = searcher.search(ip);
             long cost = TimeUnit.NANOSECONDS.toMicros(System.nanoTime() - sTime);
             log.info("ip地址：{}，归属地：{},耗时：{}μs", ip, region, cost);
-            return region;
+            // 分割出省份 中国 广东省
+            String[] split = region.split("\\|");
+            if (!"0".equals(split[0])) {
+                region = split[0] + " " + split[2];
+                return region;
+            } else {
+                return split[4];
+            }
         } catch (Exception e) {
             log.error("ip地址查询失败");
         }
@@ -61,4 +71,5 @@ public class IpAddressUtils {
     public void setBroadConfig(BroadConfig broadConfig) {
         IpAddressUtils.broadConfig = broadConfig;
     }
+
 }

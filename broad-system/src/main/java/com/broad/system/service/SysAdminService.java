@@ -34,6 +34,8 @@ public interface SysAdminService extends IService<SysAdmin> {
      */
     int saveAdmin(SysAdmin sysAdmin);
 
+    List<SysAdmin> getAdminByIds(List<Long> ids);
+
     /**
      * Update admin int.
      *
