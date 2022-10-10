@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.broad.system.mapper.SysMenuMapper">
+
+    <resultMap type="com.broad.system.entity.SysMenu" id="SysMenuMap">
+        <result property="menuId" column="menu_id" jdbcType="INTEGER"/>
+        <result property="parentId" column="parent_id" jdbcType="INTEGER"/>
+        <result property="routeName" column="route_name" jdbcType="VARCHAR"/>
+        <result property="menuName" column="menu_name" jdbcType="VARCHAR"/>
+        <result property="menuUrl" column="menu_url" jdbcType="VARCHAR"/>
+        <result property="status" column="status" jdbcType="VARCHAR"/>
+        <result property="perme" column="perme" jdbcType="VARCHAR"/>
+        <result property="icon" column="icon" jdbcType="VARCHAR"/>
+        <result property="iconPrefix" column="icon_prefix" jdbcType="VARCHAR"/>
+        <result property="localFilePath" column="local_file_path" jdbcType="VARCHAR"/>
+        <result property="orderNum" column="order_num" jdbcType="INTEGER"/>
+        <result property="cacheable" column="cacheable" jdbcType="VARCHAR"/>
+        <result property="hidden" column="hidden" jdbcType="VARCHAR"/>
+        <result property="affix" column="affix" jdbcType="VARCHAR"/>
+        <result property="remark" column="remark" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!-- 批量插入 -->
+    <insert id="insertBatch" keyProperty="menuId" useGeneratedKeys="true">
+        insert into db_template_database.sys_menu(parent_id, route_name, menu_name, menu_url, status, perme, icon,
+        icon_prefix, local_file_path, order_num, cacheable, hidden, affix, remark, create_time, update_time)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.parentId}, #{entity.routeName}, #{entity.menuName}, #{entity.menuUrl}, #{entity.status},
+            #{entity.perme}, #{entity.icon}, #{entity.iconPrefix}, #{entity.localFilePath}, #{entity.orderNum},
+            #{entity.cacheable}, #{entity.hidden}, #{entity.affix}, #{entity.remark}, #{entity.createTime},
+            #{entity.updateTime})
+        </foreach>
+    </insert>
+    <!-- 批量插入或按主键更新 -->
+    <insert id="insertOrUpdateBatch" keyProperty="menuId" useGeneratedKeys="true">
+        insert into db_template_database.sys_menu(parent_id, route_name, menu_name, menu_url, status, perme, icon,
+        icon_prefix, local_file_path, order_num, cacheable, hidden, affix, remark, create_time, update_time)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.parentId}, #{entity.routeName}, #{entity.menuName}, #{entity.menuUrl}, #{entity.status},
+            #{entity.perme}, #{entity.icon}, #{entity.iconPrefix}, #{entity.localFilePath}, #{entity.orderNum},
+            #{entity.cacheable}, #{entity.hidden}, #{entity.affix}, #{entity.remark}, #{entity.createTime},
+            #{entity.updateTime})
+        </foreach>
+        on duplicate key update
+        parent_id = values(parent_id) , route_name = values(route_name) , menu_name = values(menu_name) , menu_url =
+        values(menu_url) , status = values(status) , perme = values(perme) , icon = values(icon) , icon_prefix =
+        values(icon_prefix) , local_file_path = values(local_file_path) , order_num = values(order_num) , cacheable =
+        values(cacheable) , hidden = values(hidden) , affix = values(affix) , remark = values(remark) , create_time =
+        values(create_time) , update_time = values(update_time)
+    </insert>
+
+</mapper>
+

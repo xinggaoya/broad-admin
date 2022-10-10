@@ -6,7 +6,7 @@ broad:
   # 开发者
   author: XingGao
   # 开启图片验证码
-  captchaEnabled: true
+  captchaEnabled: false
   # 验证码类型 math 计算 char 字母
   captchaType: math
   # 系统文件目录

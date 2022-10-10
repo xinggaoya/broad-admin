@@ -1,8 +1,9 @@
-package com.broad.common.exception;
+package com.broad.framework.exception;
 
 import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.exception.NotPermissionException;
-import cn.dev33.satoken.util.SaResult;
+import com.broad.common.exception.ServiceException;
+import com.broad.framework.web.entity.ResultData;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -28,9 +29,9 @@ public class GlobalExceptionHandler {
      * @return
      */
     @ExceptionHandler
-    public SaResult handlerException(Exception e) {
+    public ResultData handlerException(Exception e) {
         e.printStackTrace();
-        return SaResult.error(e.getMessage());
+        return ResultData.error(e.getMessage());
     }
 
     /**
@@ -40,7 +41,7 @@ public class GlobalExceptionHandler {
      * @return
      */
     @ExceptionHandler(value = NotLoginException.class)
-    public SaResult handlerNotLoginException(NotLoginException e) {
+    public ResultData handlerNotLoginException(NotLoginException e) {
         // 判断场景值，定制化异常信息
         String message = "";
         if (e.getType().equals(NotLoginException.NOT_TOKEN)) {
@@ -56,7 +57,7 @@ public class GlobalExceptionHandler {
         } else {
             message = "当前会话未登录";
         }
-        return SaResult.code(401).setMsg(message);
+        return ResultData.code(401).setMsg(message);
     }
 
     /**
@@ -66,9 +67,9 @@ public class GlobalExceptionHandler {
      * @return
      */
     @ExceptionHandler(value = NotPermissionException.class)
-    public SaResult handlerNotPermissionException(NotPermissionException e) {
+    public ResultData handlerNotPermissionException(NotPermissionException e) {
         // 判断场景值，定制化异常信息
-        return SaResult.code(403).setMsg("无操作权限，请联系管理员");
+        return ResultData.code(403).setMsg("无操作权限，请联系管理员");
     }
 
     /**
@@ -79,8 +80,8 @@ public class GlobalExceptionHandler {
      */
 
     @ExceptionHandler(value = ServiceException.class)
-    public SaResult handlerServiceException(ServiceException e) {
-        return SaResult.error(e.getMessage());
+    public ResultData handlerServiceException(ServiceException e) {
+        return ResultData.error(e.getMessage());
     }
 
     /**
@@ -90,8 +91,8 @@ public class GlobalExceptionHandler {
      * @return
      */
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
-    public SaResult handlerMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-        return SaResult.error(Objects.requireNonNull(e.getBindingResult().getFieldError()).getDefaultMessage());
+    public ResultData handlerMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+        return ResultData.error(Objects.requireNonNull(e.getBindingResult().getFieldError()).getDefaultMessage());
     }
 
 }
