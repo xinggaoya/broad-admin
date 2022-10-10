@@ -1,3 +1,4 @@
 */target/
 /logs/
 /*/node_modules/
+/.idea/
