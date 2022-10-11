@@ -1,8 +1,10 @@
 package com.broad.web.controller.system;
 
+import cn.dev33.satoken.annotation.SaCheckLogin;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.broad.framework.web.controller.BaseController;
 import com.broad.framework.web.entity.ResultData;
+import com.broad.framework.web.page.TableDataInfo;
 import com.broad.system.entity.SysMenu;
 import com.broad.system.service.SysMenuService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,12 +28,24 @@ public class SysMenuController extends BaseController {
     @Autowired
     private SysMenuService sysMenuService;
 
+
     /**
-     * 动态获取路由
+     * 分页查询所有数据
      *
      * @return 所有数据
      */
     @GetMapping
+    public TableDataInfo selectAllByPage(SysMenu sysMenu) {
+        return getDataTable(this.sysMenuService.selectAllByPage(sysMenu));
+    }
+
+    /**
+     * 动态获取路由
+     *
+     * @return 角色路由
+     */
+    @GetMapping("getRouters")
+    @SaCheckLogin
     public ResultData selectAll() {
         return ResultData.success(this.sysMenuService.selectAll());
     }
@@ -54,49 +68,8 @@ public class SysMenuController extends BaseController {
      * @return 新增结果
      */
     @PostMapping
-    public ResultData insert(@RequestBody List<SysMenu> sysMenu) {
-        sysMenu.forEach(item -> {
-            item.setParentId(0);
-        });
-        this.sysMenuService.saveBatch(sysMenu);
-        sysMenu.forEach(item -> {
-            if (item.getChildren() != null && item.getChildren().size() > 0) {
-                Integer parentId = this.sysMenuService.getOne(
-                        new LambdaQueryWrapper<SysMenu>().eq(SysMenu::getMenuName, item.getMenuName())).getMenuId();
-                item.getChildren().forEach(child -> {
-                    child.setParentId(parentId);
-                });
-                this.sysMenuService.saveBatch(item.getChildren());
-                item.getChildren().forEach(child -> {
-                    if (child.getChildren() != null && child.getChildren().size() > 0) {
-                        Integer childParentId = this.sysMenuService.getOne(new LambdaQueryWrapper<SysMenu>().eq(SysMenu::getMenuName, child.getMenuName())).getMenuId();
-                        child.getChildren().forEach(childChild -> {
-                            childChild.setParentId(childParentId);
-                        });
-                        this.sysMenuService.saveBatch(child.getChildren());
-                        child.getChildren().forEach(childChild -> {
-                            if (childChild.getChildren() != null && childChild.getChildren().size() > 0) {
-                                Integer childChildParentId = this.sysMenuService.getOne(new LambdaQueryWrapper<SysMenu>().eq(SysMenu::getMenuName, childChild.getMenuName())).getMenuId();
-                                childChild.getChildren().forEach(childChildChild -> {
-                                    childChildChild.setParentId(childChildParentId);
-                                });
-                                this.sysMenuService.saveBatch(childChild.getChildren());
-                                childChild.getChildren().forEach(childChildChild -> {
-                                    if (childChildChild.getChildren() != null && childChildChild.getChildren().size() > 0) {
-                                        Integer childChildChildParentId = this.sysMenuService.getOne(new LambdaQueryWrapper<SysMenu>().eq(SysMenu::getMenuName, childChildChild.getMenuName())).getMenuId();
-                                        childChildChild.getChildren().forEach(childChildChildChild -> {
-                                            childChildChildChild.setParentId(childChildChildParentId);
-                                        });
-                                        this.sysMenuService.saveBatch(childChildChild.getChildren());
-                                    }
-                                });
-                            }
-                        });
-                    }
-                });
-            }
-        });
-        return ResultData.success(this.sysMenuService.saveBatch(sysMenu));
+    public ResultData insert(@RequestBody SysMenu sysMenu) {
+        return ResultData.success(this.sysMenuService.saveMenu(sysMenu));
     }
 
 

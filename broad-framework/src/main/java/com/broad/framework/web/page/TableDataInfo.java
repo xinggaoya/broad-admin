@@ -29,7 +29,7 @@ public class TableDataInfo implements Serializable {
     /**
      * 消息内容
      */
-    private String msg;
+    private String message;
 
     /**
      * 表格数据对象
@@ -73,10 +73,10 @@ public class TableDataInfo implements Serializable {
     }
 
     public String getMsg() {
-        return msg;
+        return message;
     }
 
     public void setMsg(String msg) {
-        this.msg = msg;
+        this.message = msg;
     }
 }

@@ -1,10 +1,12 @@
 package com.broad.system.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.broad.system.entity.SysMenu;
 import com.broad.system.mapper.SysMenuMapper;
 import com.broad.system.service.SysMenuService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +24,21 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     public List<SysMenu> selectAll() {
         List<SysMenu> list = this.baseMapper.selectList(null);
         return buildTree(list);
+    }
+
+    @Override
+    public List<SysMenu> selectAllByPage(SysMenu menu) {
+        LambdaQueryWrapper<SysMenu> queryWrapper = new LambdaQueryWrapper<>(menu);
+        return buildTree(this.baseMapper.selectList(queryWrapper));
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public int saveMenu(SysMenu entity) {
+        if (entity.getParentId() == null) {
+            entity.setParentId(0);
+        }
+        return this.baseMapper.insert(entity);
     }
 
     /**

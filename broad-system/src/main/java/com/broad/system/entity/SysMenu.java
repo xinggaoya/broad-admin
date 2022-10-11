@@ -1,8 +1,7 @@
 package com.broad.system.entity;
 
-
 import com.baomidou.mybatisplus.annotation.*;
-import com.broad.common.enums.BooleanType;
+import com.broad.common.enums.BooleanEnum;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -26,7 +25,6 @@ public class SysMenu implements Serializable {
      */
     @TableId(value = "menu_id", type = IdType.AUTO)
     private Integer menuId;
-
     /**
      * 父路由
      */
@@ -81,17 +79,17 @@ public class SysMenu implements Serializable {
      * 0缓存，1不缓存
      */
     @TableField(value = "cacheable")
-    private BooleanType cacheable;
+    private BooleanEnum cacheable;
     /**
      * 0显示，1不显示
      */
     @TableField(value = "hidden")
-    private BooleanType hidden;
+    private BooleanEnum hidden;
     /**
      * 0固定标题栏，1否
      */
     @TableField(value = "affix")
-    private BooleanType affix;
+    private BooleanEnum affix;
     /**
      * 备注
      */
@@ -108,11 +106,18 @@ public class SysMenu implements Serializable {
     @TableField(value = "update_time", fill = FieldFill.INSERT_UPDATE)
     private Date updateTime;
 
+    /**
+     * 父组件路径
+     */
     @TableField(exist = false)
     private String parentPath;
 
+    /**
+     * 子路由
+     */
     @TableField(exist = false)
     private List<SysMenu> children;
+
 
 }
 
