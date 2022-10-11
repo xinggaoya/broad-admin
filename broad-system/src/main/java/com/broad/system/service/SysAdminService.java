@@ -59,6 +59,6 @@ public interface SysAdminService extends IService<SysAdmin> {
      *
      * @param admin the admin
      */
-    void logout(SysAdmin admin);
+    void logout();
 }
 

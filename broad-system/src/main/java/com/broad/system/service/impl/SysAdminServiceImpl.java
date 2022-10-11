@@ -130,12 +130,11 @@ public class SysAdminServiceImpl extends ServiceImpl<SysAdminMapper, SysAdmin> i
 
     /**
      * 退出登录
-     *
-     * @param admin
      */
     @Override
-    public void logout(SysAdmin admin) {
-        StpUtil.logout(admin.getId());
+    @Transactional(rollbackFor = Exception.class)
+    public void logout() {
+        StpUtil.logout();
     }
 
 }

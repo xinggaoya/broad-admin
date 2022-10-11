@@ -1,27 +1,25 @@
 package com.broad.common.enums;
 
-import com.baomidou.mybatisplus.annotation.IEnum;
+import com.baomidou.mybatisplus.annotation.EnumValue;
 import com.fasterxml.jackson.annotation.JsonValue;
+import lombok.Getter;
 
 /**
  * @Author: XingGao
  * @Date: 2022/10/10
  * @Description:
  */
-public enum BooleanEnum implements IEnum<String> {
-    ONE("1", "false"),
-    TRUE("0", "true");
+@Getter
+public enum BooleanEnum {
+    ONE("1", false),
+    TRUE("0", true);
+    @EnumValue
+    private final String code;
     @JsonValue
-    private String code;
-    private String desc;
+    private final Boolean desc;
 
-    BooleanEnum(String code, String desc) {
+    BooleanEnum(String code, Boolean desc) {
         this.code = code;
         this.desc = desc;
-    }
-
-    @Override
-    public String getValue() {
-        return this.code;
     }
 }

@@ -115,13 +115,12 @@ public class SysAdminController extends BaseController {
     /**
      * Logout result data.
      *
-     * @param admin the admin
      * @return the result data
      */
     @GetMapping("/logout")
     @SaCheckLogin
-    public ResultData logout(SysAdmin admin) {
-        this.sysAdminService.logout(admin);
+    public ResultData logout() {
+        this.sysAdminService.logout();
         return ResultData.ok();
     }
 
