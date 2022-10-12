@@ -2,8 +2,10 @@ package com.broad.system.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 import com.broad.common.enums.BooleanEnum;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -17,6 +19,8 @@ import java.util.List;
  */
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @TableName("sys_menu")
 public class SysMenu implements Serializable {
 
