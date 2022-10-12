@@ -2,6 +2,7 @@ package com.broad.system.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 import com.broad.common.enums.BooleanEnum;
+import lombok.Builder;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -15,6 +16,7 @@ import java.util.List;
  * @since 2022-10-10 18:59:10
  */
 @Data
+@Builder
 @TableName("sys_menu")
 public class SysMenu implements Serializable {
 

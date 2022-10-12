@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 /**
  * @Author: XingGao
  * @Date: 2022/09/30 10:51
- * @Description:
+ * @Description: 消费者
  */
 @Component
 @Slf4j
@@ -23,6 +23,6 @@ public class SimpleConsumer {
     public void receiveObject(Simple simple) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         String message = objectMapper.writeValueAsString(simple);
-        log.info("simple consumer receive the object:{}", message);
+        log.info("消费队列:{}", message);
     }
 }

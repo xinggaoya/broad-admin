@@ -11,11 +11,10 @@ import java.util.Date;
 /**
  * @Author: XingGao
  * @Date: 2022/09/30 10:54
- * @Description:
+ * @Description: 测试
  */
 @RestController
 public class TestController {
-
     @Autowired
     private SimpleProducer simpleProducer;
 

@@ -50,7 +50,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     private List<SysMenu> buildTree(List<SysMenu> list) {
         List<SysMenu> treeMenus = new ArrayList<>();
         for (SysMenu menuNode : getRootNode(list)) {
-            menuNode = buildChilTree(menuNode, list);
+            buildChilTree(menuNode, list);
             treeMenus.add(menuNode);
         }
         return treeMenus;

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 /**
  * @Author: XingGao
  * @Date: 2022/09/30 10:52
- * @Description:
+ * @Description: 生产者
  */
 @Component
 public class SimpleProducer {
