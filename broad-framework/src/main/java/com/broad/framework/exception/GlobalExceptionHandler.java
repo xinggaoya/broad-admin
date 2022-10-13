@@ -2,6 +2,7 @@ package com.broad.framework.exception;
 
 import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.exception.NotPermissionException;
+import com.broad.common.constant.HttpStatus;
 import com.broad.common.exception.ServiceException;
 import com.broad.framework.web.entity.ResultData;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -21,7 +22,6 @@ import java.util.Objects;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-
     /**
      * 全局异常处理
      *
@@ -31,7 +31,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler
     public ResultData handlerException(Exception e) {
         e.printStackTrace();
-        return ResultData.error(e.getMessage());
+        return ResultData.error("系统异常,请联系管理员");
     }
 
     /**
@@ -57,7 +57,7 @@ public class GlobalExceptionHandler {
         } else {
             message = "当前会话未登录";
         }
-        return ResultData.code(401).setMsg(message);
+        return new ResultData(HttpStatus.FORBIDDEN, message);
     }
 
     /**
@@ -69,7 +69,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = NotPermissionException.class)
     public ResultData handlerNotPermissionException(NotPermissionException e) {
         // 判断场景值，定制化异常信息
-        return ResultData.code(403).setMsg("无操作权限，请联系管理员");
+        return new ResultData(HttpStatus.UNAUTHORIZED, "无操作权限，请联系管理员");
     }
 
     /**

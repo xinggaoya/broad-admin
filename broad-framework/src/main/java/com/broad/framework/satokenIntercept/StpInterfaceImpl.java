@@ -1,4 +1,4 @@
-package com.broad.framework.intercept;
+package com.broad.framework.satokenIntercept;
 
 import cn.dev33.satoken.stp.StpInterface;
 import com.broad.system.entity.SysMenuRule;

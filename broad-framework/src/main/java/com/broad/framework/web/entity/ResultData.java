@@ -1,7 +1,8 @@
 package com.broad.framework.web.entity;
 
+import com.broad.common.constant.HttpStatus;
+
 import java.io.Serializable;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -15,25 +16,20 @@ import java.util.Map;
  */
 public class ResultData extends LinkedHashMap<String, Object> implements Serializable {
     private static final long serialVersionUID = 1L;
-    public static final int CODE_SUCCESS = 200;
-    public static final int CODE_ERROR = 500;
 
-    public ResultData(int code,String msg) {
+    public ResultData(int code, String message) {
         this.setCode(code);
-        this.setMsg(msg);
+        this.setMsg(message);
     }
 
-    public ResultData(int code, String msg, Object data) {
+    public ResultData(int code, String message, Object data) {
         this.setCode(code);
-        this.setMsg(msg);
+        this.setMsg(message);
         this.setData(data);
     }
 
     public ResultData(Map<String, Object> map) {
-        Iterator var2 = map.keySet().iterator();
-
-        while (var2.hasNext()) {
-            String key = (String) var2.next();
+        for (String key : map.keySet()) {
             this.set(key, map.get(key));
         }
 
@@ -43,8 +39,8 @@ public class ResultData extends LinkedHashMap<String, Object> implements Seriali
         return (Integer) this.get("code");
     }
 
-    public String getMsg() {
-        return (String) this.get("msg");
+    public static ResultData success(Object data) {
+        return new ResultData(HttpStatus.SUCCESS, "操作成功", data);
     }
 
     public Object getData() {
@@ -56,8 +52,8 @@ public class ResultData extends LinkedHashMap<String, Object> implements Seriali
         return this;
     }
 
-    public static ResultData success(Object data) {
-        return new ResultData(CODE_SUCCESS, "操作成功", data);
+    public static ResultData ok() {
+        return new ResultData(HttpStatus.SUCCESS, "操作成功", null);
     }
 
     public ResultData setData(Object data) {
@@ -79,37 +75,37 @@ public class ResultData extends LinkedHashMap<String, Object> implements Seriali
         return this;
     }
 
-    public static ResultData ok() {
-        return new ResultData(CODE_SUCCESS, "操作成功", (Object) null);
-    }
-
-    public static ResultData ok(String msg) {
-        return new ResultData(CODE_SUCCESS, msg, (Object) null);
+    public static ResultData ok(String message) {
+        return new ResultData(HttpStatus.SUCCESS, message, null);
     }
 
     public static ResultData code(int code) {
-        return new ResultData(code, (String) null, (Object) null);
-    }
-
-    public ResultData setMsg(String msg) {
-        this.put("message", msg);
-        return this;
+        return new ResultData(code, null, null);
     }
 
     public static ResultData error() {
-        return new ResultData(CODE_ERROR, "操作失败,服务异常！", (Object) null);
+        return new ResultData(HttpStatus.ERROR, "操作失败,服务异常！", null);
     }
 
-    public static ResultData error(String msg) {
-        return new ResultData(CODE_ERROR, msg, (Object) null);
+    public static ResultData error(String message) {
+        return new ResultData(HttpStatus.ERROR, message, null);
     }
 
-    public static ResultData get(int code, String msg, Object data) {
-        return new ResultData(code, msg, data);
+    public static ResultData get(int code, String message, Object data) {
+        return new ResultData(code, message, data);
+    }
+
+    public String getMsg() {
+        return (String) this.get("message");
+    }
+
+    public ResultData setMsg(String message) {
+        this.put("message", message);
+        return this;
     }
 
     public String toString() {
-        return "{\"code\": " + this.getCode() + ", \"msg\": " + this.transValue(this.getMsg()) + ", \"data\": " + this.transValue(this.getData()) + "}";
+        return "{\"code\": " + this.getCode() + ", \"message\": " + this.transValue(this.getMsg()) + ", \"data\": " + this.transValue(this.getData()) + "}";
     }
 
     private String transValue(Object value) {

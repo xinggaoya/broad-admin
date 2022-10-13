@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.broad.system.mapper.SysDictDataMapper">
+
+    <resultMap type="com.broad.system.entity.SysDictData" id="SysDictDataMap">
+        <result property="dictCode" column="dict_code" jdbcType="INTEGER"/>
+        <result property="dictSort" column="dict_sort" jdbcType="INTEGER"/>
+        <result property="dictLabel" column="dict_label" jdbcType="VARCHAR"/>
+        <result property="dictValue" column="dict_value" jdbcType="VARCHAR"/>
+        <result property="dictType" column="dict_type" jdbcType="VARCHAR"/>
+        <result property="cssClass" column="css_class" jdbcType="VARCHAR"/>
+        <result property="listClass" column="list_class" jdbcType="VARCHAR"/>
+        <result property="isDefault" column="is_default" jdbcType="VARCHAR"/>
+        <result property="status" column="status" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="remark" column="remark" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!-- 批量插入 -->
+    <insert id="insertBatch" keyProperty="dictCode" useGeneratedKeys="true">
+        insert into db_template_database.sys_dict_data(dict_sort, dict_label, dict_value, dict_type, css_class,
+        list_class, is_default, status , create_time , update_time, remark)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.dictSort}, #{entity.dictLabel}, #{entity.dictValue}, #{entity.dictType}, #{entity.cssClass},
+            #{entity.listClass}, #{entity.isDefault}, #{entity.status}, #{entity.createTime},
+            #{entity.updateTime}, #{entity.remark})
+        </foreach>
+    </insert>
+    <!-- 批量插入或按主键更新 -->
+    <insert id="insertOrUpdateBatch" keyProperty="dictCode" useGeneratedKeys="true">
+        insert into db_template_database.sys_dict_data(dict_sort, dict_label, dict_value, dict_type, css_class,
+        list_class, is_default, status , create_time , update_time, remark)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.dictSort}, #{entity.dictLabel}, #{entity.dictValue}, #{entity.dictType}, #{entity.cssClass},
+            #{entity.listClass}, #{entity.isDefault}, #{entity.status}, #{entity.createTime},
+            #{entity.updateTime}, #{entity.remark})
+        </foreach>
+        on duplicate key update
+        dict_sort = values(dict_sort) , dict_label = values(dict_label) , dict_value = values(dict_value) , dict_type =
+        values(dict_type) , css_class = values(css_class) , list_class = values(list_class) , is_default =
+        values(is_default) , status = values(status) , create_time = values(create_time)
+        , update_time = values(update_time) , remark = values(remark)
+    </insert>
+
+</mapper>
+
