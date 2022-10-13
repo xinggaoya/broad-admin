@@ -1,7 +1,7 @@
 package com.broad.common.enums;
 
 import com.baomidou.mybatisplus.annotation.IEnum;
-import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
 
 /**
@@ -14,7 +14,7 @@ public enum BooleanEnum implements IEnum<String> {
     ONE("1", false),
     TRUE("0", true);
     private String value;
-    @JsonFormat
+    @JsonValue
     private Boolean desc;
 
     BooleanEnum(final String value, final Boolean desc) {
