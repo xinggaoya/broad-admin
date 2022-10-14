@@ -31,7 +31,7 @@ public class SaTokenConfigure implements WebMvcConfigurer {
                     SaRouter.match("/**").check(StpUtil::checkLogin);
                 }))
                 .addPathPatterns("/**")
-                .excludePathPatterns("/favicon.ico", "/**/*.js", "/**/*.css", "/swagger-resources", "/sysAdmin/login", "/doc.html");
+                .excludePathPatterns("/favicon.ico", "/**/*.js", "/**/*.css", "/swagger-resources", "/sysAdmin/login", "/doc.html", "/test/**");
     }
 
 }

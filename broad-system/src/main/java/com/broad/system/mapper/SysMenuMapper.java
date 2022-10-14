@@ -14,6 +14,15 @@ import java.util.List;
  */
 public interface SysMenuMapper extends BaseMapper<SysMenu> {
 
+
+    /**
+     * 根据父级id查询子菜单
+     *
+     * @param id 父级id
+     * @return 菜单列表
+     */
+    List<SysMenu> selectChildListById(@Param("id") Integer id);
+
     /**
      * 批量新增数据（MyBatis原生foreach方法）
      *

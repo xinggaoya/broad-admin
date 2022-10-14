@@ -112,17 +112,18 @@ public class SysMenu implements Serializable {
     @TableField(value = "update_time", fill = FieldFill.INSERT_UPDATE)
     private Date updateTime;
 
-    /**
-     * 父组件路径
-     */
-    @TableField(exist = false)
-    private String parentPath;
 
     /**
      * 子路由
      */
     @TableField(exist = false)
     private List<SysMenu> children;
+
+    /**
+     * 是否有子路由
+     */
+    @TableField(exist = false)
+    private BooleanEnum isLeaf;
 
 
 }

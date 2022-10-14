@@ -1,6 +1,5 @@
 package com.broad.system.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.broad.system.entity.SysMenu;
 import com.broad.system.mapper.SysMenuMapper;
@@ -28,8 +27,13 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
 
     @Override
     public List<SysMenu> selectAllByPage(SysMenu menu) {
-        LambdaQueryWrapper<SysMenu> queryWrapper = new LambdaQueryWrapper<>(menu);
-        return buildTree(this.baseMapper.selectList(queryWrapper));
+        menu.setParentId(0);
+        return this.baseMapper.selectChildListById(menu.getParentId());
+    }
+
+    @Override
+    public List<SysMenu> selectChildListById(SysMenu menu) {
+        return this.baseMapper.selectChildListById(menu.getMenuId());
     }
 
     @Override
@@ -68,7 +72,6 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         for (SysMenu menuNode : menuList) {
             if (menuNode.getParentId().equals(pNode.getMenuId())) {
                 SysMenu sysMenu = buildChilTree(menuNode, menuList);
-                sysMenu.setParentPath(pNode.getMenuUrl());
                 chilMenus.add(sysMenu);
             }
         }

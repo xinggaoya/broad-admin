@@ -1,7 +1,6 @@
 package com.broad.web.controller.system;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.broad.framework.web.controller.BaseController;
 import com.broad.framework.web.entity.ResultData;
 import com.broad.framework.web.page.TableDataInfo;
@@ -30,13 +29,25 @@ public class SysMenuController extends BaseController {
 
 
     /**
-     * 分页查询所有数据
+     * 分页查询父级菜单
      *
      * @return 所有数据
      */
     @GetMapping
     public TableDataInfo selectAllByPage(SysMenu sysMenu) {
+        startPage();
         return getDataTable(this.sysMenuService.selectAllByPage(sysMenu));
+    }
+
+    /**
+     * 通过父级菜单id查询子菜单
+     *
+     * @param sysMenu 主键
+     * @return 单条数据
+     */
+    @GetMapping("getMenuChild")
+    public ResultData selectChildListById(SysMenu sysMenu) {
+        return ResultData.success(this.sysMenuService.selectChildListById(sysMenu));
     }
 
     /**

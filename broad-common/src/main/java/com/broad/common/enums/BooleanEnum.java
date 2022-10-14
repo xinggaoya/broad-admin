@@ -1,6 +1,6 @@
 package com.broad.common.enums;
 
-import com.baomidou.mybatisplus.annotation.IEnum;
+import com.baomidou.mybatisplus.annotation.EnumValue;
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
 
@@ -10,14 +10,27 @@ import lombok.Getter;
  * @Description:
  */
 @Getter
-public enum BooleanEnum implements IEnum<String> {
-    ONE("1", false),
+public enum BooleanEnum {
+    /**
+     * 0
+     */
+    FALSE("1", false),
+    /**
+     * 1
+     */
     TRUE("0", true);
-    private String value;
+    /**
+     * 数据库存储值
+     */
+    @EnumValue
+    private final String value;
+    /**
+     * 描述
+     */
     @JsonValue
-    private Boolean desc;
+    private final Boolean desc;
 
-    BooleanEnum(final String value, final Boolean desc) {
+    BooleanEnum(String value, Boolean desc) {
         this.value = value;
         this.desc = desc;
     }
