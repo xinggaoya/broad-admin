@@ -1,7 +1,5 @@
 package com.broad.web.controller.system;
 
-import cn.dev33.satoken.annotation.SaCheckPermission;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.broad.framework.web.controller.BaseController;
 import com.broad.framework.web.entity.ResultData;
 import com.broad.framework.web.page.TableDataInfo;
@@ -35,10 +33,14 @@ public class SysDictDataController extends BaseController {
      * @return 所有数据
      */
     @GetMapping
-    @SaCheckPermission("sysDictData:list")
     public TableDataInfo selectAll(SysDictData sysDictData) {
         startPage();
-        return getDataTable(this.sysDictDataService.list(new QueryWrapper<>(sysDictData)));
+        return getDataTable(this.sysDictDataService.selectDictList(sysDictData));
+    }
+
+    @GetMapping("getDictDataByType")
+    public ResultData getDictDataByType(SysDictData sysDictData) {
+        return ResultData.success(this.sysDictDataService.selectDictList(sysDictData));
     }
 
     /**

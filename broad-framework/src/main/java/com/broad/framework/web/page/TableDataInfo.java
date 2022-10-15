@@ -72,11 +72,11 @@ public class TableDataInfo implements Serializable {
         this.code = code;
     }
 
-    public String getMsg() {
+    public String getMessage() {
         return message;
     }
 
-    public void setMsg(String msg) {
-        this.message = msg;
+    public void setMessage(String message) {
+        this.message = message;
     }
 }
