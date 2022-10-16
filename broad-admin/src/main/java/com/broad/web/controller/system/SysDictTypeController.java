@@ -39,6 +39,11 @@ public class SysDictTypeController extends BaseController {
         return getDataTable(this.sysDictTypeService.list(new QueryWrapper<>(sysDictType)));
     }
 
+    @GetMapping("/list")
+    public ResultData getDictTypeList(SysDictType sysDictType) {
+        return ResultData.success(this.sysDictTypeService.list(new QueryWrapper<>(sysDictType)));
+    }
+
     /**
      * 通过主键查询单条数据
      *

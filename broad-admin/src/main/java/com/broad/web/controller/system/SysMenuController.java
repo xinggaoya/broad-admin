@@ -27,7 +27,6 @@ public class SysMenuController extends BaseController {
     @Autowired
     private SysMenuService sysMenuService;
 
-
     /**
      * 分页查询父级菜单
      *

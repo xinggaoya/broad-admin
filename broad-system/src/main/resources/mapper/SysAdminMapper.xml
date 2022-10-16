@@ -10,13 +10,24 @@
 
     <select id="selectAll" resultType="com.broad.system.entity.SysAdmin">
         select ad.*,
-               acc.group_id as roleId,
-               ag.name      as groupName,
-               sd.dept_name as deptName
+        acc.group_id as roleId,
+        ag.name as groupName,
+        sd.dept_name as deptName
         from sys_admin ad
-                 left join sys_admin_group_access acc on ad.id = acc.uid
-                 left join sys_admin_group ag on acc.group_id = ag.id
-                 left join sys_dept sd on ad.dept_id = sd.dept_id
+        left join sys_admin_group_access acc on ad.id = acc.uid
+        left join sys_admin_group ag on acc.group_id = ag.id
+        left join sys_dept sd on ad.dept_id = sd.dept_id
+        <where>
+            <if test="userName != null and userName != ''">
+                and ad.user_name like concat('%', #{userName}, '%')
+            </if>
+            <if test="nickName != null and nickName != ''">
+                and ad.nick_name like concat('%', #{nickName}, '%')
+            </if>
+            <if test="deptId != null and deptId != ''">
+                and ad.dept_id = #{deptId}
+            </if>
+        </where>
     </select>
 
     <select id="selectAllByIds" resultType="com.broad.system.entity.SysAdmin">
