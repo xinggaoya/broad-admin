@@ -26,6 +26,15 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
         return buildTree(this.baseMapper.selectList(new LambdaQueryWrapper<>(sysDept)));
     }
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean insertDept(SysDept sysDept) {
+        if (sysDept.getParentId() == null) {
+            sysDept.setParentId(0L);
+        }
+        return this.save(sysDept);
+    }
+
 
     /**
      * 构建树形结构

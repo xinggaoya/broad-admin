@@ -3,7 +3,6 @@ package com.broad.system.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-
 import com.broad.common.exception.ServiceException;
 import com.broad.system.entity.SysAdminGroup;
 import com.broad.system.entity.SysAdminGroupAccess;
@@ -33,7 +32,7 @@ public class SysAdminGroupServiceImpl extends ServiceImpl<SysAdminGroupMapper, S
         List<SysAdminGroup> pageList = baseMapper.selectList(new QueryWrapper<>(sysAdminGroup));
         // 构建树形结构数据
 //        pageList.setRecords(buildTree(pageList.getRecords()));
-        return buildTree(pageList);
+        return pageList;
     }
 
     @Override

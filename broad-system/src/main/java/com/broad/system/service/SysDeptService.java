@@ -23,6 +23,9 @@ public interface SysDeptService extends IService<SysDept> {
     List<SysDept> selectAll(SysDept sysDept);
 
     @Transactional(rollbackFor = Exception.class)
+    boolean insertDept(SysDept sysDept);
+
+    @Transactional(rollbackFor = Exception.class)
     void deleteDept(List<Long> deptIds);
 }
 

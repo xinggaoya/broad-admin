@@ -51,6 +51,7 @@
             #{entity.updateTime})
         </foreach>
     </insert>
+
     <!-- 批量插入或按主键更新 -->
     <insert id="insertOrUpdateBatch" keyProperty="menuId" useGeneratedKeys="true">
         insert into db_template_database.sys_menu(parent_id, route_name, menu_name, menu_url, status, perme, icon,

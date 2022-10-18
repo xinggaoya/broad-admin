@@ -55,7 +55,7 @@ public class SysDeptController extends BaseController {
      */
     @PostMapping
     public ResultData insert(@RequestBody SysDept sysDept) {
-        return ResultData.success(this.sysDeptService.save(sysDept));
+        return ResultData.success(this.sysDeptService.insertDept(sysDept));
     }
 
     /**
