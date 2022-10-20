@@ -1,6 +1,6 @@
 package com.broad.system.service;
 
-import com.broad.system.entity.SysAdmin;
+import com.broad.system.entity.SysUser;
 
 import java.util.List;
 
@@ -10,5 +10,5 @@ import java.util.List;
  * @Description:
  */
 public interface SysOnlineService {
-    List<SysAdmin> getOnlineList();
+    List<SysUser> getOnlineList();
 }

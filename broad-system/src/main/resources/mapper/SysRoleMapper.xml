@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.broad.system.mapper.SysRoleMapper">
+
+    <resultMap type="com.broad.system.entity.SysRole" id="SysRoleMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="halfRules" column="half_rules" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="INTEGER"/>
+        <result property="updateTime" column="update_time" jdbcType="INTEGER"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!-- 批量插入 -->
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into sys_admin_group(pid, name, rules, half_rules, createtime, updatetime, status)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.pid}, #{entity.name}, #{entity.rules}, #{entity.halfRules}, #{entity.createtime},
+            #{entity.updatetime}, #{entity.status})
+        </foreach>
+    </insert>
+
+    <!-- 批量插入或按主键更新 -->
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into sys_admin_group(pid, name, rules, half_rules, createtime, updatetime, status)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.pid}, #{entity.name}, #{entity.rules}, #{entity.halfRules}, #{entity.createtime},
+            #{entity.updatetime}, #{entity.status})
+        </foreach>
+        on duplicate key update
+        pid = values(pid) , name = values(name) , rules = values(rules) , half_rules = values(half_rules) , createtime =
+        values(createtime) , updatetime = values(updatetime) , status = values(status)
+    </insert>
+
+</mapper>
+

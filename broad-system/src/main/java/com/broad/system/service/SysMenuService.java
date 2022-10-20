@@ -18,7 +18,7 @@ public interface SysMenuService extends IService<SysMenu> {
      *
      * @return 菜单列表
      */
-    List<SysMenu> selectAll();
+    List<SysMenu> findMenuByRole();
 
     /**
      * 分页查询父级菜单
@@ -36,6 +36,8 @@ public interface SysMenuService extends IService<SysMenu> {
      * @return 菜单列表
      */
     List<SysMenu> selectChildListById(SysMenu menu);
+
+    List<SysMenu> menuTree(SysMenu menu);
 
     int saveMenu(SysMenu entity);
 }

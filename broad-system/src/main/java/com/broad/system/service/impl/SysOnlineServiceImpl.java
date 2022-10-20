@@ -1,9 +1,9 @@
 package com.broad.system.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
-import com.broad.system.entity.SysAdmin;
-import com.broad.system.service.SysAdminService;
+import com.broad.system.entity.SysUser;
 import com.broad.system.service.SysOnlineService;
+import com.broad.system.service.SysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,10 +20,10 @@ import java.util.List;
 public class SysOnlineServiceImpl implements SysOnlineService {
 
     @Autowired
-    private SysAdminService sysAdminService;
+    private SysUserService sysAdminService;
 
     @Override
-    public List<SysAdmin> getOnlineList() {
+    public List<SysUser> getOnlineList() {
         List<Long> ids = new ArrayList<>();
         List<String> sessionIdList = StpUtil.searchSessionId("", -1, -1, false);
         sessionIdList.forEach(item -> {

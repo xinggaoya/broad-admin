@@ -1,5 +1,6 @@
 package com.broad.system.service.impl;
 
+import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.broad.system.entity.SysMenu;
 import com.broad.system.mapper.SysMenuMapper;
@@ -19,9 +20,10 @@ import java.util.List;
 @Service("sysMenuService")
 public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> implements SysMenuService {
 
+
     @Override
-    public List<SysMenu> selectAll() {
-        List<SysMenu> list = this.baseMapper.selectList(null);
+    public List<SysMenu> findMenuByRole() {
+        List<SysMenu> list = this.baseMapper.findMenuByRole(StpUtil.getLoginIdAsInt());
         return buildTree(list);
     }
 
@@ -34,6 +36,11 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     @Override
     public List<SysMenu> selectChildListById(SysMenu menu) {
         return this.baseMapper.selectChildListById(menu.getMenuId());
+    }
+
+    @Override
+    public List<SysMenu> menuTree(SysMenu menu) {
+        return buildTree(this.baseMapper.selectMenuTree());
     }
 
     @Override

@@ -85,7 +85,7 @@ public class SysJobController extends BaseController {
         } else if (!ScheduleUtils.whiteList(job.getInvokeTarget())) {
             return error("新增任务'" + job.getJobName() + "'失败，目标字符串不在白名单内");
         }
-        return toAjax(jobService.insertJob(job));
+        return toResult(jobService.insertJob(job));
     }
 
     /**
@@ -108,7 +108,7 @@ public class SysJobController extends BaseController {
         } else if (!ScheduleUtils.whiteList(job.getInvokeTarget())) {
             return error("修改任务'" + job.getJobName() + "'失败，目标字符串不在白名单内");
         }
-        return toAjax(jobService.updateJob(job));
+        return toResult(jobService.updateJob(job));
     }
 
     /**
@@ -120,7 +120,7 @@ public class SysJobController extends BaseController {
     public ResultData changeStatus(@RequestBody SysJob job) throws SchedulerException {
         SysJob newJob = jobService.selectJobById(job.getJobId());
         newJob.setStatus(job.getStatus());
-        return toAjax(jobService.changeStatus(newJob));
+        return toResult(jobService.changeStatus(newJob));
     }
 
     /**

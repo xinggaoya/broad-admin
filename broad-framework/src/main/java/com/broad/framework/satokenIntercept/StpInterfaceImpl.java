@@ -1,8 +1,8 @@
 package com.broad.framework.satokenIntercept;
 
 import cn.dev33.satoken.stp.StpInterface;
-import com.broad.system.entity.SysMenuRule;
-import com.broad.system.service.SysMenuRuleService;
+import com.broad.system.entity.SysMenu;
+import com.broad.system.service.SysRoleMenuService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -22,7 +22,7 @@ import java.util.List;
 public class StpInterfaceImpl implements StpInterface {
 
     @Autowired
-    private SysMenuRuleService sysMenuRuleService;
+    private SysRoleMenuService roleMenuService;
 
     /**
      * 返回一个账号所拥有的权限码集合
@@ -31,10 +31,10 @@ public class StpInterfaceImpl implements StpInterface {
     public List<String> getPermissionList(Object loginId, String loginType) {
         // 本list仅做模拟，实际项目中要根据具体业务逻辑来查询权限
         List<String> list = new ArrayList<>();
-
-        List<SysMenuRule> menuList = sysMenuRuleService.getRouteByAdminList(loginId);
-        for (SysMenuRule menu : menuList) {
-            list.add(menu.getName());
+        // 查询角色菜单
+        List<SysMenu> menuList = roleMenuService.findRoleMenu(Integer.parseInt(loginId.toString()));
+        for (SysMenu menu : menuList) {
+            list.add(menu.getPerme());
         }
         return list;
     }

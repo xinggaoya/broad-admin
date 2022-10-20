@@ -24,6 +24,16 @@ public interface SysMenuMapper extends BaseMapper<SysMenu> {
     List<SysMenu> selectChildListById(@Param("id") Integer id);
 
     /**
+     * 动态路由
+     *
+     * @param userId
+     * @return
+     */
+    List<SysMenu> findMenuByRole(@Param("userId") Integer userId);
+
+    List<SysMenu> selectMenuTree();
+
+    /**
      * 批量新增数据（MyBatis原生foreach方法）
      *
      * @param entities List<SysMenu> 实例对象列表

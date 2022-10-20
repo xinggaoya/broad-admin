@@ -30,6 +30,17 @@
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
     </resultMap>
 
+    <select id="findMenuByRole" resultType="com.broad.system.entity.SysMenu">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM sys_menu sm
+        <where>
+            sm.menu_id in (select menu_id from sys_role_menu where role_id in (select role_id from sys_user_role where
+            user_id = #{userId}))
+        </where>
+        ORDER BY sm.order_num ASC
+    </select>
+
     <select id="selectChildListById" resultType="com.broad.system.entity.SysMenu">
         select
         <include refid="Base_Column_List"/>
@@ -38,10 +49,37 @@
         where parent_id = #{id}
     </select>
 
+    <select id="selectMenuTree" resultType="com.broad.system.entity.SysMenu">
+        select
+        <include refid="Base_Column_List"/>
+        ,IF((select count(*) from sys_menu smu where smu.parent_id=sm.menu_id)>0,1,0) as isLeaf
+        from sys_menu sm
+        <where>
+            <if test="menuId!='' and menuId!=null">
+                and menu_id = #{menuId}
+            </if>
+            <if test="parentId!='' and parentId!=null">
+                and parent_id = #{parentId}
+            </if>
+            <if test="routeName!='' and routeName!=null">
+                and route_name = #{routeName}
+            </if>
+            <if test="menuName!='' and menuName!=null">
+                and menu_name = #{menuName}
+            </if>
+            <if test="menuUrl!='' and menuUrl!=null">
+                and menu_url = #{menuUrl}
+            </if>
+            <if test="status!='' and status!=null">
+                and status = #{status}
+            </if>
+        </where>
+    </select>
+
 
     <!-- 批量插入 -->
     <insert id="insertBatch" keyProperty="menuId" useGeneratedKeys="true">
-        insert into db_template_database.sys_menu(parent_id, route_name, menu_name, menu_url, status, perme, icon,
+        insert into sys_menu(parent_id, route_name, menu_name, menu_url, status, perme, icon,
         icon_prefix, local_file_path, order_num, cacheable, hidden, affix, remark, create_time, update_time)
         values
         <foreach collection="entities" item="entity" separator=",">
@@ -54,7 +92,7 @@
 
     <!-- 批量插入或按主键更新 -->
     <insert id="insertOrUpdateBatch" keyProperty="menuId" useGeneratedKeys="true">
-        insert into db_template_database.sys_menu(parent_id, route_name, menu_name, menu_url, status, perme, icon,
+        insert into sys_menu(parent_id, route_name, menu_name, menu_url, status, perme, icon,
         icon_prefix, local_file_path, order_num, cacheable, hidden, affix, remark, create_time, update_time)
         values
         <foreach collection="entities" item="entity" separator=",">

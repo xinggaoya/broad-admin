@@ -2,7 +2,6 @@ package com.broad.web.controller.job;
 
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
-
 import com.broad.common.enums.BusinessType;
 import com.broad.common.utils.poi.ExcelUtil;
 import com.broad.framework.annotation.Log;
@@ -67,7 +66,7 @@ public class SysJobLogController extends BaseController {
     @Log(description = "定时任务调度日志", businessType = BusinessType.DELETE)
     @DeleteMapping("/{jobLogIds}")
     public ResultData remove(@PathVariable Long[] jobLogIds) {
-        return toAjax(jobLogService.deleteJobLogByIds(jobLogIds));
+        return toResult(jobLogService.deleteJobLogByIds(jobLogIds));
     }
 
     /**

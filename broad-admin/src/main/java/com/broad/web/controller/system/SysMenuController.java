@@ -56,8 +56,8 @@ public class SysMenuController extends BaseController {
      */
     @GetMapping("getRouters")
     @SaCheckLogin
-    public ResultData selectAll() {
-        return ResultData.success(this.sysMenuService.selectAll());
+    public ResultData findMenuByRole() {
+        return ResultData.success(this.sysMenuService.findMenuByRole());
     }
 
     /**
@@ -80,6 +80,17 @@ public class SysMenuController extends BaseController {
     @PostMapping
     public ResultData insert(@RequestBody SysMenu sysMenu) {
         return ResultData.success(this.sysMenuService.saveMenu(sysMenu));
+    }
+
+    /**
+     * 获取树形角色菜单
+     *
+     * @param menu 实体对象
+     * @return 新增结果
+     */
+    @GetMapping("tree")
+    public ResultData tree(SysMenu menu) {
+        return ResultData.success(this.sysMenuService.menuTree(menu));
     }
 
 

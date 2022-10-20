@@ -5,7 +5,7 @@ import cn.dev33.satoken.stp.StpUtil;
 import com.broad.framework.web.controller.BaseController;
 import com.broad.framework.web.entity.ResultData;
 import com.broad.framework.web.page.TableDataInfo;
-import com.broad.system.entity.SysAdmin;
+import com.broad.system.entity.SysUser;
 import com.broad.system.service.SysOnlineService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,7 +36,7 @@ public class SysOnlineController extends BaseController {
 
     @PutMapping("/forceLogout")
     @SaCheckPermission("online:delete")
-    public ResultData forceLogout(SysAdmin sysAdmin) {
+    public ResultData forceLogout(SysUser sysAdmin) {
         StpUtil.kickout(sysAdmin.getId());
         return ResultData.ok();
     }

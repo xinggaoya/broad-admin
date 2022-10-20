@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.broad.system.mapper.SysRoleMenuMapper">
+
+
+    <sql id="Menu_Column_List">
+        sm
+        .
+        menu_id
+        , sm.parent_id, sm.route_name, sm.menu_name, sm.menu_url, sm.status, sm.perme, sm.icon,
+        sm.icon_prefix, sm.local_file_path, sm.order_num, sm.cacheable, sm.hidden, sm.affix, sm.remark, sm.create_time, sm.update_time
+    </sql>
+    <resultMap type="com.broad.system.entity.SysRoleMenu" id="SysRoleMenuMap">
+        <result property="roleId" column="role_id" jdbcType="VARCHAR"/>
+        <result property="menuId" column="menu_id" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!-- 批量插入 -->
+    <insert id="insertBatch" keyProperty="" useGeneratedKeys="true">
+        insert into sys_role_menu(role_id, menu_id)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.roleId}, #{entity.menuId})
+        </foreach>
+    </insert>
+    <!-- 批量插入或按主键更新 -->
+    <insert id="insertOrUpdateBatch" keyProperty="" useGeneratedKeys="true">
+        insert into sys_role_menu(role_id, menu_id)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.roleId}, #{entity.menuId})
+        </foreach>
+        on duplicate key update
+        role_id = values(role_id) , menu_id = values(menu_id)
+    </insert>
+    <select id="findRoleMenu" resultType="com.broad.system.entity.SysMenu">
+        SELECT
+        <include refid="Menu_Column_List"/>
+        FROM sys_menu sm
+        WHERE menu_id IN (
+        SELECT menu_id
+        FROM sys_role_menu
+        WHERE role_id = #{roleId}
+        )
+    </select>
+
+</mapper>
+

@@ -85,17 +85,17 @@ public class SysMenu implements Serializable {
      * 0缓存，1不缓存
      */
     @TableField(value = "cacheable")
-    private BooleanEnum cacheable;
+    private String cacheable;
     /**
      * 0显示，1不显示
      */
     @TableField(value = "hidden")
-    private BooleanEnum hidden;
+    private String hidden;
     /**
      * 0固定标题栏，1否
      */
     @TableField(value = "affix")
-    private BooleanEnum affix;
+    private String affix;
     /**
      * 备注
      */

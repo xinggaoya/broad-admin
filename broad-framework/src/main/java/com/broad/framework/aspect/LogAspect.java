@@ -6,8 +6,8 @@ import com.broad.common.constant.ExecutorConstant;
 import com.broad.common.utils.ip.IpAddressUtils;
 import com.broad.common.utils.ip.IpUtils;
 import com.broad.framework.annotation.Log;
-import com.broad.system.entity.SysAdminLog;
-import com.broad.system.service.SysAdminLogService;
+import com.broad.system.entity.SysUserLog;
+import com.broad.system.service.SysUserLogService;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -41,7 +41,7 @@ import java.util.Map;
 public class LogAspect {
 
     @Autowired
-    private SysAdminLogService sysAdminLogService;
+    private SysUserLogService sysAdminLogService;
 
     /**
      * web层切点
@@ -88,7 +88,7 @@ public class LogAspect {
         // TODO Auto-generated method stub
         // 获取ip地址
         String ip = IpUtils.getIpAddr(request);
-        SysAdminLog sysAdminLog = new SysAdminLog();
+        SysUserLog sysAdminLog = new SysUserLog();
         sysAdminLog.setLogDescription(logAnnotation.description());
         sysAdminLog.setLogTimeCost((double) timeCost);
         sysAdminLog.setLogIp(ip);
