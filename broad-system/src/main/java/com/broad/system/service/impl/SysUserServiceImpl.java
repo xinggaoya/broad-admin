@@ -34,10 +34,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     @Autowired
     private SaTokenDaoRedisJackson saTokenDaoRedisJackson;
-
     @Autowired
-    private SysUserRoleService sysUserRoleAccessService;
-
+    private SysUserRoleService userRoleService;
     @Autowired
     private BroadConfig broadConfig;
 
@@ -54,14 +52,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         sysAdmin.setSalt(uid);
         boolean res = this.save(sysAdmin);
         // 设置管理员角色
-//        if (res && sysAdmin.getRoleId() != null) {
-//            SysUser admin = this.getOne(new LambdaQueryWrapper<SysUser>().eq(SysUser::getUserName, sysAdmin.getUserName()));
-//
-//            SysUserRole sysUserRoleAccess = new SysUserRole();
-//            sysUserRoleAccess.setUserId(admin.getId());
-//            sysUserRoleAccess.setRoleId(sysAdmin.getRoleId());
-//            sysUserRoleAccessService.save(sysUserRoleAccess);
-//        }
+        if (res && sysAdmin.getRoleIds().size() > 0) {
+            userRoleService.insertUserRole(sysAdmin);
+        }
         return res ? 1 : 0;
     }
 
@@ -82,18 +75,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         }
         int res = baseMapper.updateById(sysAdmin);
         // 查询是否有角色
-//        if (res > 0 && sysAdmin.getRoleId() != null) {
-//            SysUserRole sysUserRoleAccess = sysUserRoleAccessService.getOne(
-//                    new LambdaQueryWrapper<SysUserRole>().eq(SysUserRole::getUserId,
-//                            sysAdmin.getId()).eq(SysUserRole::getRoleId, sysAdmin.getRoleId()));
-//            // 如果没有角色，则添加角色
-//            if (sysUserRoleAccess == null) {
-//                SysUserRole adminGroupAccess = new SysUserRole();
-//                adminGroupAccess.setUserId(sysAdmin.getId());
-//                adminGroupAccess.setRoleId(sysAdmin.getRoleId());
-//                sysUserRoleAccessService.save(adminGroupAccess);
-//            }
-//        }
+        if (sysAdmin.getRoleIds().size() > 0) {
+            userRoleService.insertUserRole(sysAdmin);
+        }
         return res;
     }
 

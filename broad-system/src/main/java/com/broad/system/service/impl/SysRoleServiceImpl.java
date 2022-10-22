@@ -20,11 +20,11 @@ import java.util.List;
  * @author XingGao
  * @since 2022 -07-13 09:53:11
  */
-@Service("sysUserRoleService")
+@Service("sysRoleService")
 public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> implements SysRoleService {
 
     @Autowired
-    private SysUserRoleMapper sysUserRoleAccessMapper;
+    private SysUserRoleMapper userRoleMapper;
 
     @Override
     public List<SysRole> selectAll(SysRole sysUserRole) {
@@ -48,7 +48,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
     @Override
     public int deleteUserRole(List<Long> idList) {
         // 检查该角色下是否有管理员，如果有则不能删除
-        List<SysUserRole> adminGroupAccesses = sysUserRoleAccessMapper.selectList(new LambdaQueryWrapper<SysUserRole>()
+        List<SysUserRole> adminGroupAccesses = userRoleMapper.selectList(new LambdaQueryWrapper<SysUserRole>()
                 .in(SysUserRole::getRoleId, idList));
         if (adminGroupAccesses.size() > 0) {
             throw new ServiceException("该角色下有管理员绑定，不能删除");

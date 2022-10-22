@@ -1,29 +1,37 @@
 package com.broad.system.mapper;
 
-
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.broad.system.entity.SysUserRole;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 /**
- * 管理权限分组表(SysUserRole)表数据库访问层
+ * (SysUserRole)表数据库访问层
  *
  * @author XingGao
- * @since 2022 -07-13 10:13:11
+ * @since 2022-10-21 01:03:47
  */
 @Mapper
 public interface SysUserRoleMapper extends BaseMapper<SysUserRole> {
 
     /**
-     * 通过ID查询数据
+     * 批量新增数据（MyBatis原生foreach方法）
      *
-     * @param adminId 主键
-     * @return 实例对象 sys admin group access
+     * @param entities List<SysUserRole> 实例对象列表
+     * @return 影响行数
      */
-    SysUserRole selectByAdminId(@Param("adminId") Object adminId);
+    int insertBatch(@Param("entities") List<SysUserRole> entities);
+
+    /**
+     * 批量新增或按主键更新数据（MyBatis原生foreach方法）
+     *
+     * @param entities List<SysUserRole> 实例对象列表
+     * @return 影响行数
+     * @throws org.springframework.jdbc.BadSqlGrammarException 入参是空List的时候会抛SQL语句错误的异常，请自行校验入参
+     */
+    int insertOrUpdateBatch(@Param("entities") List<SysUserRole> entities);
 
 }
-
-
 

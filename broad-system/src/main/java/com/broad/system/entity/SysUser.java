@@ -6,6 +6,7 @@ import lombok.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 管理员表(SysUser)实体类
@@ -125,6 +126,9 @@ public class SysUser implements Serializable {
 
     @TableField(exist = false)
     private String codeValue;
+
+    @TableField(exist = false)
+    private List<Integer> roleIds;
 
     @TableField(exist = false)
     private String tokenValue;

@@ -1,39 +1,35 @@
 package com.broad.system.entity;
 
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
 
 /**
- * 管理权限分组表(SysUserRole)实体类
+ * (SysUserRole)表实体类
  *
  * @author XingGao
- * @since 2022 -07-13 10:13:11
+ * @since 2022-10-21 01:03:46
  */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper = false)
 @TableName("sys_user_role")
-public class SysUserRole extends Model<SysUserRole> {
+public class SysUserRole implements Serializable {
 
-    /**
-     * 管理员ID
-     */
-    @TableId(value = "user_id", type = IdType.AUTO)
+    private static final long serialVersionUID = -93280302663195627L;
+
+
+    @TableField(value = "user_id")
     private Integer userId;
-
-    /**
-     * 分组ID
-     */
     @TableField(value = "role_id")
     private Integer roleId;
-
 
 }
 
