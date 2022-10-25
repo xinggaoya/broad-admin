@@ -22,6 +22,11 @@ import java.util.stream.Collectors;
 public class SysUserRoleServiceImpl extends ServiceImpl<SysUserRoleMapper, SysUserRole> implements SysUserRoleService {
 
     @Override
+    public List<Integer> selectUserRoleIds(Long userId) {
+        return this.list(new QueryWrapper<SysUserRole>().lambda().eq(SysUserRole::getUserId, userId)).stream().map(SysUserRole::getRoleId).collect(Collectors.toList());
+    }
+
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public void insertUserRole(SysUser user) {
         this.remove(new QueryWrapper<SysUserRole>().lambda().eq(SysUserRole::getUserId, user.getId()));

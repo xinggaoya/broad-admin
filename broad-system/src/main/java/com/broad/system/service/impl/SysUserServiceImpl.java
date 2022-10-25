@@ -82,6 +82,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Object administratorLogin(SysUser sysAdmin, HttpServletRequest request) {
 
         if (sysAdmin.getUserName() == null || sysAdmin.getPassword() == null) {

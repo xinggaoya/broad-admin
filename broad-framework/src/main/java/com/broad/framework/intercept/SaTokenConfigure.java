@@ -1,4 +1,4 @@
-package com.broad.framework.satokenIntercept;
+package com.broad.framework.intercept;
 
 import cn.dev33.satoken.interceptor.SaInterceptor;
 import cn.dev33.satoken.router.SaRouter;
@@ -31,7 +31,9 @@ public class SaTokenConfigure implements WebMvcConfigurer {
                     SaRouter.match("/**").check(StpUtil::checkLogin);
                 }))
                 .addPathPatterns("/**")
-                .excludePathPatterns("/favicon.ico", "/**/*.js", "/**/*.css", "/swagger-resources", "/sysAdmin/login", "/doc.html", "/test/**");
+                .excludePathPatterns("/favicon.ico", "/**/*.js", "/**/*.css",
+                        "/swagger-resources", "/sysAdmin/login", "/doc.html", "/test/**"
+                        , "/druid/**");
     }
 
 }

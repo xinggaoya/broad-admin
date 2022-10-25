@@ -15,11 +15,18 @@
         <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
     </resultMap>
 
+    <sql id="key">
+        sul
+        .
+        log_id
+        , sul.log_description, sul.log_time_cost, sul.log_url, sul.log_http_method, sul.log_ip_address, sul.log_params, sul.log_result, sul.log_method_type, sul.create_time
+    </sql>
+
     <select id="selectAll" resultType="com.broad.system.entity.SysUserLog">
-        SELECT *, sys_user.user_name adminName
-        FROM sys_admin_log
-                 left join sys_user on sys_user.id = sys_admin_log.admin_id
-        ORDER BY sys_admin_log.create_time DESC
+        SELECT<include refid="key"/>, su.user_name adminName
+        FROM sys_user_log sul
+        left join sys_user su on su.id = sul.admin_id
+        ORDER BY sul.create_time DESC
     </select>
 </mapper>
 

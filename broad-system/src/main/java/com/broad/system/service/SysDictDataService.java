@@ -17,7 +17,7 @@ public interface SysDictDataService extends IService<SysDictData> {
      * 查询字典数据
      *
      * @param dictData 字典数据信息
-     * @return 字典数据集合信息
+     * @return 字典数据集合信息 做了缓存
      */
     List<SysDictData> selectDictList(SysDictData dictData);
 }

@@ -6,7 +6,7 @@
         sm
         .
         menu_id
-        , sm.parent_id, sm.route_name, sm.menu_name, sm.menu_url, sm.status, sm.perme, sm.icon,
+        , sm.parent_id, sm.route_name, sm.menu_name, sm.menu_url,sm.iframe_url, sm.status, sm.perme, sm.icon,
         sm.icon_prefix, sm.local_file_path, sm.order_num, sm.cacheable, sm.hidden, sm.affix, sm.remark, sm.create_time, sm.update_time
     </sql>
 
@@ -16,6 +16,7 @@
         <result property="routeName" column="route_name" jdbcType="VARCHAR"/>
         <result property="menuName" column="menu_name" jdbcType="VARCHAR"/>
         <result property="menuUrl" column="menu_url" jdbcType="VARCHAR"/>
+        <result property="iframeUrl" column="iframe_url" jdbcType="VARCHAR"/>
         <result property="status" column="status" jdbcType="VARCHAR"/>
         <result property="perme" column="perme" jdbcType="VARCHAR"/>
         <result property="icon" column="icon" jdbcType="VARCHAR"/>

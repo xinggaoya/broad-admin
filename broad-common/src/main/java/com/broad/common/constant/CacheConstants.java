@@ -30,4 +30,5 @@ public class CacheConstants {
      * 路由缓存时间 （分钟）
      */
     public final static long ROUTE_TIME = 60 * 24;
+
 }

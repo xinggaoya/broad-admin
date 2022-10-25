@@ -46,8 +46,8 @@ spring:
       # 配置监控服务器
       stat-view-servlet:
         enabled: true
-        login-username: druid
-        login-password: druid
+        login-username: root
+        login-password: xinggaocode
         reset-enable: false
         url-pattern: /druid/*
         # 添加IP白名单

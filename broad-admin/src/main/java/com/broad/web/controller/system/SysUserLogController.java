@@ -38,7 +38,7 @@ public class SysUserLogController extends BaseController {
      * @return 所有数据 table data info
      */
     @GetMapping
-    @SaCheckPermission("sys:adminLog:list")
+    @SaCheckPermission("monitor:log:list")
     public TableDataInfo selectAll(SysUserLog sysAdminLog) {
         startPage();
         return getDataTable(this.sysAdminLogService.selectAll(sysAdminLog));
@@ -51,7 +51,7 @@ public class SysUserLogController extends BaseController {
      * @return 单条数据 result data
      */
     @GetMapping("{id}")
-    @SaCheckPermission("sys:adminLog:list")
+    @SaCheckPermission("monitor:log:list")
     public ResultData selectOne(@PathVariable Serializable id) {
         return ResultData.success(this.sysAdminLogService.getById(id));
     }
@@ -75,7 +75,7 @@ public class SysUserLogController extends BaseController {
      * @return 修改结果 result data
      */
     @PutMapping
-    @SaCheckPermission("sys:adminLog:update")
+    @SaCheckPermission("monitor:log:update")
     @Log(description = "修改管理员日志", businessType = BusinessType.UPDATE)
     public ResultData update(@RequestBody SysUserLog sysAdminLog) {
         return ResultData.success(this.sysAdminLogService.updateById(sysAdminLog));
@@ -88,7 +88,7 @@ public class SysUserLogController extends BaseController {
      * @return 删除结果 result data
      */
     @DeleteMapping
-    @SaCheckPermission("sys:adminLog:delete")
+    @SaCheckPermission("monitor:log:delete")
     @Log(description = "删除管理员日志", businessType = BusinessType.DELETE)
     public ResultData delete(@RequestParam("idList") List<Long> idList) {
         return ResultData.success(this.sysAdminLogService.removeByIds(idList));

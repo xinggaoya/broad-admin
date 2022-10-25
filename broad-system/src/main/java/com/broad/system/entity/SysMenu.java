@@ -52,6 +52,11 @@ public class SysMenu implements Serializable {
     @TableField(value = "menu_url")
     private String menuUrl;
     /**
+     * 菜单路径
+     */
+    @TableField(value = "iframe_url")
+    private String iframeUrl;
+    /**
      * 0正常，1禁用
      */
     @TableField(value = "status")

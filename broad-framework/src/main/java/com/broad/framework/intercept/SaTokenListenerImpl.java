@@ -1,4 +1,4 @@
-package com.broad.framework.satokenIntercept;
+package com.broad.framework.intercept;
 
 import cn.dev33.satoken.listener.SaTokenListener;
 import cn.dev33.satoken.stp.SaLoginModel;
