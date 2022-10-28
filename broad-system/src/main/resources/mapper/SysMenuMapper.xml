@@ -10,6 +10,7 @@
         sm.icon_prefix, sm.local_file_path, sm.order_num, sm.cacheable, sm.hidden, sm.affix, sm.remark, sm.create_time, sm.update_time
     </sql>
 
+
     <resultMap type="com.broad.system.entity.SysMenu" id="SysMenuMap">
         <result property="menuId" column="menu_id" jdbcType="INTEGER"/>
         <result property="parentId" column="parent_id" jdbcType="INTEGER"/>
@@ -76,6 +77,13 @@
             </if>
         </where>
     </select>
+
+    <delete id="deleteChildMenu">
+        delete from sys_menu where parent_id in
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
 
 
     <!-- 批量插入 -->

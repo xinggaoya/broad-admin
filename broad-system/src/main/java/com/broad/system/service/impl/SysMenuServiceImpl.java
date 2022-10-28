@@ -1,10 +1,14 @@
 package com.broad.system.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.broad.system.entity.SysMenu;
+import com.broad.system.entity.SysRoleMenu;
 import com.broad.system.mapper.SysMenuMapper;
 import com.broad.system.service.SysMenuService;
+import com.broad.system.service.SysRoleMenuService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +23,9 @@ import java.util.List;
  */
 @Service("sysMenuService")
 public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> implements SysMenuService {
+
+    @Autowired
+    private SysRoleMenuService roleMenuService;
 
 
     @Override
@@ -100,6 +107,18 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
             }
         }
         return rootMenuLists;
+    }
+
+    /**
+     * 删除菜单和下级菜单
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public int deleteMenu(List<Long> idList) {
+        this.baseMapper.deleteBatchIds(idList);
+        roleMenuService.remove(new LambdaUpdateWrapper<SysRoleMenu>()
+                .in(SysRoleMenu::getMenuId, idList));
+        return this.baseMapper.deleteChildMenu(idList);
     }
 
 }

@@ -113,7 +113,7 @@ public class SysMenuController extends BaseController {
      */
     @DeleteMapping
     public ResultData delete(@RequestParam("idList") List<Long> idList) {
-        return ResultData.success(this.sysMenuService.removeByIds(idList));
+        return ResultData.success(this.sysMenuService.deleteMenu(idList));
     }
 }
 

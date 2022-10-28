@@ -40,5 +40,13 @@ public interface SysMenuService extends IService<SysMenu> {
     List<SysMenu> menuTree(SysMenu menu);
 
     int saveMenu(SysMenu entity);
+
+    /**
+     * 删除菜单
+     *
+     * @param idList 菜单id
+     * @return 结果
+     */
+    int deleteMenu(List<Long> idList);
 }
 

@@ -31,7 +31,19 @@ public interface SysMenuMapper extends BaseMapper<SysMenu> {
      */
     List<SysMenu> findMenuByRole(@Param("userId") Integer userId);
 
+    /**
+     * 查询菜单树
+     *
+     * @return
+     */
     List<SysMenu> selectMenuTree();
+
+    /**
+     * 删除菜单和下级菜单
+     *
+     * @param menuIds
+     */
+    int deleteChildMenu(@Param("ids") List<Long> menuIds);
 
     /**
      * 批量新增数据（MyBatis原生foreach方法）
