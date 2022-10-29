@@ -1,6 +1,8 @@
 package com.broad.web.controller.system;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.broad.common.enums.BusinessType;
+import com.broad.framework.annotation.Log;
 import com.broad.framework.web.controller.BaseController;
 import com.broad.framework.web.entity.ResultData;
 import com.broad.framework.web.page.TableDataInfo;
@@ -57,6 +59,7 @@ public class SysRoleDeptController extends BaseController {
      * @return 新增结果
      */
     @PostMapping
+    @Log(description = "新增部门角色", businessType = BusinessType.INSERT)
     public ResultData insert(@RequestBody SysRoleDept sysRoleDept) {
         return ResultData.success(this.sysRoleDeptService.save(sysRoleDept));
     }
@@ -68,6 +71,7 @@ public class SysRoleDeptController extends BaseController {
      * @return 修改结果
      */
     @PutMapping
+    @Log(description = "修改部门角色", businessType = BusinessType.UPDATE)
     public ResultData update(@RequestBody SysRoleDept sysRoleDept) {
         return ResultData.success(this.sysRoleDeptService.updateById(sysRoleDept));
     }
@@ -79,6 +83,7 @@ public class SysRoleDeptController extends BaseController {
      * @return 删除结果
      */
     @DeleteMapping
+    @Log(description = "删除部门角色", businessType = BusinessType.DELETE)
     public ResultData delete(@RequestParam("idList") List<Long> idList) {
         return ResultData.success(this.sysRoleDeptService.removeByIds(idList));
     }

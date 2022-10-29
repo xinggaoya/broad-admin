@@ -1,6 +1,8 @@
 package com.broad.web.controller.system;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.broad.common.enums.BusinessType;
+import com.broad.framework.annotation.Log;
 import com.broad.framework.web.controller.BaseController;
 import com.broad.framework.web.entity.ResultData;
 import com.broad.system.entity.SysRoleMenu;
@@ -9,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.Serializable;
-import java.util.List;
 
 /**
  * 管理权限分组表(SysRoleMenu)表控制层
@@ -55,6 +56,7 @@ public class SysRoleMenuController extends BaseController {
      * @return 新增结果
      */
     @PostMapping
+    @Log(description = "新增角色菜单", businessType = BusinessType.INSERT)
     public ResultData insert(@RequestBody SysRoleMenu sysRoleMenu) {
         return toResult(this.sysRoleMenuService.addRoleMenu(sysRoleMenu));
     }
@@ -66,19 +68,9 @@ public class SysRoleMenuController extends BaseController {
      * @return 修改结果
      */
     @PutMapping
+    @Log(description = "修改角色菜单", businessType = BusinessType.UPDATE)
     public ResultData update(@RequestBody SysRoleMenu sysRoleMenu) {
         return ResultData.success(this.sysRoleMenuService.updateById(sysRoleMenu));
-    }
-
-    /**
-     * 删除数据
-     *
-     * @param idList 主键结合
-     * @return 删除结果
-     */
-    @DeleteMapping
-    public ResultData delete(@RequestParam("idList") List<Long> idList) {
-        return ResultData.success(this.sysRoleMenuService.removeByIds(idList));
     }
 }
 

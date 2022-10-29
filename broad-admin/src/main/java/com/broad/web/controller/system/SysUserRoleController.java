@@ -1,6 +1,8 @@
 package com.broad.web.controller.system;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import com.broad.common.enums.BusinessType;
+import com.broad.framework.annotation.Log;
 import com.broad.framework.web.controller.BaseController;
 import com.broad.framework.web.entity.ResultData;
 import com.broad.system.entity.SysUserRole;
@@ -47,6 +49,7 @@ public class SysUserRoleController extends BaseController {
      */
     @PostMapping
     @SaCheckPermission("sys:user:add")
+    @Log(description = "新增用户角色", businessType = BusinessType.INSERT)
     public ResultData insert(@RequestBody SysUserRole sysUserRole) {
         return ResultData.success(this.sysUserRoleService.save(sysUserRole));
     }
@@ -59,6 +62,7 @@ public class SysUserRoleController extends BaseController {
      */
     @PutMapping
     @SaCheckPermission("sys:user:update")
+    @Log(description = "修改用户角色", businessType = BusinessType.UPDATE)
     public ResultData update(@RequestBody SysUserRole sysUserRole) {
         return ResultData.success(this.sysUserRoleService.updateById(sysUserRole));
     }
@@ -71,6 +75,7 @@ public class SysUserRoleController extends BaseController {
      */
     @DeleteMapping
     @SaCheckPermission("sys:user:delete")
+    @Log(description = "删除用户角色", businessType = BusinessType.DELETE)
     public ResultData delete(@RequestParam("idList") List<Long> idList) {
         return ResultData.success(this.sysUserRoleService.removeByIds(idList));
     }

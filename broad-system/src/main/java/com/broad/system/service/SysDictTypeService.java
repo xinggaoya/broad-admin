@@ -11,5 +11,12 @@ import com.broad.system.entity.SysDictType;
  */
 public interface SysDictTypeService extends IService<SysDictType> {
 
+    /**
+     * 根据id删除字典类型和下级字典数据
+     *
+     * @param id
+     * @return
+     */
+    boolean deleteDictTypeById(Long id);
 }
 

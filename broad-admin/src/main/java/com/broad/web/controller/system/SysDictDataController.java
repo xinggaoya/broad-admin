@@ -1,5 +1,8 @@
 package com.broad.web.controller.system;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
+import com.broad.common.enums.BusinessType;
+import com.broad.framework.annotation.Log;
 import com.broad.framework.web.controller.BaseController;
 import com.broad.framework.web.entity.ResultData;
 import com.broad.framework.web.page.TableDataInfo;
@@ -33,12 +36,14 @@ public class SysDictDataController extends BaseController {
      * @return 所有数据
      */
     @GetMapping
+    @SaCheckPermission("sys:dict:list")
     public TableDataInfo selectAll(SysDictData sysDictData) {
         startPage();
         return getDataTable(this.sysDictDataService.selectDictList(sysDictData));
     }
 
     @GetMapping("getDictDataByType")
+    @SaCheckPermission("sys:dict:list")
     public ResultData getDictDataByType(SysDictData sysDictData) {
         return ResultData.success(this.sysDictDataService.selectDictList(sysDictData));
     }
@@ -50,6 +55,7 @@ public class SysDictDataController extends BaseController {
      * @return 单条数据
      */
     @GetMapping("{id}")
+    @SaCheckPermission("sys:dict:list")
     public ResultData selectOne(@PathVariable Serializable id) {
         return ResultData.success(this.sysDictDataService.getById(id));
     }
@@ -61,6 +67,8 @@ public class SysDictDataController extends BaseController {
      * @return 新增结果
      */
     @PostMapping
+    @SaCheckPermission("sys:dict:add")
+    @Log(description = "新增字典数据", businessType = BusinessType.INSERT)
     public ResultData insert(@RequestBody SysDictData sysDictData) {
         return ResultData.success(this.sysDictDataService.save(sysDictData));
     }
@@ -72,6 +80,8 @@ public class SysDictDataController extends BaseController {
      * @return 修改结果
      */
     @PutMapping
+    @SaCheckPermission("sys:dict:update")
+    @Log(description = "修改字典数据", businessType = BusinessType.UPDATE)
     public ResultData update(@RequestBody SysDictData sysDictData) {
         return ResultData.success(this.sysDictDataService.updateById(sysDictData));
     }
@@ -83,6 +93,8 @@ public class SysDictDataController extends BaseController {
      * @return 删除结果
      */
     @DeleteMapping
+    @SaCheckPermission("sys:dict:delete")
+    @Log(description = "删除字典数据", businessType = BusinessType.DELETE)
     public ResultData delete(@RequestParam("idList") List<Long> idList) {
         return ResultData.success(this.sysDictDataService.removeByIds(idList));
     }
