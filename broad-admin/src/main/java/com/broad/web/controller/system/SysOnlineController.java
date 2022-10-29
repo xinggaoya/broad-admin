@@ -8,8 +8,8 @@ import com.broad.framework.web.page.TableDataInfo;
 import com.broad.system.entity.SysUser;
 import com.broad.system.service.SysOnlineService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -34,7 +34,7 @@ public class SysOnlineController extends BaseController {
         return getDataTable(sysOnlineService.getOnlineList());
     }
 
-    @PutMapping("/forceLogout")
+    @DeleteMapping("/forceLogout")
     @SaCheckPermission("online:delete")
     public ResultData forceLogout(SysUser sysAdmin) {
         StpUtil.kickout(sysAdmin.getId());

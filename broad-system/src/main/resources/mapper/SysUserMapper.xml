@@ -3,39 +3,38 @@
 <mapper namespace="com.broad.system.mapper.SysUserMapper">
 
 
-    <sql id="item">
+    <sql id="key">
+        su
+        .
         id
-        ,user_name,nick_name,avatar,email,mobile,last_ip,last_logintime,dept_id,last_loginip,password,salt,motto,create_time,update_time,user_status
+        , su.user_name, su.password, su.salt, su.email, su.mobile, su.user_status, su.create_time, su.update_time, su.dept_id, su.avatar
+            ,su.last_logintime, su.last_loginip ,su.last_ip
     </sql>
 
     <select id="selectAll" resultType="com.broad.system.entity.SysUser">
-        select ad.*,
+        select<include refid="key"/>,
         sd.dept_name as deptName
-        from sys_user ad
-        left join sys_dept sd on ad.dept_id = sd.dept_id
+        from sys_user su
+        left join sys_dept sd on su.dept_id = sd.dept_id
         <where>
             <if test="userName != null and userName != ''">
-                and ad.user_name like concat('%', #{userName}, '%')
+                and su.user_name like concat('%', #{userName}, '%')
             </if>
             <if test="nickName != null and nickName != ''">
-                and ad.nick_name like concat('%', #{nickName}, '%')
+                and su.nick_name like concat('%', #{nickName}, '%')
             </if>
             <if test="deptId != null and deptId != ''">
-                and ad.dept_id = #{deptId}
+                and su.dept_id = #{deptId}
             </if>
         </where>
     </select>
 
     <select id="selectAllByIds" resultType="com.broad.system.entity.SysUser">
-        select ad.*,
-        acc.group_id as roleId,
-        ag.name as groupName,
+        select<include refid="key"/>,
         sd.dept_name as deptName
-        from sys_user ad
-        left join sys_admin_group_access acc on ad.id = acc.uid
-        left join sys_admin_group ag on acc.group_id = ag.id
-        left join sys_dept sd on ad.dept_id = sd.dept_id
-        where ad.id in
+        from sys_user su
+        left join sys_dept sd on su.dept_id = sd.dept_id
+        where su.id in
         <foreach collection="ids" item="id" open="(" separator="," close=")">
             #{id}
         </foreach>

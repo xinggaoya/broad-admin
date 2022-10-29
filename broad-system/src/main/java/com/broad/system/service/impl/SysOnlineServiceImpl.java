@@ -30,6 +30,10 @@ public class SysOnlineServiceImpl implements SysOnlineService {
             List<String> names = Arrays.asList(item.split(":"));
             ids.add(Long.valueOf(names.get(3)));
         });
-        return sysAdminService.getAdminByIds(ids);
+        List<SysUser> sysAdminList = sysAdminService.getAdminByIds(ids);
+        for (SysUser sysAdmin : sysAdminList) {
+            sysAdmin.setTokenValue(StpUtil.getTokenValueByLoginId(sysAdmin.getId()));
+        }
+        return sysAdminList;
     }
 }

@@ -19,7 +19,7 @@
         sul
         .
         log_id
-        , sul.log_description, sul.log_time_cost, sul.log_url, sul.log_http_method, sul.log_ip_address, sul.log_params, sul.log_result, sul.log_method_type, sul.create_time
+        , sul.log_description, sul.log_time_cost, sul.log_url, sul.log_http_method,sul.log_ip, sul.log_ip_address, sul.log_params, sul.log_result, sul.log_method_type, sul.create_time
     </sql>
 
     <select id="selectAll" resultType="com.broad.system.entity.SysUserLog">
