@@ -1,6 +1,7 @@
 package com.broad.web.controller.system;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.broad.common.enums.BusinessType;
 import com.broad.framework.annotation.Log;
 import com.broad.framework.web.controller.BaseController;
@@ -39,7 +40,7 @@ public class SysDictDataController extends BaseController {
     @SaCheckPermission("sys:dict:list")
     public TableDataInfo selectAll(SysDictData sysDictData) {
         startPage();
-        return getDataTable(this.sysDictDataService.selectDictList(sysDictData));
+        return getDataTable(this.sysDictDataService.list(new LambdaQueryWrapper<>(sysDictData)));
     }
 
     @GetMapping("getDictDataByType")
@@ -70,7 +71,8 @@ public class SysDictDataController extends BaseController {
     @SaCheckPermission("sys:dict:add")
     @Log(description = "新增字典数据", businessType = BusinessType.INSERT)
     public ResultData insert(@RequestBody SysDictData sysDictData) {
-        return ResultData.success(this.sysDictDataService.save(sysDictData));
+        this.sysDictDataService.insertDictData(sysDictData);
+        return ResultData.ok();
     }
 
     /**
@@ -83,7 +85,8 @@ public class SysDictDataController extends BaseController {
     @SaCheckPermission("sys:dict:update")
     @Log(description = "修改字典数据", businessType = BusinessType.UPDATE)
     public ResultData update(@RequestBody SysDictData sysDictData) {
-        return ResultData.success(this.sysDictDataService.updateById(sysDictData));
+        this.sysDictDataService.updateDictData(sysDictData);
+        return ResultData.ok();
     }
 
     /**
@@ -96,7 +99,8 @@ public class SysDictDataController extends BaseController {
     @SaCheckPermission("sys:dict:delete")
     @Log(description = "删除字典数据", businessType = BusinessType.DELETE)
     public ResultData delete(@RequestParam("idList") List<Long> idList) {
-        return ResultData.success(this.sysDictDataService.removeByIds(idList));
+        this.sysDictDataService.deleteDictDataById(SysDictData.builder().dictCode(idList.get(0)).build());
+        return ResultData.ok();
     }
 }
 

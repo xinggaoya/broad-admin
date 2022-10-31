@@ -2,6 +2,7 @@ package com.broad.system.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.broad.system.entity.SysDictData;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -20,5 +21,14 @@ public interface SysDictDataService extends IService<SysDictData> {
      * @return 字典数据集合信息 做了缓存
      */
     List<SysDictData> selectDictList(SysDictData dictData);
+
+    @Transactional(rollbackFor = Exception.class)
+    void insertDictData(SysDictData dictData);
+
+    @Transactional(rollbackFor = Exception.class)
+    void updateDictData(SysDictData dictData);
+
+    @Transactional(rollbackFor = Exception.class)
+    void deleteDictDataById(SysDictData dictData);
 }
 

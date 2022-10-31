@@ -91,7 +91,7 @@ public class SysJobController extends BaseController {
     /**
      * 修改定时任务
      */
-    @SaCheckPermission("job:edit")
+    @SaCheckPermission("job:update")
     @Log(description = "修改定时任务", businessType = BusinessType.UPDATE)
     @PutMapping
     public ResultData edit(@RequestBody SysJob job) throws SchedulerException, TaskException {
@@ -114,7 +114,7 @@ public class SysJobController extends BaseController {
     /**
      * 定时任务状态修改
      */
-    @SaCheckPermission("job:edit")
+    @SaCheckPermission("job:update")
     @Log(description = "修改定时任务状态", businessType = BusinessType.UPDATE)
     @PutMapping("/changeStatus")
     public ResultData changeStatus(@RequestBody SysJob job) throws SchedulerException {
@@ -126,7 +126,7 @@ public class SysJobController extends BaseController {
     /**
      * 定时任务立即执行一次
      */
-    @SaCheckPermission("job:edit")
+    @SaCheckPermission("job:update")
     @Log(description = "执行定时任务", businessType = BusinessType.UPDATE)
     @PutMapping("/run")
     public ResultData run(@RequestBody SysJob job) throws SchedulerException {

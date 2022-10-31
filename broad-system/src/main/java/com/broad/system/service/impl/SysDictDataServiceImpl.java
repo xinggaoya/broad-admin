@@ -10,6 +10,7 @@ import com.broad.system.mapper.SysDictDataMapper;
 import com.broad.system.service.SysDictDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -34,6 +35,30 @@ public class SysDictDataServiceImpl extends ServiceImpl<SysDictDataMapper, SysDi
             redisService.setCacheObject(Constants.SYS_DICT_KEY + dictData.getDictType(), dictDataList, CacheConstants.EXPIRATION);
             return dictDataList;
         }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void insertDictData(SysDictData dictData) {
+        this.save(dictData);
+        redisService.setCacheObject(Constants.SYS_DICT_KEY + dictData.getDictType(), this.list(new LambdaQueryWrapper<SysDictData>()
+                .eq(SysDictData::getDictType, dictData.getDictType())), CacheConstants.EXPIRATION);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateDictData(SysDictData dictData) {
+        this.updateById(dictData);
+        redisService.setCacheObject(Constants.SYS_DICT_KEY + dictData.getDictType(), this.list(new LambdaQueryWrapper<SysDictData>()
+                .eq(SysDictData::getDictType, dictData.getDictType())), CacheConstants.EXPIRATION);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteDictDataById(SysDictData dictData) {
+        this.removeById(dictData.getDictCode());
+        redisService.setCacheObject(Constants.SYS_DICT_KEY + dictData.getDictType(), this.list(new LambdaQueryWrapper<SysDictData>()
+                .eq(SysDictData::getDictType, dictData.getDictType())), CacheConstants.EXPIRATION);
     }
 }
 

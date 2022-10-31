@@ -1,6 +1,5 @@
 package com.broad.job.entity;
 
-
 import com.broad.common.annotation.Excel;
 import com.broad.common.constant.ScheduleConstants;
 import com.broad.common.utils.StringUtils;
@@ -11,6 +10,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -18,7 +18,7 @@ import java.util.Date;
  *
  * @author XingGao
  */
-public class SysJob {
+public class SysJob implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
