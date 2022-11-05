@@ -69,6 +69,17 @@ public class SysJob implements Serializable {
     @Excel(name = "任务状态", readConverterExp = "0=正常,1=暂停")
     private String status;
 
+    @Excel(name = "备注")
+    private String remark;
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
     public Long getJobId() {
         return jobId;
     }
