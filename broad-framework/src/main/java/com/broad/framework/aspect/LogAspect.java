@@ -3,7 +3,6 @@ package com.broad.framework.aspect;
 import cn.dev33.satoken.stp.StpUtil;
 import com.alibaba.fastjson2.JSON;
 import com.broad.common.constant.ExecutorConstant;
-import com.broad.common.utils.ip.IpAddressUtils;
 import com.broad.common.utils.ip.IpUtils;
 import com.broad.framework.annotation.Log;
 import com.broad.system.entity.SysUserLog;
@@ -87,12 +86,12 @@ public class LogAspect {
     public void setLog(HttpServletRequest request, Log logAnnotation, long timeCost, Object result, ProceedingJoinPoint joinPoint) {
         // TODO Auto-generated method stub
         // 获取ip地址
-        String ip = IpUtils.getIpAddr(request);
+        String ip = IpUtils.getIp(request);
         SysUserLog sysAdminLog = new SysUserLog();
         sysAdminLog.setLogDescription(logAnnotation.description());
         sysAdminLog.setLogTimeCost((double) timeCost);
         sysAdminLog.setLogIp(ip);
-        sysAdminLog.setLogIpAddress(IpAddressUtils.getHome(ip));
+        sysAdminLog.setLogIpAddress(IpUtils.getIpAddress(ip));
         sysAdminLog.setLogHttpMethod(request.getMethod());
         sysAdminLog.setLogParams(JSON.toJSONString(getParams(joinPoint)));
         sysAdminLog.setLogResult(JSON.toJSONString(result));

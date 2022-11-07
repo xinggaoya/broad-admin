@@ -1,6 +1,11 @@
 package com.broad.common.utils.ip;
 
+import com.broad.common.config.BroadConfig;
 import com.broad.common.utils.StringUtils;
+import lombok.extern.slf4j.Slf4j;
+import org.lionsoul.ip2region.xdb.Searcher;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.InetAddress;
@@ -11,14 +16,19 @@ import java.net.UnknownHostException;
  *
  * @author XingGao
  */
+@Component
+@Slf4j
 public class IpUtils {
+
+    private static BroadConfig broadConfig;
+
     /**
      * 获取客户端IP
      *
      * @param request 请求对象
      * @return IP地址
      */
-    public static String getIpAddr(HttpServletRequest request) {
+    public static String getIp(HttpServletRequest request) {
         if (request == null) {
             return "unknown";
         }
@@ -41,6 +51,62 @@ public class IpUtils {
         }
 
         return "0:0:0:0:0:0:0:1".equals(ip) ? "127.0.0.1" : getMultistageReverseProxyIp(ip);
+    }
+
+    /**
+     * 获取城市信息
+     *
+     * @param ip ip
+     * @return 城市信息
+     */
+    public static String getIpAddress(String ip) {
+
+        String dbPath = broadConfig.getSystemFileDir().concat("/ip2region/ip2region.xdb");
+
+        // 1、从 dbPath 加载整个 xdb 到内存。
+        byte[] cBuff = new byte[0];
+        try {
+            cBuff = Searcher.loadContentFromFile(dbPath);
+        } catch (Exception e) {
+            log.error("无法加载ip2region.xdb文件,请检查ip2region.xdb文件是否存在于 {}", dbPath);
+        }
+
+        // 2、使用上述的 cBuff 创建一个完全基于内存的查询对象。
+        Searcher searcher = null;
+        try {
+            searcher = Searcher.newWithBuffer(cBuff);
+        } catch (Exception e) {
+            log.error("未能创建内容缓存搜索器");
+        }
+        if (internalIp(ip)) {
+            return "内网IP";
+        }
+
+        // 3、查询
+        try {
+            assert searcher != null;
+            String region = searcher.search(ip);
+            // 分割出省份 中国 广东省 广州市
+            String[] split = region.split("\\|");
+            if (!"0".equals(split[0])) {
+                region = split[0] + " " + split[2] + " " + split[3];
+                return region;
+            } else {
+                return split[4];
+            }
+        } catch (Exception e) {
+            log.error("ip地址查询失败");
+        }
+        return null;
+        // 4、关闭资源 - 该 searcher 对象可以安全用于并发，等整个服务关闭的时候再关闭 searcher
+//         searcher.close();
+
+        // 备注：并发使用，用整个 xdb 数据缓存创建的查询对象可以安全的用于并发，也就是你可以把这个 searcher 对象做成全局对象去跨线程访问。
+    }
+
+    @Autowired
+    public void setBroadConfig(BroadConfig broadConfig) {
+        IpUtils.broadConfig = broadConfig;
     }
 
     /**
