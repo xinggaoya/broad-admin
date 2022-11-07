@@ -1,8 +1,9 @@
-Application Version: ${broad.version}
-Spring Boot Version: ${spring-boot.version}
   ____                          _
  |  _ \                        | |
  | |_) | _ __  ___    __ _   __| |
  |  _ < | '__|/ _ \  / _` | / _` |
  | |_) || |  | (_) || (_| || (_| |
  |____/ |_|   \___/  \__,_| \__,_|
+
+ Application Version: ${broad.version}
+ Spring Boot Version: ${spring-boot.version}

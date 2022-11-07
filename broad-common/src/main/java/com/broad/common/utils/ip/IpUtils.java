@@ -22,6 +22,12 @@ public class IpUtils {
 
     private static BroadConfig broadConfig;
 
+
+    @Autowired
+    public void setBroadConfig(BroadConfig broadConfig) {
+        IpUtils.broadConfig = broadConfig;
+    }
+
     /**
      * 获取客户端IP
      *
@@ -102,11 +108,6 @@ public class IpUtils {
 //         searcher.close();
 
         // 备注：并发使用，用整个 xdb 数据缓存创建的查询对象可以安全的用于并发，也就是你可以把这个 searcher 对象做成全局对象去跨线程访问。
-    }
-
-    @Autowired
-    public void setBroadConfig(BroadConfig broadConfig) {
-        IpUtils.broadConfig = broadConfig;
     }
 
     /**
