@@ -1,6 +1,5 @@
 package com.broad.system.service.impl;
 
-import cn.dev33.satoken.dao.SaTokenDaoRedisJackson;
 import cn.dev33.satoken.secure.SaSecureUtil;
 import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -9,6 +8,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.broad.common.config.BroadConfig;
 import com.broad.common.constant.Constants;
 import com.broad.common.exception.ServiceException;
+import com.broad.common.service.RedisService;
 import com.broad.common.utils.ip.IpUtils;
 import com.broad.system.entity.SysUser;
 import com.broad.system.mapper.SysUserMapper;
@@ -32,7 +32,7 @@ import java.util.List;
 public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> implements SysUserService {
 
     @Autowired
-    private SaTokenDaoRedisJackson saTokenDaoRedisJackson;
+    private RedisService redisService;
     @Autowired
     private SysUserRoleService userRoleService;
     @Autowired
@@ -90,7 +90,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         SysUser admin = baseMapper.selectOne(new QueryWrapper<SysUser>().lambda().eq(SysUser::getUserName, sysAdmin.getUserName()));
 
         if (broadConfig.getCaptchaEnabled()) {
-            if (sysAdmin.getCodeValue() == null || !sysAdmin.getCodeValue().equals(saTokenDaoRedisJackson.get(Constants.CAPTCHA_CODE_KEY + sysAdmin.getCodeId()))) {
+            if (sysAdmin.getCodeValue() == null || !sysAdmin.getCodeValue().equals(redisService.getCacheObject(Constants.CAPTCHA_CODE_KEY + sysAdmin.getCodeId()))) {
                 throw new ServiceException("请输入正确的验证码");
             }
         }

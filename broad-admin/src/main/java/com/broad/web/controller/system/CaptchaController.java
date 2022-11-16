@@ -1,8 +1,8 @@
 package com.broad.web.controller.system;
 
-import cn.dev33.satoken.dao.SaTokenDaoRedisJackson;
 import com.broad.common.config.BroadConfig;
 import com.broad.common.constant.Constants;
+import com.broad.common.service.RedisService;
 import com.broad.common.utils.sign.Base64;
 import com.broad.framework.web.entity.ResultData;
 import com.google.code.kaptcha.Producer;
@@ -34,7 +34,7 @@ public class CaptchaController {
     private Producer captchaProducerMath;
 
     @Autowired
-    private SaTokenDaoRedisJackson saTokenDaoRedisJackson;
+    private RedisService redisService;
 
     @Autowired
     private BroadConfig broadConfig;
@@ -52,7 +52,7 @@ public class CaptchaController {
         String uuid = UUID.randomUUID().toString();
         String verifyKey = Constants.CAPTCHA_CODE_KEY + uuid;
 
-        String capStr = null, code = null;
+        String capStr, code = null;
         BufferedImage image = null;
 
         // 生成验证码
@@ -67,7 +67,7 @@ public class CaptchaController {
             image = captchaProducer.createImage(capStr);
         }
 
-        saTokenDaoRedisJackson.set(verifyKey, code, 120);
+        redisService.setCacheObject(verifyKey, code, 120L);
         // 转换流信息写出
         FastByteArrayOutputStream os = new FastByteArrayOutputStream();
         try {

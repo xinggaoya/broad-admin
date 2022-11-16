@@ -51,7 +51,7 @@ spring:
         reset-enable: false
         url-pattern: /druid/*
         # 添加IP白名单
-        allow: 127.0.0.1
+        allow: localhost
         # 添加IP黑名单，当白名单和黑名单重复时，黑名单优先级更高
         #deny:
       web-stat-filter:
@@ -65,7 +65,7 @@ spring:
     # Redis数据库索引（默认为0）
     database: 1
     # Redis服务器地址
-    host: xinggaocode.cn
+    host: 139.159.194.35
     # Redis服务器连接端口
     port: 6379
     # Redis服务器连接密码（默认为空）
@@ -84,7 +84,7 @@ spring:
         min-idle: 0
   # Rabbitmq配置
   rabbitmq:
-    host: xinggaocode.cn
+    host: 139.159.194.35
     port: 5672
     username: root
     password: xinggaocode
