@@ -24,6 +24,17 @@ spring:
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8
+  data:
+    redis:
+      repositories:
+        enabled: false
+  cache:
+    # 缓存类型
+    type: redis
+    #指定存活时间（ms）
+    redis.time-to-live: 86400000
+    #是否缓存空值，可以防止缓存穿透
+    redis.cache-null-values: true
   # 文件上传
   servlet:
     multipart:

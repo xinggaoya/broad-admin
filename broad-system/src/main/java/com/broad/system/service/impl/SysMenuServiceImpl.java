@@ -1,14 +1,17 @@
 package com.broad.system.service.impl;
 
-import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.broad.common.constant.CacheConstants;
 import com.broad.system.entity.SysMenu;
 import com.broad.system.entity.SysRoleMenu;
 import com.broad.system.mapper.SysMenuMapper;
 import com.broad.system.service.SysMenuService;
 import com.broad.system.service.SysRoleMenuService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +25,7 @@ import java.util.List;
  * @since 2022-10-10 18:46:52
  */
 @Service("sysMenuService")
+@CacheConfig(cacheNames = "router_menu", keyGenerator = CacheConstants.CACHE_PREFIX_GENERATION)
 public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> implements SysMenuService {
 
     @Autowired
@@ -29,8 +33,9 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
 
 
     @Override
-    public List<SysMenu> findMenuByRole() {
-        List<SysMenu> list = this.baseMapper.findMenuByRole(StpUtil.getLoginIdAsInt());
+    @Cacheable(key = "#menuId", unless = "null == #result")
+    public List<SysMenu> findMenuByRole(Integer menuId) {
+        List<SysMenu> list = this.baseMapper.findMenuByRole(menuId);
         return buildTree(list);
     }
 
@@ -51,6 +56,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     }
 
     @Override
+    @CacheEvict(allEntries = true)
     @Transactional(rollbackFor = Exception.class)
     public int saveMenu(SysMenu entity) {
         if (entity.getParentId() == null) {
@@ -113,11 +119,11 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
      * 删除菜单和下级菜单
      */
     @Override
+    @CacheEvict(allEntries = true)
     @Transactional(rollbackFor = Exception.class)
     public int deleteMenu(List<Long> idList) {
         this.baseMapper.deleteBatchIds(idList);
-        roleMenuService.remove(new LambdaUpdateWrapper<SysRoleMenu>()
-                .in(SysRoleMenu::getMenuId, idList));
+        roleMenuService.remove(new LambdaUpdateWrapper<SysRoleMenu>().in(SysRoleMenu::getMenuId, idList));
         return this.baseMapper.deleteChildMenu(idList);
     }
 

@@ -31,4 +31,9 @@ public class CacheConstants {
      */
     public final static long ROUTE_TIME = 60 * 24;
 
+    /**
+     * 缓存前缀生成
+     */
+    public final static String CACHE_PREFIX_GENERATION = "selfKeyGenerator";
+
 }

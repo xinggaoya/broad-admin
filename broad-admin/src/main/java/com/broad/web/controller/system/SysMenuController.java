@@ -2,6 +2,7 @@ package com.broad.web.controller.system;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import cn.dev33.satoken.stp.StpUtil;
 import com.broad.common.enums.BusinessType;
 import com.broad.framework.annotation.Log;
 import com.broad.framework.web.controller.BaseController;
@@ -62,7 +63,7 @@ public class SysMenuController extends BaseController {
     @GetMapping("getRouters")
     @SaCheckLogin
     public ResultData findMenuByRole() {
-        return ResultData.success(this.sysMenuService.findMenuByRole());
+        return ResultData.success(this.sysMenuService.findMenuByRole(StpUtil.getLoginIdAsInt()));
     }
 
     /**
