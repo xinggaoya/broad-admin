@@ -25,7 +25,7 @@ import java.util.List;
  * @since 2022-10-10 18:46:52
  */
 @Service("sysMenuService")
-@CacheConfig(cacheNames = "router_menu", keyGenerator = CacheConstants.CACHE_PREFIX_GENERATION)
+@CacheConfig(cacheNames = CacheConstants.ROUTE_KEY, keyGenerator = CacheConstants.CACHE_PREFIX_GENERATION)
 public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> implements SysMenuService {
 
     @Autowired

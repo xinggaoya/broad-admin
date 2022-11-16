@@ -24,7 +24,7 @@ public class CacheConstants {
     /**
      * 路由缓存前缀
      */
-    public final static String ROUTE_KEY = "menu_list";
+    public final static String ROUTE_KEY = "router_menu";
 
     /**
      * 路由缓存时间 （分钟）
