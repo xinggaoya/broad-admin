@@ -41,6 +41,8 @@ public interface SysMenuService extends IService<SysMenu> {
 
     int saveMenu(SysMenu entity);
 
+    int updateMenu(SysMenu entity);
+
     /**
      * 删除菜单
      *

@@ -50,8 +50,8 @@ spring:
         login-password: xinggaocode
         reset-enable: false
         url-pattern: /druid/*
-        # 添加IP白名单
-        allow: localhost
+        # 添加IP白名单 不填写则为所有
+        allow:
         # 添加IP黑名单，当白名单和黑名单重复时，黑名单优先级更高
         #deny:
       web-stat-filter:

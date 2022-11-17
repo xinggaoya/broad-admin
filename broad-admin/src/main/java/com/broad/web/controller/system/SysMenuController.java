@@ -114,7 +114,7 @@ public class SysMenuController extends BaseController {
     @SaCheckPermission("sys:menu:update")
     @Log(description = "修改菜单数据", businessType = BusinessType.UPDATE)
     public ResultData update(@RequestBody SysMenu sysMenu) {
-        return ResultData.success(this.sysMenuService.updateById(sysMenu));
+        return ResultData.success(this.sysMenuService.updateMenu(sysMenu));
     }
 
     /**

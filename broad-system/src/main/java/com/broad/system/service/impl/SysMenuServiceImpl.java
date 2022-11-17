@@ -65,6 +65,13 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         return this.baseMapper.insert(entity);
     }
 
+    @Override
+    @CacheEvict(allEntries = true)
+    @Transactional(rollbackFor = Exception.class)
+    public int updateMenu(SysMenu entity) {
+        return this.baseMapper.updateById(entity);
+    }
+
     /**
      * 构建树形结构
      *
