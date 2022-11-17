@@ -37,10 +37,10 @@ public class RedisService {
      *
      * @param key     缓存的键值
      * @param value   缓存的值
-     * @param timeout 时间
+     * @param timeout 时间(分钟)
      */
     public <T> void setCacheObject(final String key, final T value, final Long timeout) {
-        redisTemplate.opsForValue().set(key, value, timeout, TimeUnit.MINUTES);
+        redisTemplate.opsForValue().set(key, value, timeout, TimeUnit.SECONDS);
     }
 
     /**

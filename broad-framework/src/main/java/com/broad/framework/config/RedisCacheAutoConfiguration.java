@@ -73,7 +73,8 @@ public class RedisCacheAutoConfiguration {
         RedisCacheConfiguration defaultCacheConfig = RedisCacheConfiguration
                 .defaultCacheConfig()
                 .serializeValuesWith(pair)
-                .entryTtl(Duration.ofMinutes(10));
+                // 设置缓存有效期一周
+                .entryTtl(Duration.ofDays(7));
         return RedisCacheManager
                 .builder(RedisCacheWriter.nonLockingRedisCacheWriter(connectionFactory))
                 .cacheDefaults(defaultCacheConfig).build();

@@ -7,17 +7,17 @@ import org.springframework.stereotype.Component;
 /**
  * @Author: XingGao
  * @Date: 2022/10/13 13:54
- * @Description:自定义侦听器的实现
+ * @Description: 自定义侦听器的实现
  */
 @Component
 public class SaTokenListenerImpl implements SaTokenListener {
+
 
     /**
      * 每次登录时触发
      */
     @Override
     public void doLogin(String loginType, Object loginId, String tokenValue, SaLoginModel loginModel) {
-
     }
 
     /**
@@ -25,7 +25,6 @@ public class SaTokenListenerImpl implements SaTokenListener {
      */
     @Override
     public void doLogout(String loginType, Object loginId, String tokenValue) {
-
     }
 
     /**
@@ -33,7 +32,6 @@ public class SaTokenListenerImpl implements SaTokenListener {
      */
     @Override
     public void doKickout(String loginType, Object loginId, String tokenValue) {
-
     }
 
     /**
@@ -41,7 +39,6 @@ public class SaTokenListenerImpl implements SaTokenListener {
      */
     @Override
     public void doReplaced(String loginType, Object loginId, String tokenValue) {
-
     }
 
     /**
@@ -49,7 +46,6 @@ public class SaTokenListenerImpl implements SaTokenListener {
      */
     @Override
     public void doDisable(String loginType, Object loginId, String service, int level, long disableTime) {
-
     }
 
     /**
@@ -57,7 +53,20 @@ public class SaTokenListenerImpl implements SaTokenListener {
      */
     @Override
     public void doUntieDisable(String loginType, Object loginId, String service) {
+    }
 
+    /**
+     * 每次二级认证时触发
+     */
+    @Override
+    public void doOpenSafe(String loginType, String tokenValue, String service, long safeTime) {
+    }
+
+    /**
+     * 每次退出二级认证时触发
+     */
+    @Override
+    public void doCloseSafe(String loginType, String tokenValue, String service) {
     }
 
     /**
@@ -65,7 +74,6 @@ public class SaTokenListenerImpl implements SaTokenListener {
      */
     @Override
     public void doCreateSession(String id) {
-
     }
 
     /**
@@ -73,7 +81,6 @@ public class SaTokenListenerImpl implements SaTokenListener {
      */
     @Override
     public void doLogoutSession(String id) {
-
     }
 
     /**
@@ -81,7 +88,6 @@ public class SaTokenListenerImpl implements SaTokenListener {
      */
     @Override
     public void doRenewTimeout(String tokenValue, Object loginId, long timeout) {
-
     }
 }
 

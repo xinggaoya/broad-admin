@@ -120,7 +120,7 @@ public class Constants {
     /**
      * 字典管理 cache key
      */
-    public static final String SYS_DICT_KEY = "sys_dict:";
+    public static final String SYS_DICT_KEY = "sys_dict";
 
     /**
      * 资源映射路径 前缀
