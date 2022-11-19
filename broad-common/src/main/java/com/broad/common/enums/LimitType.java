@@ -1,4 +1,4 @@
-package com.broad.framework.annotation.type;
+package com.broad.common.enums;
 
 /**
  * @Author: XingGao

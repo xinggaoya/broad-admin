@@ -113,7 +113,7 @@ public class SysUserController extends BaseController {
     }
 
     /**
-     * Logout result data.
+     * 退出登录.
      *
      * @return the result data
      */

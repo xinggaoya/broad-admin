@@ -1,6 +1,6 @@
 package com.broad.framework.annotation;
 
-import com.broad.framework.annotation.type.LimitType;
+import com.broad.common.enums.LimitType;
 
 import java.lang.annotation.*;
 

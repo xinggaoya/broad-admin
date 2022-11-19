@@ -3,6 +3,7 @@ package com.broad.web.controller.system;
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.broad.common.enums.BusinessType;
+import com.broad.common.utils.poi.ExcelUtil;
 import com.broad.framework.annotation.Log;
 import com.broad.framework.web.controller.BaseController;
 import com.broad.framework.web.entity.ResultData;
@@ -12,6 +13,7 @@ import com.broad.system.service.SysUserLogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.Serializable;
 import java.util.List;
 
@@ -92,6 +94,14 @@ public class SysUserLogController extends BaseController {
     @Log(description = "删除管理员日志", businessType = BusinessType.DELETE)
     public ResultData delete(@RequestParam("idList") List<Long> idList) {
         return ResultData.success(this.sysAdminLogService.removeByIds(idList));
+    }
+
+    @PostMapping("export")
+    @Log(description = "导出管理员日志", businessType = BusinessType.EXPORT)
+    public void export(@RequestBody SysUserLog sysAdminLog, HttpServletResponse response) {
+        List<SysUserLog> list = this.sysAdminLogService.selectAll(sysAdminLog);
+        ExcelUtil<SysUserLog> util = new ExcelUtil<>(SysUserLog.class);
+        util.exportExcel(response, list, "管理员日志");
     }
 }
 

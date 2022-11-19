@@ -1,8 +1,9 @@
 package com.broad.web.controller;
 
+import com.broad.common.utils.ServletUtils;
+import com.broad.common.utils.ip.IpUtils;
 import com.broad.framework.rabbit.entity.Simple;
 import com.broad.framework.rabbit.entity.SimpleProducer;
-import com.broad.system.entity.SysMenu;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,8 +28,7 @@ public class TestController {
     }
 
     @GetMapping("/test/1")
-    public SysMenu testSimple2(SysMenu sysMenu) {
-        System.out.println(sysMenu.toString());
-        return sysMenu;
+    public String testSimple2() {
+        return IpUtils.getIpAddress(IpUtils.getIp(ServletUtils.getRequest()));
     }
 }

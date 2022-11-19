@@ -59,7 +59,7 @@ public class RateLimiterAspect {
             rateLimiter = limitMap.get(key);
             boolean acquire = rateLimiter.tryAcquire(limit.period(), TimeUnit.SECONDS);
             if (!acquire) {
-                log.warn("{} 连接异常，异常信息：{}"
+                log.warn("{} 异常连接，异常信息：{}"
                         , IpUtils.getIp(ServletUtils.getRequest())
                         , limit.msg());
                 throw new ServiceException(limit.msg());

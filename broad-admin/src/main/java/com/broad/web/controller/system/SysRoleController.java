@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.Serializable;
-import java.util.List;
 
 /**
  * 角色表(SysRole)表控制层
@@ -86,11 +85,11 @@ public class SysRoleController extends BaseController {
      * @param idList 主键结合
      * @return 删除结果 result data
      */
-    @DeleteMapping
+    @DeleteMapping("{id}")
     @SaCheckPermission("sys:role:delete")
     @Log(description = "删除角色", businessType = BusinessType.DELETE)
-    public ResultData delete(@RequestParam("idList") List<Long> idList) {
-        return ResultData.success(this.sysUserRoleService.removeByIds(idList));
+    public ResultData delete(@PathVariable("id") Integer idList) {
+        return ResultData.success(this.sysUserRoleService.removeById(idList));
     }
 }
 

@@ -1,10 +1,10 @@
 package com.broad.common.utils.ip;
 
 import com.broad.common.config.BroadConfig;
+import com.broad.common.utils.SpringUtils;
 import com.broad.common.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.lionsoul.ip2region.xdb.Searcher;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
@@ -19,14 +19,6 @@ import java.net.UnknownHostException;
 @Component
 @Slf4j
 public class IpUtils {
-
-    private static BroadConfig broadConfig;
-
-
-    @Autowired
-    public void setBroadConfig(BroadConfig broadConfig) {
-        IpUtils.broadConfig = broadConfig;
-    }
 
     /**
      * 获取客户端IP
@@ -67,7 +59,7 @@ public class IpUtils {
      */
     public static String getIpAddress(String ip) {
 
-        String dbPath = broadConfig.getSystemFileDir().concat("/ip2region/ip2region.xdb");
+        String dbPath = SpringUtils.getBean(BroadConfig.class).getSystemFileDir().concat("/ip2region/ip2region.xdb");
 
         // 1、从 dbPath 加载整个 xdb 到内存。
         byte[] cBuff = new byte[0];
@@ -93,13 +85,14 @@ public class IpUtils {
             assert searcher != null;
             String region = searcher.search(ip);
             // 分割出省份 中国 广东省 广州市
+            StringBuilder address = new StringBuilder();
             String[] split = region.split("\\|");
-            if (!"0".equals(split[0])) {
-                region = split[0] + " " + split[2] + " " + split[3];
-                return region;
-            } else {
-                return split[4];
+            for (String s : split) {
+                if (!"0".equals(s)) {
+                    address.append(" ".concat(s));
+                }
             }
+            return address.toString();
         } catch (Exception e) {
             log.error("ip地址查询失败");
         }

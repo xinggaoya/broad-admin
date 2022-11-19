@@ -2,26 +2,28 @@ package com.broad.framework.aspect;
 
 import cn.dev33.satoken.stp.StpUtil;
 import com.alibaba.fastjson2.JSON;
-import com.broad.common.constant.ExecutorConstant;
+import com.alibaba.fastjson2.JSONObject;
+import com.broad.common.enums.LogType;
+import com.broad.common.utils.ServletUtils;
+import com.broad.common.utils.StringUtils;
 import com.broad.common.utils.ip.IpUtils;
 import com.broad.framework.annotation.Log;
 import com.broad.system.entity.SysUserLog;
 import com.broad.system.service.SysUserLogService;
+import io.swagger.models.HttpMethod;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.annotation.AfterReturning;
+import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Pointcut;
-import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
-import java.lang.reflect.Method;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -43,96 +45,163 @@ public class LogAspect {
     private SysUserLogService sysAdminLogService;
 
     /**
-     * web层切点
-     * 1. @Pointcut("execution(public * com.hyh.web.*.*(..))")  web层的所有方法
-     * 2. @Pointcut("@annotation(com.hyh.annotation.Log)")      Log注解标注的方法
+     * 处理完请求后执行
+     *
+     * @param joinPoint 切点
      */
-    @Pointcut("@annotation(com.broad.framework.annotation.Log)")
-    public void webLog() {
+    @AfterReturning(pointcut = "@annotation(controllerLog)", returning = "jsonResult")
+    public void doAfterReturning(JoinPoint joinPoint, Log controllerLog, Object jsonResult) {
+        handleLog(joinPoint, controllerLog, null, jsonResult);
     }
 
     /**
-     * 环绕通知
+     * 拦截异常操作
+     *
+     * @param joinPoint 切点
+     * @param e         异常
      */
-    @Around("webLog()")
-    public Object doAround(ProceedingJoinPoint joinPoint) throws Throwable {
-        //获取请求对象
-        HttpServletRequest request = getRequest();
-        Object result;
+    @AfterThrowing(value = "@annotation(controllerLog)", throwing = "e")
+    public void doAfterThrowing(JoinPoint joinPoint, Log controllerLog, Exception e) {
+        handleLog(joinPoint, controllerLog, e, null);
+    }
+
+    protected void handleLog(final JoinPoint joinPoint, Log controllerLog, final Exception e, Object jsonResult) {
         try {
-            long start = System.currentTimeMillis();
-            result = joinPoint.proceed();
-            long timeCost = System.currentTimeMillis() - start;
-            // 获取Log注解
-            Log logAnnotation = getAnnotation(joinPoint);
-            // 写入数据库
-            this.setLog(request, logAnnotation, timeCost, result, joinPoint);
-        } catch (Throwable e) {
-            throw new Throwable(e);
-        }
-        return result;
-    }
 
-    /**
-     * 获取方法上的注解
-     */
-    private Log getAnnotation(ProceedingJoinPoint joinPoint) {
-        Method method = ((MethodSignature) joinPoint.getSignature()).getMethod();
-        return method.getAnnotation(Log.class);
-    }
+            HttpServletRequest response = ServletUtils.getRequest();
+            // *========数据库日志=========*//
+            SysUserLog operLog = new SysUserLog();
+            // 请求的地址
+            String ip = IpUtils.getIp(response);
+            operLog.setLogIp(ip);
+            operLog.setLogIpAddress(IpUtils.getIpAddress(ip));
+            operLog.setLogUrl(response.getRequestURI());
+            operLog.setAdminId(StpUtil.getLoginIdAsInt());
 
-
-    @Async(ExecutorConstant.SERVICE_EXECUTOR)
-    public void setLog(HttpServletRequest request, Log logAnnotation, long timeCost, Object result, ProceedingJoinPoint joinPoint) {
-        // TODO Auto-generated method stub
-        // 获取ip地址
-        String ip = IpUtils.getIp(request);
-        SysUserLog sysAdminLog = new SysUserLog();
-        sysAdminLog.setLogDescription(logAnnotation.description());
-        sysAdminLog.setLogTimeCost((double) timeCost);
-        sysAdminLog.setLogIp(ip);
-        sysAdminLog.setLogIpAddress(IpUtils.getIpAddress(ip));
-        sysAdminLog.setLogHttpMethod(request.getMethod());
-        sysAdminLog.setLogParams(JSON.toJSONString(getParams(joinPoint)));
-        sysAdminLog.setLogResult(JSON.toJSONString(result));
-        sysAdminLog.setLogUrl(request.getRequestURL().toString());
-        sysAdminLog.setLogMethodType(logAnnotation.businessType().name());
-        sysAdminLog.setAdminId(StpUtil.getLoginIdAsInt());
-        sysAdminLogService.save(sysAdminLog);
-    }
-
-
-    /**
-     * 获取参数 params:{"name":"天乔巴夏"}
-     */
-    private Object getParams(ProceedingJoinPoint joinPoint) {
-        // 参数名
-        String[] paramNames = getMethodSignature(joinPoint).getParameterNames();
-        // 参数值
-        Object[] paramValues = joinPoint.getArgs();
-        // 存储参数
-        Map<String, Object> params = new LinkedHashMap<>();
-        for (int i = 0; i < paramNames.length; i++) {
-            Object value = paramValues[i];
-            // MultipartFile对象以文件名作为参数值
-            if (value instanceof MultipartFile) {
-                MultipartFile file = (MultipartFile) value;
-                value = file.getOriginalFilename();
+            if (e != null) {
+                operLog.setLogStatus(LogType.FAILURE.getInfo());
+                operLog.setExceptionInfo(StringUtils.substring(e.getMessage(), 0, 2000));
             }
-            params.put(paramNames[i], value);
+            // 设置方法名称
+            String className = joinPoint.getTarget().getClass().getName();
+            String methodName = joinPoint.getSignature().getName();
+            operLog.setLogMethod(className + "." + methodName + "()");
+            // 设置请求方式
+            operLog.setLogHttpMethod(response.getMethod());
+            // 处理设置注解上的参数
+            getControllerMethodDescription(joinPoint, controllerLog, operLog, jsonResult);
+            // 保存数据库
+            sysAdminLogService.save(operLog);
+        } catch (Exception exp) {
+            // 记录本地异常日志
+            log.error("==异常日志 前置通知异常==");
+            exp.printStackTrace();
         }
-        return params;
     }
 
-    private MethodSignature getMethodSignature(ProceedingJoinPoint joinPoint) {
-        return (MethodSignature) joinPoint.getSignature();
+    /**
+     * 获取注解中对方法的描述信息 用于Controller层注解
+     *
+     * @param log     日志
+     * @param operLog 操作日志
+     */
+    public void getControllerMethodDescription(JoinPoint joinPoint, Log log, SysUserLog operLog, Object jsonResult) {
+        // 设置action动作
+        operLog.setLogMethodType(log.businessType().toString());
+        // 设置标题
+        operLog.setLogDescription(log.description());
+        // 保存request，参数和值
+        // 获取参数的信息，传入到数据库中。
+        setRequestValue(joinPoint, operLog);
+        // 是否需要保存response，参数和值
+        if (StringUtils.isNotNull(jsonResult)) {
+            operLog.setLogResult(StringUtils.substring(JSON.toJSONString(jsonResult), 0, 2000));
+        }
     }
 
-
-    private HttpServletRequest getRequest() {
-        ServletRequestAttributes requestAttributes =
-                (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        return requestAttributes.getRequest();
+    /**
+     * 获取请求的参数，放到log中
+     *
+     * @param operLog 操作日志
+     */
+    private void setRequestValue(JoinPoint joinPoint, SysUserLog operLog) {
+        String requestMethod = operLog.getLogHttpMethod();
+        if (HttpMethod.PUT.name().equals(requestMethod) || HttpMethod.POST.name().equals(requestMethod)) {
+            String params = argsArrayToString(joinPoint.getArgs());
+            operLog.setLogParams(StringUtils.substring(params, 0, 2000));
+        } else {
+            // 获取request url中的参数
+            Map<?, ?> paramsMap = getRequestParam(ServletUtils.getRequest());
+            operLog.setLogParams(StringUtils.substring(JSONObject.toJSONString(paramsMap), 0, 2000));
+        }
     }
+
+    /**
+     * 获取request url中的参数
+     *
+     * @param request request
+     * @return 参数map
+     */
+    private Map<String, String> getRequestParam(HttpServletRequest request) {
+        Map<String, String> map = new LinkedHashMap<>();
+        Map<String, String[]> parameterMap = request.getParameterMap();
+        for (Map.Entry<String, String[]> entry : parameterMap.entrySet()) {
+            String key = entry.getKey();
+            String[] values = entry.getValue();
+            String value = "";
+            if (values != null && values.length > 0) {
+                value = values[0];
+            }
+            map.put(key, value);
+        }
+        return map;
+    }
+
+    /**
+     * 参数拼装
+     */
+    private String argsArrayToString(Object[] paramsArray) {
+        StringBuilder params = new StringBuilder();
+        if (paramsArray != null && paramsArray.length > 0) {
+            for (Object o : paramsArray) {
+                if (StringUtils.isNotNull(o) && !isFilterObject(o)) {
+                    try {
+                        String jsonObj = JSONObject.toJSONString(o);
+                        params.append(jsonObj).append(" ");
+                    } catch (Exception ignored) {
+                    }
+                }
+            }
+        }
+        return params.toString().trim();
+    }
+
+    /**
+     * 判断是否需要过滤的对象。
+     *
+     * @param o 对象信息。
+     * @return 如果是需要过滤的对象，则返回true；否则返回false。
+     */
+    @SuppressWarnings("rawtypes")
+    public boolean isFilterObject(final Object o) {
+        Class<?> clazz = o.getClass();
+        if (clazz.isArray()) {
+            return clazz.getComponentType().isAssignableFrom(MultipartFile.class);
+        } else if (Collection.class.isAssignableFrom(clazz)) {
+            Collection collection = (Collection) o;
+            for (Object value : collection) {
+                return value instanceof MultipartFile;
+            }
+        } else if (Map.class.isAssignableFrom(clazz)) {
+            Map map = (Map) o;
+            for (Object value : map.entrySet()) {
+                Map.Entry entry = (Map.Entry) value;
+                return entry.getValue() instanceof MultipartFile;
+            }
+        }
+        return o instanceof MultipartFile || o instanceof HttpServletRequest || o instanceof HttpServletResponse
+                || o instanceof BindingResult;
+    }
+
 
 }

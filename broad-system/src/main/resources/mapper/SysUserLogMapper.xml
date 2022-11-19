@@ -5,8 +5,10 @@
     <resultMap type="com.broad.system.entity.SysUserLog" id="SysUserLogMap">
         <result property="logId" column="log_id" jdbcType="INTEGER"/>
         <result property="logDescription" column="log_description" jdbcType="VARCHAR"/>
-        <result property="logTimeCost" column="log_time_cost" jdbcType="NUMERIC"/>
+        <result property="logMethod" column="log_method" jdbcType="NUMERIC"/>
         <result property="logUrl" column="log_url" jdbcType="VARCHAR"/>
+        <result property="logStatus" column="log_status" jdbcType="VARCHAR"/>
+        <result property="exceptionInfo" column="exception_info" jdbcType="VARCHAR"/>
         <result property="logHttpMethod" column="log_http_method" jdbcType="VARCHAR"/>
         <result property="logIpAddress" column="log_ip_address" jdbcType="VARCHAR"/>
         <result property="logParams" column="log_params" jdbcType="VARCHAR"/>
@@ -19,13 +21,36 @@
         sul
         .
         log_id
-        , sul.log_description, sul.log_time_cost, sul.log_url, sul.log_http_method,sul.log_ip, sul.log_ip_address, sul.log_params, sul.log_result, sul.log_method_type, sul.create_time
+        , sul.log_description, sul.log_method,sul.log_status,sul.exception_info, sul.log_url, sul.log_http_method,sul.log_ip, sul.log_ip_address, sul.log_params, sul.log_result, sul.log_method_type, sul.create_time
     </sql>
 
     <select id="selectAll" resultType="com.broad.system.entity.SysUserLog">
         SELECT<include refid="key"/>, su.user_name adminName
         FROM sys_user_log sul
         left join sys_user su on su.id = sul.admin_id
+        <where>
+            <if test="logDescription != null and logDescription != ''">
+                and sul.log_description like concat('%',#{logDescription},'%')
+            </if>
+            <if test="logMethod != null and logMethod != ''">
+                and sul.log_method = #{logMethod}
+            </if>
+            <if test="logStatus != null and logStatus != ''">
+                and sul.log_status = #{logStatus}
+            </if>
+            <if test="logHttpMethod != null and logHttpMethod != ''">
+                and sul.log_http_method = #{logHttpMethod}
+            </if>
+            <if test="logIpAddress != null and logIpAddress != ''">
+                and sul.log_ip_address = #{logIpAddress}
+            </if>
+            <if test="logMethodType != null and logMethodType != ''">
+                and sul.log_method_type = #{logMethodType}
+            </if>
+            <if test="createTime != null and createTime != ''">
+                and sul.create_time = #{createTime}
+            </if>
+        </where>
         ORDER BY sul.create_time DESC
     </select>
 </mapper>
