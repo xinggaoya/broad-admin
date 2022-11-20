@@ -1,8 +1,8 @@
 package com.broad.web.controller.system;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.broad.common.annotation.Log;
 import com.broad.common.enums.BusinessType;
-import com.broad.framework.annotation.Log;
 import com.broad.framework.web.controller.BaseController;
 import com.broad.framework.web.entity.ResultData;
 import com.broad.framework.web.page.TableDataInfo;

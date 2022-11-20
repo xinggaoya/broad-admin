@@ -3,13 +3,13 @@ package com.broad.framework.aspect;
 import cn.dev33.satoken.stp.StpUtil;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
+import com.broad.common.annotation.Log;
 import com.broad.common.enums.LogType;
 import com.broad.common.utils.ServletUtils;
 import com.broad.common.utils.StringUtils;
 import com.broad.common.utils.ip.IpUtils;
-import com.broad.framework.annotation.Log;
+import com.broad.framework.rabbit.producer.UserLogProducer;
 import com.broad.system.entity.SysUserLog;
-import com.broad.system.service.SysUserLogService;
 import io.swagger.models.HttpMethod;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
@@ -42,7 +42,7 @@ import java.util.Map;
 public class LogAspect {
 
     @Autowired
-    private SysUserLogService sysAdminLogService;
+    private UserLogProducer userLogProducer;
 
     /**
      * 处理完请求后执行
@@ -91,7 +91,7 @@ public class LogAspect {
             // 处理设置注解上的参数
             getControllerMethodDescription(joinPoint, controllerLog, operLog, jsonResult);
             // 保存数据库
-            sysAdminLogService.save(operLog);
+            userLogProducer.sendLogMessage(operLog);
         } catch (Exception exp) {
             // 记录本地异常日志
             log.error("==异常日志 前置通知异常==");
@@ -132,7 +132,9 @@ public class LogAspect {
         } else {
             // 获取request url中的参数
             Map<?, ?> paramsMap = getRequestParam(ServletUtils.getRequest());
-            operLog.setLogParams(StringUtils.substring(JSONObject.toJSONString(paramsMap), 0, 2000));
+            if (StringUtils.isNotNull(paramsMap)) {
+                operLog.setLogParams(StringUtils.substring(JSON.toJSONString(paramsMap), 0, 2000));
+            }
         }
     }
 

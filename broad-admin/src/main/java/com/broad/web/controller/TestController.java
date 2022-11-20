@@ -2,8 +2,8 @@ package com.broad.web.controller;
 
 import com.broad.common.utils.ServletUtils;
 import com.broad.common.utils.ip.IpUtils;
-import com.broad.framework.rabbit.entity.Simple;
-import com.broad.framework.rabbit.entity.SimpleProducer;
+import com.broad.framework.rabbit.producer.UserLogProducer;
+import com.broad.system.entity.SysUserLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,12 +18,12 @@ import java.util.Date;
 @RestController
 public class TestController {
     @Autowired
-    private SimpleProducer simpleProducer;
+    private UserLogProducer userLogProducer;
 
     @GetMapping("/test")
     public void testSimple() {
-        for (int i = 0; i < 10; i++) {
-            simpleProducer.sendOrderMessage(Simple.builder().createTime(new Date()).name("JulyWhj").age(i).no("ID-0001").phone("138XXXXXXXX").build());
+        for (int i = 0; i < 20; i++) {
+            userLogProducer.sendLogMessage(SysUserLog.builder().adminId(i).createTime(new Date()).logDescription("开始").build());
         }
     }
 

@@ -8,13 +8,13 @@ package com.broad.common.enums;
 public enum LimitType {
 
     /**
-     * 自定义key
+     * 默认策略全局限流
      */
-    CUSTOMER,
+    DEFAULT,
 
     /**
-     * 根据请求者IP
+     * 根据请求者IP进行限流
      */
-    IP,
+    IP
 
 }

@@ -10,5 +10,5 @@ public class SimpleMqConstant {
     /**
      * 处理对象的MQ队列
      */
-    public static final String HANDLER_OBJECT_QUEUE_NAME = "queue.handler.object";
+    public static final String HANDLER_OBJECT_QUEUE_NAME = "queue.userLog.object";
 }

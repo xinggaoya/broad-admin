@@ -8,14 +8,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Created with IntelliJ IDEA.
- *
  * @Author: XingGao
- * @Date: 2022/07/18 13:54
+ * @Date: 2022/11/20
  * @Description:
  */
 @Configuration
-public class RabbitMqTemplateConfig {
+public class RabbitConfig {
 
     @Bean
     public RabbitTemplate rabbitTemplate(CachingConnectionFactory connectionFactory) {

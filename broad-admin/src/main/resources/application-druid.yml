@@ -89,8 +89,3 @@ spring:
     username: root
     password: xinggaocode
     virtual-host: /
-    listener:
-      simple:
-        concurrency: 5
-      direct:
-        prefetch: 10

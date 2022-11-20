@@ -1,21 +1,24 @@
 package com.broad.framework.aspect;
 
+import com.broad.common.annotation.RateLimiter;
+import com.broad.common.enums.LimitType;
 import com.broad.common.exception.ServiceException;
 import com.broad.common.utils.ServletUtils;
 import com.broad.common.utils.StringUtils;
 import com.broad.common.utils.ip.IpUtils;
-import com.broad.framework.annotation.RateLimiter;
-import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @Author: XingGao
@@ -27,45 +30,42 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class RateLimiterAspect {
 
-    /**
-     * 不同的接口，不同的流量控制
-     * map的key为 Limiter.key
-     */
-    private final Map<String, com.google.common.util.concurrent.RateLimiter> limitMap = Maps.newConcurrentMap();
+    @Autowired
+    private RedisTemplate<Object, Object> redisTemplate;
 
-    @Around("@annotation(com.broad.framework.annotation.RateLimiter)")
-    public Object around(ProceedingJoinPoint joinPoint) throws Throwable {
-        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
-        Method method = signature.getMethod();
-        //拿limit的注解
-        RateLimiter limit = method.getAnnotation(RateLimiter.class);
-        if (limit != null) {
-            // key作用：不同的接口，不同的流量控制
-            String key = limit.key();
-            // 如果key为空，则使用方法名
-            if (StringUtils.isBlank(key)) {
-                key = method.getName();
+    @Autowired
+    private RedisScript limitScript;
+
+    @Before("@annotation(rateLimiter)")
+    public void doBefore(JoinPoint point, RateLimiter rateLimiter) {
+        String key = rateLimiter.key();
+        int time = rateLimiter.time();
+        int count = rateLimiter.count();
+
+        String combineKey = getCombineKey(rateLimiter, point);
+        List<Object> keys = Collections.singletonList(combineKey);
+        try {
+            Long number = (Long) redisTemplate.execute(limitScript, keys, count, time);
+            if (StringUtils.isNull(number) || number.intValue() > count) {
+                throw new ServiceException("访问过于频繁，请稍候再试");
             }
-            if (StringUtils.isNotBlank(limit.prefix())) {
-                key = limit.prefix().concat(key);
-            }
-            com.google.common.util.concurrent.RateLimiter rateLimiter;
-            // 验证缓存是否有命中key
-            if (!limitMap.containsKey(key)) {
-                // 创建令牌桶
-                rateLimiter = com.google.common.util.concurrent.RateLimiter.create(limit.count());
-                limitMap.put(key, rateLimiter);
-            }
-            rateLimiter = limitMap.get(key);
-            boolean acquire = rateLimiter.tryAcquire(limit.period(), TimeUnit.SECONDS);
-            if (!acquire) {
-                log.warn("{} 异常连接，异常信息：{}"
-                        , IpUtils.getIp(ServletUtils.getRequest())
-                        , limit.msg());
-                throw new ServiceException(limit.msg());
-            }
+            log.info("限制请求'{}',当前请求'{}',缓存key'{}'", count, number.intValue(), key);
+        } catch (ServiceException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ServiceException("服务器限流异常，请稍候再试");
         }
-        return joinPoint.proceed();
     }
 
+    public String getCombineKey(RateLimiter rateLimiter, JoinPoint point) {
+        StringBuffer stringBuffer = new StringBuffer(rateLimiter.key());
+        if (rateLimiter.limitType() == LimitType.IP) {
+            stringBuffer.append(IpUtils.getIp(ServletUtils.getRequest())).append("-");
+        }
+        MethodSignature signature = (MethodSignature) point.getSignature();
+        Method method = signature.getMethod();
+        Class<?> targetClass = method.getDeclaringClass();
+        stringBuffer.append(targetClass.getName()).append("-").append(method.getName());
+        return stringBuffer.toString();
+    }
 }

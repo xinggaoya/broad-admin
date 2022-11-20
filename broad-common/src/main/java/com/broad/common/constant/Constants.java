@@ -137,4 +137,8 @@ public class Constants {
      */
     public static final String[] JOB_ERROR_STR = {"java.net.URL", "javax.naming.InitialContext", "org.yaml.snakeyaml",
             "org.springframework", "org.apache", "com.XingGao.common.core.utils.file"};
+    /**
+     * 限流key
+     */
+    public static final String RATE_LIMIT_KEY = "rate_limit:";
 }

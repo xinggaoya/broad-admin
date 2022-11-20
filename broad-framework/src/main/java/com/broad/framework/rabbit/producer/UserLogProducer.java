@@ -1,6 +1,7 @@
-package com.broad.framework.rabbit.entity;
+package com.broad.framework.rabbit.producer;
 
 import com.broad.common.constant.SimpleMqConstant;
+import com.broad.system.entity.SysUserLog;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -11,16 +12,16 @@ import org.springframework.stereotype.Component;
  * @Description: 生产者
  */
 @Component
-public class SimpleProducer {
+public class UserLogProducer {
     @Autowired
     private RabbitTemplate rabbitTemplate;
 
     /**
      * 消息体为对象。配置MessageConverter为Jackson2JsonMessageConverter即可
      *
-     * @param simple
+     * @param userLog
      */
-    public void sendOrderMessage(Simple simple) {
-        rabbitTemplate.convertAndSend(SimpleMqConstant.HANDLER_OBJECT_QUEUE_NAME, simple);
+    public void sendLogMessage(SysUserLog userLog) {
+        rabbitTemplate.convertAndSend(SimpleMqConstant.HANDLER_OBJECT_QUEUE_NAME, userLog);
     }
 }

@@ -1,10 +1,10 @@
 package com.broad.web.controller.system;
 
+import com.broad.common.annotation.RateLimiter;
 import com.broad.common.config.BroadConfig;
 import com.broad.common.constant.Constants;
 import com.broad.common.service.RedisService;
 import com.broad.common.utils.sign.Base64;
-import com.broad.framework.annotation.RateLimiter;
 import com.broad.framework.web.entity.ResultData;
 import com.google.code.kaptcha.Producer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +47,7 @@ public class CaptchaController {
      * @return the code
      */
     @GetMapping("/captchaImage")
-    @RateLimiter(key = "captchaImage", count = 1, prefix = "limit", period = 1)
+    @RateLimiter(key = "captchaImage", count = 1, time = 1)
     public ResultData getCode() {
         LinkedHashMap<String, Object> linkedHashMap = new LinkedHashMap<>();
         // 保存验证码信息

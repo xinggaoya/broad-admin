@@ -1,4 +1,4 @@
-package com.broad.framework.annotation;
+package com.broad.common.annotation;
 
 import com.broad.common.enums.BusinessType;
 
