@@ -58,6 +58,13 @@ public class SysJobLog  {
     private String exceptionInfo;
 
     /**
+     * 创建时间
+     */
+    @Excel(name = "创建时间", dateFormat = "yyyy-MM-dd HH:mm:ss")
+    private Date createTime;
+
+
+    /**
      * 开始时间
      */
     private Date startTime;
@@ -69,6 +76,14 @@ public class SysJobLog  {
 
     public Long getJobLogId() {
         return jobLogId;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
     }
 
     public void setJobLogId(Long jobLogId) {

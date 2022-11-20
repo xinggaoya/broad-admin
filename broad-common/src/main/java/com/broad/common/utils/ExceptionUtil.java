@@ -2,7 +2,6 @@ package com.broad.common.utils;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
-import java.io.PrintWriter;
 import java.io.StringWriter;
 
 /**
@@ -16,7 +15,6 @@ public class ExceptionUtil {
      */
     public static String getExceptionMessage(Throwable e) {
         StringWriter sw = new StringWriter();
-        e.printStackTrace(new PrintWriter(sw, true));
         return sw.toString();
     }
 
