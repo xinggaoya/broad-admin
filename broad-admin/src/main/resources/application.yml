@@ -83,7 +83,7 @@ mybatis-plus:
   auto-convert: true
   type-aliases-package: com.broad.**.entity
   mapper-locations: classpath*:mapper/**/*Mapper.xml
-    #configuration:
+  #configuration:
   #log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 # swagger配置 /doc.html

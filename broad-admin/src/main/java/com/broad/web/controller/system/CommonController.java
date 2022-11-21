@@ -1,0 +1,25 @@
+package com.broad.web.controller.system;
+
+import com.broad.common.config.BroadConfig;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+/**
+ * @Author: XingGao
+ * @Date: 2022/11/21
+ * @Description:
+ */
+@RestController
+@ResponseBody
+public class CommonController {
+
+    @Autowired
+    private BroadConfig broadConfig;
+
+    @GetMapping("/")
+    public String test() {
+        return "欢迎使用".concat(broadConfig.getName()).concat("后台管理系统！").concat("请使用前端访问！");
+    }
+}

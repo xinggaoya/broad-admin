@@ -47,7 +47,7 @@ public class CaptchaController {
      * @return the code
      */
     @GetMapping("/captchaImage")
-    @RateLimiter(key = "captchaImage", count = 1, time = 1)
+    @RateLimiter(key = "captchaImage", count = 5, time = 1)
     public ResultData getCode() {
         LinkedHashMap<String, Object> linkedHashMap = new LinkedHashMap<>();
         // 保存验证码信息

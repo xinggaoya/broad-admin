@@ -57,6 +57,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         return res ? 1 : 0;
     }
 
+
     @Override
     public List<SysUser> getAdminByIds(List<Long> ids) {
         return this.baseMapper.selectAllByIds(ids);
@@ -67,14 +68,14 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Transactional(rollbackFor = Exception.class)
     public int updateAdmin(SysUser sysAdmin) {
         // 如果密码与数据库密码不一致，说明用户修改密码,则重新加密
-        if (!sysAdmin.getPassword().equals(baseMapper.selectOne(new LambdaQueryWrapper<SysUser>().eq(SysUser::getId, sysAdmin.getId())).getPassword())) {
+        if (sysAdmin.getPassword() != null && !sysAdmin.getPassword().equals(baseMapper.selectOne(new LambdaQueryWrapper<SysUser>().eq(SysUser::getId, sysAdmin.getId())).getPassword())) {
             String uid = java.util.UUID.randomUUID().toString();
             sysAdmin.setPassword(SaSecureUtil.md5BySalt(sysAdmin.getPassword(), uid));
             sysAdmin.setSalt(uid);
         }
         int res = baseMapper.updateById(sysAdmin);
         // 查询是否有角色
-        if (sysAdmin.getRoleIds().size() > 0) {
+        if (sysAdmin.getRoleIds() != null && sysAdmin.getRoleIds().size() > 0) {
             userRoleService.insertUserRole(sysAdmin);
         }
         return res;

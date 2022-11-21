@@ -38,7 +38,7 @@
         <log4j-version>2.7.1</log4j-version>
         <xss-version>2.7.0</xss-version>
         <fastjson-version>2.0.10</fastjson-version>
-        <ip2region-version>2.6.4</ip2region-version>
+        <ip2region-version>2.6.6</ip2region-version>
         <pagehelper-version>1.4.3</pagehelper-version>
         <poi.version>4.1.2</poi.version>
         <commons.io.version>2.11.0</commons.io.version>

@@ -1,7 +1,13 @@
 package com.broad.common.utils.file;
 
+import com.broad.common.config.BroadConfig;
+import com.broad.common.constant.Constants;
+import com.broad.common.exception.file.FileException;
+import com.broad.common.utils.SpringUtils;
 import com.broad.common.utils.StringUtils;
+import com.broad.common.utils.uuid.UUID;
 import org.apache.commons.lang3.ArrayUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -114,6 +120,37 @@ public class FileUtils {
         // 不在允许下载的文件规则
         return false;
     }
+
+    /**
+     * 保存文件到本地
+     *
+     * @param file 文件
+     * @throws IOException IO异常
+     */
+    public static String saveFileToLocal(MultipartFile file) {
+        if (file.isEmpty()) {
+            throw new FileException("file.not.exist", null);
+        }
+        String localPath = SpringUtils.getBean(BroadConfig.class).getSystemFileDir().concat(Constants.UPLOAD_FILE).concat(File.separator);
+        String originalFilename = file.getOriginalFilename();
+        // 重复名文件
+        String fileName = UUID.randomUUID().toString().concat(originalFilename.substring(originalFilename.lastIndexOf(".")));
+        // 拼接访问路径
+        String localFilePath = Constants.UPLOAD_FILE.concat("/").concat(fileName);
+        File dest = new File(localPath.concat(fileName));
+        // 检测是否存在目录
+        if (!dest.getParentFile().exists()) {
+            dest.getParentFile().mkdirs();
+        }
+        try {
+            file.transferTo(dest);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new FileException("file.upload.error", null);
+        }
+        return localFilePath;
+    }
+
 
     /**
      * 下载文件名重新编码
