@@ -13,13 +13,13 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @ResponseBody
-public class CommonController {
+public class SysIndexController {
 
     @Autowired
     private BroadConfig broadConfig;
 
     @GetMapping("/")
     public String test() {
-        return "欢迎使用".concat(broadConfig.getName()).concat("后台管理系统！").concat("请使用前端访问！");
+        return "欢迎使用".concat(broadConfig.getName()).concat("后台管理系统！当前版本：").concat(broadConfig.getVersion()).concat(";请使用前端访问！");
     }
 }

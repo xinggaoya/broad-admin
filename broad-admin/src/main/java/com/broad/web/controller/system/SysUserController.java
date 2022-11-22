@@ -2,6 +2,7 @@ package com.broad.web.controller.system;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import cn.dev33.satoken.annotation.SaIgnore;
 import com.broad.common.annotation.Log;
 import com.broad.common.enums.BusinessType;
 import com.broad.framework.web.controller.BaseController;
@@ -108,6 +109,7 @@ public class SysUserController extends BaseController {
      * @throws IOException the io exception
      */
     @PostMapping("/login")
+    @SaIgnore
     public ResultData login(@RequestBody SysUser sysAdmin, HttpServletRequest request) throws IOException {
         return ResultData.success(this.sysAdminService.administratorLogin(sysAdmin, request)).setMsg("登录成功!");
     }

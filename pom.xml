@@ -42,6 +42,7 @@
         <pagehelper-version>1.4.3</pagehelper-version>
         <poi.version>4.1.2</poi.version>
         <commons.io.version>2.11.0</commons.io.version>
+        <bitwalker-version>1.21</bitwalker-version>
     </properties>
 
     <dependencyManagement>
@@ -152,6 +153,12 @@
                         <groupId>javax.servlet</groupId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>eu.bitwalker</groupId>
+                <artifactId>UserAgentUtils</artifactId>
+                <version>${bitwalker-version}</version>
             </dependency>
 
 

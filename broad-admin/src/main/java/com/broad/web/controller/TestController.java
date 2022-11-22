@@ -3,12 +3,12 @@ package com.broad.web.controller;
 import com.broad.common.utils.ServletUtils;
 import com.broad.common.utils.ip.IpUtils;
 import com.broad.framework.rabbit.producer.UserLogProducer;
-import com.broad.system.entity.SysUserLog;
+import eu.bitwalker.useragentutils.UserAgent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Date;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @Author: XingGao
@@ -21,10 +21,11 @@ public class TestController {
     private UserLogProducer userLogProducer;
 
     @GetMapping("/test")
-    public void testSimple() {
-        for (int i = 0; i < 20; i++) {
-            userLogProducer.sendLogMessage(SysUserLog.builder().adminId(i).createTime(new Date()).logDescription("开始").build());
-        }
+    public void testSimple(HttpServletRequest request) {
+        UserAgent userAgent = UserAgent.parseUserAgentString(request.getHeader("User-Agent"));
+//        for (int i = 0; i < 20; i++) {
+//            userLogProducer.sendLogMessage(SysUserLog.builder().adminId(i).createTime(new Date()).logDescription("开始").build());
+//        }
     }
 
     @GetMapping("/test/1")
