@@ -5,7 +5,7 @@ import com.broad.common.config.BroadConfig;
 import com.broad.common.constant.Constants;
 import com.broad.common.service.RedisService;
 import com.broad.common.utils.sign.Base64;
-import com.broad.framework.web.entity.ResultData;
+import com.broad.common.web.entity.ResultData;
 import com.google.code.kaptcha.Producer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.FastByteArrayOutputStream;

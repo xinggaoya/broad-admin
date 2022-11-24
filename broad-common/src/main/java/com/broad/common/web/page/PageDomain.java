@@ -1,4 +1,4 @@
-package com.broad.framework.web.page;
+package com.broad.common.web.page;
 
 
 import com.broad.common.utils.StringUtils;

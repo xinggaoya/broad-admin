@@ -2,9 +2,10 @@ package com.broad.web.controller.system;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.stp.StpUtil;
-import com.broad.framework.web.controller.BaseController;
-import com.broad.framework.web.entity.ResultData;
-import com.broad.framework.web.page.TableDataInfo;
+import com.broad.common.web.controller.BaseController;
+import com.broad.common.web.entity.ResultData;
+import com.broad.common.web.page.TableDataInfo;
+import com.broad.framework.socket.service.UserSocketServer;
 import com.broad.system.entity.SysUser;
 import com.broad.system.service.SysOnlineService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,7 @@ public class SysOnlineController extends BaseController {
     @SaCheckPermission("online:delete")
     public ResultData forceLogout(SysUser sysAdmin) {
         StpUtil.kickout(sysAdmin.getId());
+        UserSocketServer.sendInfo(ResultData.error(), sysAdmin.getId().toString());
         return ResultData.ok();
     }
 }

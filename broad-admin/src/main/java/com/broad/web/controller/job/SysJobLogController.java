@@ -1,13 +1,12 @@
 package com.broad.web.controller.job;
 
-
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.broad.common.annotation.Log;
 import com.broad.common.enums.BusinessType;
 import com.broad.common.utils.poi.ExcelUtil;
-import com.broad.framework.web.controller.BaseController;
-import com.broad.framework.web.entity.ResultData;
-import com.broad.framework.web.page.TableDataInfo;
+import com.broad.common.web.controller.BaseController;
+import com.broad.common.web.entity.ResultData;
+import com.broad.common.web.page.TableDataInfo;
 import com.broad.job.entity.SysJobLog;
 import com.broad.job.service.ISysJobLogService;
 import org.springframework.beans.factory.annotation.Autowired;

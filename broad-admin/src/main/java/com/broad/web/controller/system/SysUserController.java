@@ -1,13 +1,14 @@
 package com.broad.web.controller.system;
 
+import cn.dev33.satoken.annotation.SaCheckDisable;
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.annotation.SaIgnore;
 import com.broad.common.annotation.Log;
 import com.broad.common.enums.BusinessType;
-import com.broad.framework.web.controller.BaseController;
-import com.broad.framework.web.entity.ResultData;
-import com.broad.framework.web.page.TableDataInfo;
+import com.broad.common.web.controller.BaseController;
+import com.broad.common.web.entity.ResultData;
+import com.broad.common.web.page.TableDataInfo;
 import com.broad.system.entity.SysUser;
 import com.broad.system.service.SysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -112,6 +113,18 @@ public class SysUserController extends BaseController {
     @SaIgnore
     public ResultData login(@RequestBody SysUser sysAdmin, HttpServletRequest request) throws IOException {
         return ResultData.success(this.sysAdminService.administratorLogin(sysAdmin, request)).setMsg("登录成功!");
+    }
+
+    /**
+     * 验证用户状态
+     *
+     * @return result data
+     */
+    @GetMapping("/checkLogin")
+    @SaCheckLogin
+    @SaCheckDisable
+    public ResultData checkLogin() {
+        return ResultData.ok();
     }
 
     /**

@@ -1,4 +1,4 @@
-package com.broad.framework.web.entity;
+package com.broad.common.web.entity;
 
 
 import com.alibaba.fastjson2.annotation.JSONField;

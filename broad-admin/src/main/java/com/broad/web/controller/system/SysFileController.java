@@ -2,8 +2,8 @@ package com.broad.web.controller.system;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import com.broad.common.utils.file.FileUtils;
-import com.broad.framework.web.controller.BaseController;
-import com.broad.framework.web.entity.ResultData;
+import com.broad.common.web.controller.BaseController;
+import com.broad.common.web.entity.ResultData;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 

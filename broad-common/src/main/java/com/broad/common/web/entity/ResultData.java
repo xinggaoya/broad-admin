@@ -1,4 +1,4 @@
-package com.broad.framework.web.entity;
+package com.broad.common.web.entity;
 
 import com.broad.common.constant.HttpStatus;
 

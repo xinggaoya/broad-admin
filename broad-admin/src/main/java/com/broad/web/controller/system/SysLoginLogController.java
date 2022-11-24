@@ -1,9 +1,9 @@
 package com.broad.web.controller.system;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
-import com.broad.framework.web.controller.BaseController;
-import com.broad.framework.web.entity.ResultData;
-import com.broad.framework.web.page.TableDataInfo;
+import com.broad.common.web.controller.BaseController;
+import com.broad.common.web.entity.ResultData;
+import com.broad.common.web.page.TableDataInfo;
 import com.broad.system.entity.SysLoginLog;
 import com.broad.system.service.SysLoginLogService;
 import org.springframework.beans.factory.annotation.Autowired;

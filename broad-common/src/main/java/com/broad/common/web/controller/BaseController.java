@@ -1,10 +1,10 @@
-package com.broad.framework.web.controller;
+package com.broad.common.web.controller;
 
 import com.broad.common.constant.HttpStatus;
 import com.broad.common.utils.DateUtils;
-import com.broad.framework.utils.PageUtils;
-import com.broad.framework.web.entity.ResultData;
-import com.broad.framework.web.page.TableDataInfo;
+import com.broad.common.utils.PageUtils;
+import com.broad.common.web.entity.ResultData;
+import com.broad.common.web.page.TableDataInfo;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.WebDataBinder;

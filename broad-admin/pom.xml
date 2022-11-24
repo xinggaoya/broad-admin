@@ -26,12 +26,12 @@
 
         <dependency>
             <groupId>com.broad</groupId>
-            <artifactId>broad-framework</artifactId>
+            <artifactId>broad-quartz</artifactId>
         </dependency>
 
         <dependency>
             <groupId>com.broad</groupId>
-            <artifactId>broad-quartz</artifactId>
+            <artifactId>broad-framework</artifactId>
         </dependency>
 
     </dependencies>

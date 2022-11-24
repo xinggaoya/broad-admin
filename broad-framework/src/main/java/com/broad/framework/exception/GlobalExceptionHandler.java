@@ -4,7 +4,7 @@ import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.exception.NotPermissionException;
 import com.broad.common.constant.HttpStatus;
 import com.broad.common.exception.ServiceException;
-import com.broad.framework.web.entity.ResultData;
+import com.broad.common.web.entity.ResultData;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;

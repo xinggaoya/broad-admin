@@ -80,7 +80,7 @@ public class LogAspect {
 
             if (e != null) {
                 operLog.setLogStatus(LogType.FAILURE.getInfo());
-                operLog.setExceptionInfo(StringUtils.substring(e.getMessage(), 0, 2000));
+                operLog.setExceptionInfo(StringUtils.substring(e.getMessage(), 0, 1000));
             }
             // 设置方法名称
             String className = joinPoint.getTarget().getClass().getName();

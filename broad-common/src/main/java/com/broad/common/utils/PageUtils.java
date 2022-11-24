@@ -1,9 +1,10 @@
-package com.broad.framework.utils;
+package com.broad.common.utils;
 
 import com.broad.common.utils.sql.SqlUtil;
-import com.broad.framework.web.page.PageDomain;
-import com.broad.framework.web.page.TableSupport;
+import com.broad.common.web.page.PageDomain;
+import com.broad.common.web.page.TableSupport;
 import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.page.PageMethod;
 
 /**
  * 分页工具类
@@ -20,7 +21,7 @@ public class PageUtils extends PageHelper {
         Integer pageSize = pageDomain.getPageSize();
         String orderBy = SqlUtil.escapeOrderBySql(pageDomain.getOrderBy());
         Boolean reasonable = pageDomain.getReasonable();
-        startPage(pageNum, pageSize, orderBy).setReasonable(reasonable);
+        PageMethod.startPage(pageNum, pageSize, orderBy).setReasonable(reasonable);
     }
 
     /**

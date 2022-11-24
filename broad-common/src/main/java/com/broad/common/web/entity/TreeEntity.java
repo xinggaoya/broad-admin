@@ -1,11 +1,11 @@
-package com.broad.framework.web.entity;
+package com.broad.common.web.entity;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Tree基类
- * 
+ *
  * @author XingGao
  */
 public class TreeEntity extends BaseEntity

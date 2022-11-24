@@ -19,12 +19,6 @@
             <artifactId>dynamic-datasource-spring-boot-starter</artifactId>
         </dependency>
 
-        <!--消息队列模块-->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-amqp</artifactId>
-        </dependency>
-
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>druid-spring-boot-starter</artifactId>
@@ -46,24 +40,22 @@
             <artifactId>spring-boot-starter-log4j2</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>com.broad</groupId>
-            <artifactId>broad-system</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.github.pagehelper</groupId>
-            <artifactId>pagehelper-spring-boot-starter</artifactId>
-        </dependency>
 
         <!--   防XSS攻击     -->
         <dependency>
             <groupId>net.dreamlu</groupId>
             <artifactId>mica-xss</artifactId>
         </dependency>
+
+
         <dependency>
             <groupId>net.dreamlu</groupId>
             <artifactId>mica-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.broad</groupId>
+            <artifactId>broad-system</artifactId>
         </dependency>
 
     </dependencies>
