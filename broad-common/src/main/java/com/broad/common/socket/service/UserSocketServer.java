@@ -1,4 +1,4 @@
-package com.broad.framework.socket.service;
+package com.broad.common.socket.service;
 
 import cn.dev33.satoken.stp.StpUtil;
 import com.alibaba.fastjson2.JSON;
@@ -11,6 +11,8 @@ import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
@@ -46,7 +48,7 @@ public class UserSocketServer {
      */
     public static void sendInfo(Object message, @PathParam("sid") String sid) {
         log.info("推送消息到窗口" + sid + "，推送内容:" + message);
-        String msg = JSON.toJSONString(message);
+        String msg = JSON.toJSONString(ResultData.success(message));
         for (UserSocketServer item : webSocketSet) {
             try {
                 //这里可以设定只推送给这个sid的，为null则全部推送
@@ -100,6 +102,19 @@ public class UserSocketServer {
     }
 
     /**
+     * 获取所有登录用户的sid
+     *
+     * @return ids
+     */
+    public static synchronized List<Long> getLoginId() {
+        List<Long> ids = new ArrayList<>();
+        webSocketSet.forEach(item -> {
+            ids.add(Long.parseLong(item.sid));
+        });
+        return ids;
+    }
+
+    /**
      * Gets web socket set.
      *
      * @return the web socket set
@@ -127,7 +142,7 @@ public class UserSocketServer {
         webSocketSet.add(this);
         this.sid = sid;
         addOnlineCount();
-        sendInfo(JSON.toJSONString(ResultData.success("连接成功")), sid);
+//        sendInfo(ResultData.success("连接成功"), sid);
         log.info("有新用户开始连接:" + sid + ",当前在线人数为:" + getOnlineCount());
 
     }

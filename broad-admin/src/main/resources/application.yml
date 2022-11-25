@@ -14,7 +14,7 @@ server:
 spring:
   mvc:
     pathmatch:
-      matching-strategy: AntPathMatcher
+      matching-strategy: ant_path_matcher
   # 资源信息
   messages:
     # 国际化资源文件路径
@@ -58,7 +58,7 @@ sa-token:
   # token风格
   token-style: uuid
   # 是否输出操作日志
-  is-log: true
+  is-log: false
 
 
 # 异步线程配置
@@ -77,13 +77,11 @@ async:
 
 # mybatis配置
 mybatis-plus:
-  # 是否启用驼峰命名规则
-  camel-case-name: true
-  # 是否启用驼峰命名规则
-  auto-convert: true
   type-aliases-package: com.broad.**.entity
   mapper-locations: classpath*:mapper/**/*Mapper.xml
-  #configuration:
+  configuration:
+    arg-name-based-constructor-auto-mapping: true
+    map-underscore-to-camel-case: true
   #log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 # swagger配置 /doc.html

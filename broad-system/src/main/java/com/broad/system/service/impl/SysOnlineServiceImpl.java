@@ -1,6 +1,7 @@
 package com.broad.system.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
+import com.broad.common.socket.service.UserSocketServer;
 import com.broad.system.entity.SysUser;
 import com.broad.system.service.SysOnlineService;
 import com.broad.system.service.SysUserService;
@@ -8,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -26,12 +26,7 @@ public class SysOnlineServiceImpl implements SysOnlineService {
 
     @Override
     public List<SysUser> getOnlineList() {
-        List<Long> ids = new ArrayList<>();
-        List<String> sessionIdList = StpUtil.searchSessionId("", -1, -1, false);
-        sessionIdList.forEach(item -> {
-            List<String> names = Arrays.asList(item.split(":"));
-            ids.add(Long.valueOf(names.get(3)));
-        });
+        List<Long> ids = UserSocketServer.getLoginId();
         if (ids.size() == 0) {
             return new ArrayList<>();
         }

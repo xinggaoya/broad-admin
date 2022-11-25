@@ -72,5 +72,8 @@ public class SysLoginLog implements Serializable {
     @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
+    @TableField(exist = false)
+    private String userName;
+
 }
 
