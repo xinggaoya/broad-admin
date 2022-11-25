@@ -5,8 +5,10 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
 
 /**
+ * The enum Boolean enum.
+ *
  * @Author: XingGao
- * @Date: 2022/10/10
+ * @Date: 2022 /10/10
  * @Description:
  */
 @Getter

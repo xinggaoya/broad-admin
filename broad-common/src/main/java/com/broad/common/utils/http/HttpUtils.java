@@ -28,7 +28,7 @@ public class HttpUtils {
      * 向指定 URL 发送GET方法的请求
      *
      * @param url 发送请求的 URL
-     * @return 所代表远程资源的响应结果
+     * @return 所代表远程资源的响应结果 string
      */
     public static String sendGet(String url) {
         return sendGet(url, StringUtils.EMPTY);
@@ -39,7 +39,7 @@ public class HttpUtils {
      *
      * @param url   发送请求的 URL
      * @param param 请求参数，请求参数应该是 name1=value1&name2=value2 的形式。
-     * @return 所代表远程资源的响应结果
+     * @return 所代表远程资源的响应结果 string
      */
     public static String sendGet(String url, String param) {
         return sendGet(url, param, Constants.UTF8);
@@ -51,7 +51,7 @@ public class HttpUtils {
      * @param url         发送请求的 URL
      * @param param       请求参数，请求参数应该是 name1=value1&name2=value2 的形式。
      * @param contentType 编码类型
-     * @return 所代表远程资源的响应结果
+     * @return 所代表远程资源的响应结果 string
      */
     public static String sendGet(String url, String param, String contentType) {
         StringBuilder result = new StringBuilder();
@@ -94,9 +94,10 @@ public class HttpUtils {
     /**
      * 向指定 URL 发送POST方法的请求
      *
-     * @param url   发送请求的 URL
-     * @param param 请求参数，请求参数应该是 name1=value1&name2=value2 的形式。
-     * @return 所代表远程资源的响应结果
+     * @param url    发送请求的 URL
+     * @param param  请求参数，请求参数应该是 name1=value1&name2=value2 的形式。
+     * @param header the header
+     * @return 所代表远程资源的响应结果 string
      */
     public static String sendPost(String url, Map<String, String> param, Map<String, String> header) {
         PrintWriter out = null;
@@ -151,6 +152,13 @@ public class HttpUtils {
         return result.toString();
     }
 
+    /**
+     * Send ssl post string.
+     *
+     * @param url   the url
+     * @param param the param
+     * @return the string
+     */
     public static String sendSSLPost(String url, String param) {
         StringBuilder result = new StringBuilder();
         String urlNameString = url + "?" + param;

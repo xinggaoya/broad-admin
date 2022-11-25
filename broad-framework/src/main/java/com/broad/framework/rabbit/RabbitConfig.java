@@ -8,13 +8,21 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
+ * The type Rabbit config.
+ *
  * @Author: XingGao
- * @Date: 2022/11/20
+ * @Date: 2022 /11/20
  * @Description:
  */
 @Configuration
 public class RabbitConfig {
 
+    /**
+     * Rabbit template rabbit template.
+     *
+     * @param connectionFactory the connection factory
+     * @return the rabbit template
+     */
     @Bean
     public RabbitTemplate rabbitTemplate(CachingConnectionFactory connectionFactory) {
         RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
@@ -22,6 +30,11 @@ public class RabbitConfig {
         return rabbitTemplate;
     }
 
+    /**
+     * Jackson 2 json message converter message converter.
+     *
+     * @return the message converter
+     */
     @Bean
     public MessageConverter jackson2JsonMessageConverter() {
         return new Jackson2JsonMessageConverter();

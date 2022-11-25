@@ -22,6 +22,9 @@ public class SqlUtil {
 
     /**
      * 检查字符，防止注入绕过
+     *
+     * @param value the value
+     * @return the string
      */
     public static String escapeOrderBySql(String value) {
         if (StringUtils.isNotEmpty(value) && !isValidOrderBySql(value)) {
@@ -32,6 +35,9 @@ public class SqlUtil {
 
     /**
      * 验证 order by 语法是否符合规范
+     *
+     * @param value the value
+     * @return the boolean
      */
     public static boolean isValidOrderBySql(String value) {
         return value.matches(SQL_PATTERN);
@@ -39,6 +45,8 @@ public class SqlUtil {
 
     /**
      * SQL关键字检查
+     *
+     * @param value the value
      */
     public static void filterKeyword(String value) {
         if (StringUtils.isEmpty(value)) {

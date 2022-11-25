@@ -16,7 +16,7 @@ import java.io.Serializable;
  * 管理权限分组表(SysRoleMenu)表控制层
  *
  * @author XingGao
- * @since 2022-10-19 17:15:02
+ * @since 2022 -10-19 17:15:02
  */
 @RestController
 @RequestMapping("sysRoleMenu")
@@ -31,7 +31,7 @@ public class SysRoleMenuController extends BaseController {
      * 查询所有数据
      *
      * @param sysRoleMenu 查询实体
-     * @return 所有数据
+     * @return 所有数据 result data
      */
     @GetMapping
     public ResultData selectAll(SysRoleMenu sysRoleMenu) {
@@ -42,7 +42,7 @@ public class SysRoleMenuController extends BaseController {
      * 通过主键查询单条数据
      *
      * @param id 主键
-     * @return 单条数据
+     * @return 单条数据 result data
      */
     @GetMapping("{id}")
     public ResultData selectOne(@PathVariable Serializable id) {
@@ -53,7 +53,7 @@ public class SysRoleMenuController extends BaseController {
      * 新增数据
      *
      * @param sysRoleMenu 实体对象
-     * @return 新增结果
+     * @return 新增结果 result data
      */
     @PostMapping
     @Log(description = "新增角色菜单", businessType = BusinessType.INSERT)
@@ -65,7 +65,7 @@ public class SysRoleMenuController extends BaseController {
      * 修改数据
      *
      * @param sysRoleMenu 实体对象
-     * @return 修改结果
+     * @return 修改结果 result data
      */
     @PutMapping
     @Log(description = "修改角色菜单", businessType = BusinessType.UPDATE)

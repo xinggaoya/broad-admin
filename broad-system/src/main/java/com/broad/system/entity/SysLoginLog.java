@@ -10,7 +10,7 @@ import java.util.Date;
  * (SysLoginLog)表实体类
  *
  * @author XingGao
- * @since 2022-11-22 20:00:01
+ * @since 2022 -11-22 20:00:01
  */
 @Data
 @TableName("sys_login_log")

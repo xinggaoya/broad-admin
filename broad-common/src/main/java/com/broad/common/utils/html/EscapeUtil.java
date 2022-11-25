@@ -9,6 +9,9 @@ import com.broad.common.utils.StringUtils;
  * @author XingGao
  */
 public class EscapeUtil {
+    /**
+     * The constant RE_HTML_MARK.
+     */
     public static final String RE_HTML_MARK = "(<[^<]*?>)|(<[\\s]*?/[^<]*?>)|(<[^<]*?/[\\s]*?>)";
 
     private static final char[][] TEXT = new char[64][];
@@ -30,7 +33,7 @@ public class EscapeUtil {
      * 转义文本中的HTML字符为安全的字符
      *
      * @param text 被转义的文本
-     * @return 转义后的文本
+     * @return 转义后的文本 string
      */
     public static String escape(String text) {
         return encode(text);
@@ -40,7 +43,7 @@ public class EscapeUtil {
      * 还原被转义的HTML特殊字符
      *
      * @param content 包含转义符的HTML内容
-     * @return 转换后的字符串
+     * @return 转换后的字符串 string
      */
     public static String unescape(String content) {
         return decode(content);
@@ -50,7 +53,7 @@ public class EscapeUtil {
      * 清除所有HTML标签，但是不删除标签内的内容
      *
      * @param content 文本
-     * @return 清除标签后的文本
+     * @return 清除标签后的文本 string
      */
     public static String clean(String content) {
         return new HTMLFilter().filter(content);
@@ -93,7 +96,7 @@ public class EscapeUtil {
      * Escape解码
      *
      * @param content 被转义的内容
-     * @return 解码后的字符串
+     * @return 解码后的字符串 string
      */
     public static String decode(String content) {
         if (StringUtils.isEmpty(content)) {

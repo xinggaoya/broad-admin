@@ -14,7 +14,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * Created with IntelliJ IDEA.
  *
  * @Author: XingGao
- * @Date: 2022/07/12 21:36
+ * @Date: 2022 /07/12 21:36
  * @Description:
  */
 @Configuration
@@ -25,6 +25,8 @@ public class ResourcesConfig implements WebMvcConfigurer {
 
     /**
      * 跨域配置
+     *
+     * @return the cors filter
      */
     @Bean
     public CorsFilter corsFilter() {

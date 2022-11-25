@@ -18,10 +18,24 @@ public final class UUID implements java.io.Serializable, Comparable<UUID> {
     private static final long serialVersionUID = -1185015143654744140L;
 
     /**
-     * SecureRandom 的单例
+     * 与此 UUID 相关联的时间戳值。
+     *
+     * <p>
+     * 60 位的时间戳值根据此 {@code UUID} 的 time_low、time_mid 和 time_hi 字段构造。<br>
+     * 所得到的时间戳以 100 毫微秒为单位，从 UTC（通用协调时间） 1582 年 10 月 15 日零时开始。
+     *
+     * <p>
+     * 时间戳值仅在在基于时间的 UUID（其 version 类型为 1）中才有意义。<br>
+     * 如果此 {@code UUID} 不是基于时间的 UUID，则此方法抛出 UnsupportedOperationException。
+     *
+     * @return the long
+     * @throws UnsupportedOperationException 如果此 {@code UUID} 不是 version 为 1 的 UUID。
      */
-    private static class Holder {
-        static final SecureRandom numberGenerator = getSecureRandom();
+    public long timestamp() throws UnsupportedOperationException {
+        checkTimeBase();
+        return (mostSigBits & 0x0FFFL) << 48//
+                | ((mostSigBits >> 16) & 0x0FFFFL) << 32//
+                | mostSigBits >>> 32;
     }
 
     /**
@@ -209,23 +223,55 @@ public final class UUID implements java.io.Serializable, Comparable<UUID> {
     }
 
     /**
-     * 与此 UUID 相关联的时间戳值。
+     * 返回此{@code UUID} 的字符串表现形式。
      *
      * <p>
-     * 60 位的时间戳值根据此 {@code UUID} 的 time_low、time_mid 和 time_hi 字段构造。<br>
-     * 所得到的时间戳以 100 毫微秒为单位，从 UTC（通用协调时间） 1582 年 10 月 15 日零时开始。
+     * UUID 的字符串表示形式由此 BNF 描述：
      *
-     * <p>
-     * 时间戳值仅在在基于时间的 UUID（其 version 类型为 1）中才有意义。<br>
-     * 如果此 {@code UUID} 不是基于时间的 UUID，则此方法抛出 UnsupportedOperationException。
+     * <pre>
+     * {@code
+     * UUID                   = <time_low>-<time_mid>-<time_high_and_version>-<variant_and_sequence>-<node>
+     * time_low               = 4*<hexOctet>
+     * time_mid               = 2*<hexOctet>
+     * time_high_and_version  = 2*<hexOctet>
+     * variant_and_sequence   = 2*<hexOctet>
+     * node                   = 6*<hexOctet>
+     * hexOctet               = <hexDigit><hexDigit>
+     * hexDigit               = [0-9a-fA-F]
+     * }*
+     * </pre>
      *
-     * @throws UnsupportedOperationException 如果此 {@code UUID} 不是 version 为 1 的 UUID。
+     * </blockquote>
+     *
+     * @param isSimple 是否简单模式，简单模式为不带'-'的UUID字符串
+     * @return 此 {@code UUID} 的字符串表现形式
      */
-    public long timestamp() throws UnsupportedOperationException {
-        checkTimeBase();
-        return (mostSigBits & 0x0FFFL) << 48//
-                | ((mostSigBits >> 16) & 0x0FFFFL) << 32//
-                | mostSigBits >>> 32;
+    public String toString(boolean isSimple) {
+        final StringBuilder builder = new StringBuilder(isSimple ? 32 : 36);
+        // time_low
+        builder.append(digits(mostSigBits >> 32, 8));
+        if (false == isSimple) {
+            builder.append('-');
+        }
+        // time_mid
+        builder.append(digits(mostSigBits >> 16, 4));
+        if (false == isSimple) {
+            builder.append('-');
+        }
+        // time_high_and_version
+        builder.append(digits(mostSigBits, 4));
+        if (false == isSimple) {
+            builder.append('-');
+        }
+        // variant_and_sequence
+        builder.append(digits(leastSigBits >> 48, 4));
+        if (false == isSimple) {
+            builder.append('-');
+        }
+        // node
+        builder.append(digits(leastSigBits, 12));
+
+        return builder.toString();
     }
 
     /**
@@ -292,55 +338,13 @@ public final class UUID implements java.io.Serializable, Comparable<UUID> {
     }
 
     /**
-     * 返回此{@code UUID} 的字符串表现形式。
-     *
-     * <p>
-     * UUID 的字符串表示形式由此 BNF 描述：
-     *
-     * <pre>
-     * {@code
-     * UUID                   = <time_low>-<time_mid>-<time_high_and_version>-<variant_and_sequence>-<node>
-     * time_low               = 4*<hexOctet>
-     * time_mid               = 2*<hexOctet>
-     * time_high_and_version  = 2*<hexOctet>
-     * variant_and_sequence   = 2*<hexOctet>
-     * node                   = 6*<hexOctet>
-     * hexOctet               = <hexDigit><hexDigit>
-     * hexDigit               = [0-9a-fA-F]
-     * }
-     * </pre>
-     *
-     * </blockquote>
-     *
-     * @param isSimple 是否简单模式，简单模式为不带'-'的UUID字符串
-     * @return 此{@code UUID} 的字符串表现形式
+     * SecureRandom 的单例
      */
-    public String toString(boolean isSimple) {
-        final StringBuilder builder = new StringBuilder(isSimple ? 32 : 36);
-        // time_low
-        builder.append(digits(mostSigBits >> 32, 8));
-        if (false == isSimple) {
-            builder.append('-');
-        }
-        // time_mid
-        builder.append(digits(mostSigBits >> 16, 4));
-        if (false == isSimple) {
-            builder.append('-');
-        }
-        // time_high_and_version
-        builder.append(digits(mostSigBits, 4));
-        if (false == isSimple) {
-            builder.append('-');
-        }
-        // variant_and_sequence
-        builder.append(digits(leastSigBits >> 48, 4));
-        if (false == isSimple) {
-            builder.append('-');
-        }
-        // node
-        builder.append(digits(leastSigBits, 12));
-
-        return builder.toString();
+    private static class Holder {
+        /**
+         * The Number generator.
+         */
+        static final SecureRandom numberGenerator = getSecureRandom();
     }
 
     /**

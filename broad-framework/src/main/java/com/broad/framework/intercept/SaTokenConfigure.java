@@ -11,7 +11,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * Created with IntelliJ IDEA.
  *
  * @Author: XingGao
- * @Date: 2022/07/10 18:03
+ * @Date: 2022 /07/10 18:03
  * @Description:
  */
 @Configuration

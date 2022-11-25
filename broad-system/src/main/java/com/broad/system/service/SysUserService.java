@@ -31,6 +31,12 @@ public interface SysUserService extends IService<SysUser> {
      */
     int saveAdmin(SysUser sysAdmin);
 
+    /**
+     * Gets admin by ids.
+     *
+     * @param ids the ids
+     * @return the admin by ids
+     */
     List<SysUser> getAdminByIds(List<Long> ids);
 
     /**

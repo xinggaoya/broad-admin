@@ -28,6 +28,14 @@ public class BaseException extends RuntimeException {
      */
     private String defaultMessage;
 
+    /**
+     * Instantiates a new Base exception.
+     *
+     * @param module         the module
+     * @param code           the code
+     * @param args           the args
+     * @param defaultMessage the default message
+     */
     public BaseException(String module, String code, Object[] args, String defaultMessage) {
         this.module = module;
         this.code = code;
@@ -35,34 +43,78 @@ public class BaseException extends RuntimeException {
         this.defaultMessage = defaultMessage;
     }
 
+    /**
+     * Instantiates a new Base exception.
+     *
+     * @param module the module
+     * @param code   the code
+     * @param args   the args
+     */
     public BaseException(String module, String code, Object[] args) {
         this(module, code, args, null);
     }
 
+    /**
+     * Instantiates a new Base exception.
+     *
+     * @param module         the module
+     * @param defaultMessage the default message
+     */
     public BaseException(String module, String defaultMessage) {
         this(module, null, null, defaultMessage);
     }
 
+    /**
+     * Instantiates a new Base exception.
+     *
+     * @param code the code
+     * @param args the args
+     */
     public BaseException(String code, Object[] args) {
         this(null, code, args, null);
     }
 
+    /**
+     * Instantiates a new Base exception.
+     *
+     * @param defaultMessage the default message
+     */
     public BaseException(String defaultMessage) {
         this(null, null, null, defaultMessage);
     }
 
+    /**
+     * Gets module.
+     *
+     * @return the module
+     */
     public String getModule() {
         return module;
     }
 
+    /**
+     * Gets code.
+     *
+     * @return the code
+     */
     public String getCode() {
         return code;
     }
 
+    /**
+     * Get args object [ ].
+     *
+     * @return the object [ ]
+     */
     public Object[] getArgs() {
         return args;
     }
 
+    /**
+     * Gets default message.
+     *
+     * @return the default message
+     */
     public String getDefaultMessage() {
         return defaultMessage;
     }

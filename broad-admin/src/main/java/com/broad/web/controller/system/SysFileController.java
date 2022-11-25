@@ -8,8 +8,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
+ * The type Sys file controller.
+ *
  * @Author: XingGao
- * @Date: 2022/11/21
+ * @Date: 2022 /11/21
  * @Description:
  */
 @RestController
@@ -17,6 +19,12 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("file")
 public class SysFileController extends BaseController {
 
+    /**
+     * Upload file result data.
+     *
+     * @param file the file
+     * @return the result data
+     */
     @PostMapping("/upload")
     @SaCheckLogin
     public ResultData uploadFile(@RequestParam("file") MultipartFile file) {

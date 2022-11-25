@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
  * (SysUserRole)表服务实现类
  *
  * @author XingGao
- * @since 2022-10-21 01:03:47
+ * @since 2022 -10-21 01:03:47
  */
 @Service("sysUserRoleService")
 public class SysUserRoleServiceImpl extends ServiceImpl<SysUserRoleMapper, SysUserRole> implements SysUserRoleService {

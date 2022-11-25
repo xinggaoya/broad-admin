@@ -18,7 +18,7 @@ import java.io.Serializable;
  * 字典类型表(SysDictType)表控制层
  *
  * @author XingGao
- * @since 2022-10-13 15:00:02
+ * @since 2022 -10-13 15:00:02
  */
 @RestController
 @RequestMapping("sysDictType")
@@ -33,7 +33,7 @@ public class SysDictTypeController extends BaseController {
      * 分页查询所有数据
      *
      * @param sysDictType 查询实体
-     * @return 所有数据
+     * @return 所有数据 table data info
      */
     @GetMapping
     @SaCheckPermission("sys:dict:list")
@@ -42,6 +42,12 @@ public class SysDictTypeController extends BaseController {
         return getDataTable(this.sysDictTypeService.list(new QueryWrapper<>(sysDictType)));
     }
 
+    /**
+     * Gets dict type list.
+     *
+     * @param sysDictType the sys dict type
+     * @return the dict type list
+     */
     @GetMapping("/list")
     @SaCheckPermission("sys:dict:list")
     public ResultData getDictTypeList(SysDictType sysDictType) {
@@ -52,7 +58,7 @@ public class SysDictTypeController extends BaseController {
      * 通过主键查询单条数据
      *
      * @param id 主键
-     * @return 单条数据
+     * @return 单条数据 result data
      */
     @GetMapping("{id}")
     @SaCheckPermission("sys:dict:list")
@@ -64,7 +70,7 @@ public class SysDictTypeController extends BaseController {
      * 新增数据
      *
      * @param sysDictType 实体对象
-     * @return 新增结果
+     * @return 新增结果 result data
      */
     @PostMapping
     @SaCheckPermission("sys:dict:add")
@@ -77,7 +83,7 @@ public class SysDictTypeController extends BaseController {
      * 修改数据
      *
      * @param sysDictType 实体对象
-     * @return 修改结果
+     * @return 修改结果 result data
      */
     @PutMapping
     @SaCheckPermission("sys:dict:update")
@@ -90,7 +96,7 @@ public class SysDictTypeController extends BaseController {
      * 删除数据
      *
      * @param id 主键结合
-     * @return 删除结果
+     * @return 删除结果 result data
      */
     @DeleteMapping("{id}")
     @SaCheckPermission("sys:dict:delete")

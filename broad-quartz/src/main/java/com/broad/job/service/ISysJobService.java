@@ -17,7 +17,7 @@ public interface ISysJobService {
      * 获取quartz调度器的计划任务
      *
      * @param job 调度信息
-     * @return 调度任务集合
+     * @return 调度任务集合 list
      */
     List<SysJob> selectJobList(SysJob job);
 
@@ -25,7 +25,7 @@ public interface ISysJobService {
      * 通过调度任务ID查询调度信息
      *
      * @param jobId 调度任务ID
-     * @return 调度任务对象信息
+     * @return 调度任务对象信息 sys job
      */
     SysJob selectJobById(Long jobId);
 
@@ -33,7 +33,8 @@ public interface ISysJobService {
      * 暂停任务
      *
      * @param job 调度信息
-     * @return 结果
+     * @return 结果 int
+     * @throws SchedulerException the scheduler exception
      */
     int pauseJob(SysJob job) throws SchedulerException;
 
@@ -41,7 +42,8 @@ public interface ISysJobService {
      * 恢复任务
      *
      * @param job 调度信息
-     * @return 结果
+     * @return 结果 int
+     * @throws SchedulerException the scheduler exception
      */
     int resumeJob(SysJob job) throws SchedulerException;
 
@@ -49,7 +51,8 @@ public interface ISysJobService {
      * 删除任务后，所对应的trigger也将被删除
      *
      * @param job 调度信息
-     * @return 结果
+     * @return 结果 int
+     * @throws SchedulerException the scheduler exception
      */
     int deleteJob(SysJob job) throws SchedulerException;
 
@@ -58,6 +61,7 @@ public interface ISysJobService {
      *
      * @param jobIds 需要删除的任务ID
      * @return 结果
+     * @throws SchedulerException the scheduler exception
      */
     void deleteJobByIds(Long[] jobIds) throws SchedulerException;
 
@@ -65,7 +69,8 @@ public interface ISysJobService {
      * 任务调度状态修改
      *
      * @param job 调度信息
-     * @return 结果
+     * @return 结果 int
+     * @throws SchedulerException the scheduler exception
      */
     int changeStatus(SysJob job) throws SchedulerException;
 
@@ -74,6 +79,7 @@ public interface ISysJobService {
      *
      * @param job 调度信息
      * @return 结果
+     * @throws SchedulerException the scheduler exception
      */
     void run(SysJob job) throws SchedulerException;
 
@@ -81,7 +87,9 @@ public interface ISysJobService {
      * 新增任务
      *
      * @param job 调度信息
-     * @return 结果
+     * @return 结果 int
+     * @throws SchedulerException the scheduler exception
+     * @throws TaskException      the task exception
      */
     int insertJob(SysJob job) throws SchedulerException, TaskException;
 
@@ -89,7 +97,9 @@ public interface ISysJobService {
      * 更新任务
      *
      * @param job 调度信息
-     * @return 结果
+     * @return 结果 int
+     * @throws SchedulerException the scheduler exception
+     * @throws TaskException      the task exception
      */
     int updateJob(SysJob job) throws SchedulerException, TaskException;
 
@@ -97,7 +107,7 @@ public interface ISysJobService {
      * 校验cron表达式是否有效
      *
      * @param cronExpression 表达式
-     * @return 结果
+     * @return 结果 boolean
      */
     boolean checkCronExpressionIsValid(String cronExpression);
 }

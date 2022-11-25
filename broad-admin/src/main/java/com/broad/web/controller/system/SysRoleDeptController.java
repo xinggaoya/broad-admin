@@ -18,7 +18,7 @@ import java.util.List;
  * (SysRoleDept)表控制层
  *
  * @author XingGao
- * @since 2022-10-19 17:14:52
+ * @since 2022 -10-19 17:14:52
  */
 @RestController
 @RequestMapping("sysRoleDept")
@@ -33,7 +33,7 @@ public class SysRoleDeptController extends BaseController {
      * 分页查询所有数据
      *
      * @param sysRoleDept 查询实体
-     * @return 所有数据
+     * @return 所有数据 table data info
      */
     @GetMapping
     public TableDataInfo selectAll(SysRoleDept sysRoleDept) {
@@ -45,7 +45,7 @@ public class SysRoleDeptController extends BaseController {
      * 通过主键查询单条数据
      *
      * @param id 主键
-     * @return 单条数据
+     * @return 单条数据 result data
      */
     @GetMapping("{id}")
     public ResultData selectOne(@PathVariable Serializable id) {
@@ -56,7 +56,7 @@ public class SysRoleDeptController extends BaseController {
      * 新增数据
      *
      * @param sysRoleDept 实体对象
-     * @return 新增结果
+     * @return 新增结果 result data
      */
     @PostMapping
     @Log(description = "新增部门角色", businessType = BusinessType.INSERT)
@@ -68,7 +68,7 @@ public class SysRoleDeptController extends BaseController {
      * 修改数据
      *
      * @param sysRoleDept 实体对象
-     * @return 修改结果
+     * @return 修改结果 result data
      */
     @PutMapping
     @Log(description = "修改部门角色", businessType = BusinessType.UPDATE)
@@ -80,7 +80,7 @@ public class SysRoleDeptController extends BaseController {
      * 删除数据
      *
      * @param idList 主键结合
-     * @return 删除结果
+     * @return 删除结果 result data
      */
     @DeleteMapping
     @Log(description = "删除部门角色", businessType = BusinessType.DELETE)

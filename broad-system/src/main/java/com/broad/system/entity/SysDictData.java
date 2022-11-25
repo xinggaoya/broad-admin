@@ -13,7 +13,7 @@ import java.util.Date;
  * 字典数据表(SysDictData)表实体类
  *
  * @author XingGao
- * @since 2022-10-13 15:00:02
+ * @since 2022 -10-13 15:00:02
  */
 @Data
 @Builder

@@ -1,8 +1,10 @@
 package com.broad.common.constant;
 
 /**
+ * The type Simple mq constant.
+ *
  * @Author: XingGao
- * @Date: 2022/09/30 10:50
+ * @Date: 2022 /09/30 10:50
  * @Description:
  */
 public class SimpleMqConstant {

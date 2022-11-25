@@ -13,13 +13,18 @@ import static com.google.code.kaptcha.Constants.*;
  * Created with IntelliJ IDEA.
  *
  * @Author: XingGao
- * @Date: 2022/07/12 13:53
+ * @Date: 2022 /07/12 13:53
  * @Description:
  */
 @Component
 public class KaptchaConfig {
 
 
+    /**
+     * Gets kaptcha bean.
+     *
+     * @return the kaptcha bean
+     */
     @Bean(name = "captchaProducer")
     public DefaultKaptcha getKaptchaBean() {
         DefaultKaptcha defaultKaptcha = new DefaultKaptcha();
@@ -47,6 +52,11 @@ public class KaptchaConfig {
         return defaultKaptcha;
     }
 
+    /**
+     * Gets kaptcha bean math.
+     *
+     * @return the kaptcha bean math
+     */
     @Bean(name = "captchaProducerMath")
     public DefaultKaptcha getKaptchaBeanMath() {
         DefaultKaptcha defaultKaptcha = new DefaultKaptcha();

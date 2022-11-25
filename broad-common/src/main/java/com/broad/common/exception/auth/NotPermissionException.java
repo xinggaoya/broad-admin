@@ -10,10 +10,20 @@ import org.apache.commons.lang3.StringUtils;
 public class NotPermissionException extends RuntimeException {
     private static final long serialVersionUID = 1L;
 
+    /**
+     * Instantiates a new Not permission exception.
+     *
+     * @param permission the permission
+     */
     public NotPermissionException(String permission) {
         super(permission);
     }
 
+    /**
+     * Instantiates a new Not permission exception.
+     *
+     * @param permissions the permissions
+     */
     public NotPermissionException(String[] permissions) {
         super(StringUtils.join(permissions, ","));
     }

@@ -14,7 +14,7 @@ import java.util.Date;
  * 字典类型表(SysDictType)表实体类
  *
  * @author XingGao
- * @since 2022-10-13 15:00:02
+ * @since 2022 -10-13 15:00:02
  */
 @Data
 @Builder

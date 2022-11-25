@@ -15,7 +15,7 @@ import java.util.List;
  * 管理权限分组表(SysRoleMenu)表实体类
  *
  * @author XingGao
- * @since 2022-10-19 17:15:02
+ * @since 2022 -10-19 17:15:02
  */
 @Data
 @Builder

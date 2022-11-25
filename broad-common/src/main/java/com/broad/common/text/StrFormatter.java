@@ -9,9 +9,21 @@ import com.broad.common.utils.StringUtils;
  * @author XingGao
  */
 public class StrFormatter {
+    /**
+     * The constant EMPTY_JSON.
+     */
     public static final String EMPTY_JSON = "{}";
+    /**
+     * The constant C_BACKSLASH.
+     */
     public static final char C_BACKSLASH = '\\';
+    /**
+     * The constant C_DELIM_START.
+     */
     public static final char C_DELIM_START = '{';
+    /**
+     * The constant C_DELIM_END.
+     */
     public static final char C_DELIM_END = '}';
 
     /**
@@ -25,7 +37,7 @@ public class StrFormatter {
      *
      * @param strPattern 字符串模板
      * @param argArray   参数列表
-     * @return 结果
+     * @return 结果 string
      */
     public static String format(final String strPattern, final Object... argArray) {
         if (StringUtils.isEmpty(strPattern) || StringUtils.isEmpty(argArray)) {

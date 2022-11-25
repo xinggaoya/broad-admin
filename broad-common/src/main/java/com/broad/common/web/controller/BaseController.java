@@ -24,6 +24,8 @@ public class BaseController {
 
     /**
      * 将前台传递过来的日期格式的字符串，自动转化为Date类型
+     *
+     * @param binder the binder
      */
     @InitBinder
     public void initBinder(WebDataBinder binder) {
@@ -52,6 +54,9 @@ public class BaseController {
 
     /**
      * 响应请求分页数据
+     *
+     * @param list the list
+     * @return the data table
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     protected TableDataInfo getDataTable(List<?> list) {
@@ -67,7 +72,7 @@ public class BaseController {
      * 响应返回结果
      *
      * @param rows 影响行数
-     * @return 操作结果
+     * @return 操作结果 result data
      */
     protected ResultData toResult(int rows) {
         return rows > 0 ? ResultData.ok() : ResultData.error();
@@ -77,7 +82,7 @@ public class BaseController {
      * 响应返回结果
      *
      * @param result 结果
-     * @return 操作结果
+     * @return 操作结果 result data
      */
     protected ResultData toResult(boolean result) {
         return result ? success() : error();
@@ -85,6 +90,8 @@ public class BaseController {
 
     /**
      * 返回成功
+     *
+     * @return the result data
      */
     public ResultData success() {
         return ResultData.ok();
@@ -92,6 +99,8 @@ public class BaseController {
 
     /**
      * 返回失败消息
+     *
+     * @return the result data
      */
     public ResultData error() {
         return ResultData.error();
@@ -99,6 +108,9 @@ public class BaseController {
 
     /**
      * 返回成功消息
+     *
+     * @param message the message
+     * @return the result data
      */
     public ResultData success(String message) {
         return ResultData.ok(message);
@@ -106,6 +118,9 @@ public class BaseController {
 
     /**
      * 返回失败消息
+     *
+     * @param message the message
+     * @return the result data
      */
     public ResultData error(String message) {
         return ResultData.error(message);

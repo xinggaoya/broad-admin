@@ -16,7 +16,7 @@ import java.util.List;
  * (SysLoginLog)表服务实现类
  *
  * @author XingGao
- * @since 2022-11-22 19:57:59
+ * @since 2022 -11-22 19:57:59
  */
 @Service("sysLoginLogService")
 public class SysLoginLogServiceImpl extends ServiceImpl<SysLoginLogMapper, SysLoginLog> implements SysLoginLogService {

@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
  * 字典类型表(SysDictType)表服务实现类
  *
  * @author XingGao
- * @since 2022-10-13 15:00:03
+ * @since 2022 -10-13 15:00:03
  */
 @Service("sysDictTypeService")
 public class SysDictTypeServiceImpl extends ServiceImpl<SysDictTypeMapper, SysDictType> implements SysDictTypeService {

@@ -22,7 +22,7 @@ import java.util.List;
  * (SysMenu)表服务实现类
  *
  * @author XingGao
- * @since 2022-10-10 18:46:52
+ * @since 2022 -10-10 18:46:52
  */
 @Service("sysMenuService")
 @CacheConfig(cacheNames = CacheConstants.ROUTE_KEY, keyGenerator = CacheConstants.CACHE_PREFIX_GENERATION)

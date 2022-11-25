@@ -14,14 +14,29 @@ import java.util.Date;
  * @author XingGao
  */
 public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
+    /**
+     * The constant YYYY.
+     */
     public static String YYYY = "yyyy";
 
+    /**
+     * The constant YYYY_MM.
+     */
     public static String YYYY_MM = "yyyy-MM";
 
+    /**
+     * The constant YYYY_MM_DD.
+     */
     public static String YYYY_MM_DD = "yyyy-MM-dd";
 
+    /**
+     * The constant YYYYMMDDHHMMSS.
+     */
     public static String YYYYMMDDHHMMSS = "yyyyMMddHHmmss";
 
+    /**
+     * The constant YYYY_MM_DD_HH_MM_SS.
+     */
     public static String YYYY_MM_DD_HH_MM_SS = "yyyy-MM-dd HH:mm:ss";
 
     private static String[] parsePatterns = {
@@ -41,32 +56,68 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
     /**
      * 获取当前日期, 默认格式为yyyy-MM-dd
      *
-     * @return String
+     * @return String date
      */
     public static String getDate() {
         return dateTimeNow(YYYY_MM_DD);
     }
 
+    /**
+     * Gets time.
+     *
+     * @return the time
+     */
     public static final String getTime() {
         return dateTimeNow(YYYY_MM_DD_HH_MM_SS);
     }
 
+    /**
+     * Date time now string.
+     *
+     * @return the string
+     */
     public static final String dateTimeNow() {
         return dateTimeNow(YYYYMMDDHHMMSS);
     }
 
+    /**
+     * Date time now string.
+     *
+     * @param format the format
+     * @return the string
+     */
     public static final String dateTimeNow(final String format) {
         return parseDateToStr(format, new Date());
     }
 
+    /**
+     * Date time string.
+     *
+     * @param date the date
+     * @return the string
+     */
     public static final String dateTime(final Date date) {
         return parseDateToStr(YYYY_MM_DD, date);
     }
 
+    /**
+     * Parse date to str string.
+     *
+     * @param format the format
+     * @param date   the date
+     * @return the string
+     */
     public static final String parseDateToStr(final String format, final Date date) {
         return new SimpleDateFormat(format).format(date);
     }
 
+    /**
+     * Date time date.
+     *
+     * @param format the format
+     * @param ts     the ts
+     * @return the date
+     */
     public static final Date dateTime(final String format, final String ts) {
         try {
             return new SimpleDateFormat(format).parse(ts);
@@ -77,6 +128,8 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 
     /**
      * 日期路径 即年/月/日 如2018/08/08
+     *
+     * @return the string
      */
     public static final String datePath() {
         Date now = new Date();
@@ -85,6 +138,8 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 
     /**
      * 日期路径 即年/月/日 如20180808
+     *
+     * @return the string
      */
     public static final String dateTime() {
         Date now = new Date();
@@ -93,6 +148,9 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 
     /**
      * 日期型字符串转化为日期 格式
+     *
+     * @param str the str
+     * @return the date
      */
     public static Date parseDate(Object str) {
         if (str == null) {
@@ -107,6 +165,8 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 
     /**
      * 获取服务器启动时间
+     *
+     * @return the server start date
      */
     public static Date getServerStartDate() {
         long time = ManagementFactory.getRuntimeMXBean().getStartTime();
@@ -115,6 +175,10 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 
     /**
      * 计算两个时间差
+     *
+     * @param endDate the end date
+     * @param nowDate the now date
+     * @return the date poor
      */
     public static String getDatePoor(Date endDate, Date nowDate) {
         long nd = 1000 * 24 * 60 * 60;
@@ -136,6 +200,9 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 
     /**
      * 增加 LocalDateTime ==> Date
+     *
+     * @param temporalAccessor the temporal accessor
+     * @return the date
      */
     public static Date toDate(LocalDateTime temporalAccessor) {
         ZonedDateTime zdt = temporalAccessor.atZone(ZoneId.systemDefault());
@@ -144,6 +211,9 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 
     /**
      * 增加 LocalDate ==> Date
+     *
+     * @param temporalAccessor the temporal accessor
+     * @return the date
      */
     public static Date toDate(LocalDate temporalAccessor) {
         LocalDateTime localDateTime = LocalDateTime.of(temporalAccessor, LocalTime.of(0, 0, 0));

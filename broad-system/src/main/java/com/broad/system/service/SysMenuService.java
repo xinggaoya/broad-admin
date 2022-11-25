@@ -9,14 +9,15 @@ import java.util.List;
  * (SysMenu)表服务接口
  *
  * @author XingGao
- * @since 2022-10-10 18:46:52
+ * @since 2022 -10-10 18:46:52
  */
 public interface SysMenuService extends IService<SysMenu> {
 
     /**
      * 根据角色获取对应菜单
      *
-     * @return 菜单列表
+     * @param menuId the menu id
+     * @return 菜单列表 list
      */
     List<SysMenu> findMenuByRole(Integer menuId);
 
@@ -24,7 +25,7 @@ public interface SysMenuService extends IService<SysMenu> {
      * 分页查询父级菜单
      *
      * @param menu 菜单
-     * @return 菜单列表
+     * @return 菜单列表 list
      */
     List<SysMenu> selectAllByPage(SysMenu menu);
 
@@ -33,21 +34,39 @@ public interface SysMenuService extends IService<SysMenu> {
      * 根据父级id查询子菜单
      *
      * @param menu 菜单
-     * @return 菜单列表
+     * @return 菜单列表 list
      */
     List<SysMenu> selectChildListById(SysMenu menu);
 
+    /**
+     * Menu tree list.
+     *
+     * @param menu the menu
+     * @return the list
+     */
     List<SysMenu> menuTree(SysMenu menu);
 
+    /**
+     * Save menu int.
+     *
+     * @param entity the entity
+     * @return the int
+     */
     int saveMenu(SysMenu entity);
 
+    /**
+     * Update menu int.
+     *
+     * @param entity the entity
+     * @return the int
+     */
     int updateMenu(SysMenu entity);
 
     /**
      * 删除菜单
      *
      * @param idList 菜单id
-     * @return 结果
+     * @return 结果 int
      */
     int deleteMenu(List<Long> idList);
 }

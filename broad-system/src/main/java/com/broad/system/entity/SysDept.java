@@ -15,7 +15,7 @@ import java.util.List;
  * 部门表(SysDept)表实体类
  *
  * @author XingGao
- * @since 2022-10-02 19:56:02
+ * @since 2022 -10-02 19:56:02
  */
 @Data
 public class SysDept implements Serializable {

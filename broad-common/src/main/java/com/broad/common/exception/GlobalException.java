@@ -26,14 +26,30 @@ public class GlobalException extends RuntimeException {
     public GlobalException() {
     }
 
+    /**
+     * Instantiates a new Global exception.
+     *
+     * @param message the message
+     */
     public GlobalException(String message) {
         this.message = message;
     }
 
+    /**
+     * Gets detail message.
+     *
+     * @return the detail message
+     */
     public String getDetailMessage() {
         return detailMessage;
     }
 
+    /**
+     * Sets detail message.
+     *
+     * @param detailMessage the detail message
+     * @return the detail message
+     */
     public GlobalException setDetailMessage(String detailMessage) {
         this.detailMessage = detailMessage;
         return this;
@@ -44,6 +60,12 @@ public class GlobalException extends RuntimeException {
         return message;
     }
 
+    /**
+     * Sets message.
+     *
+     * @param message the message
+     * @return the message
+     */
     public GlobalException setMessage(String message) {
         this.message = message;
         return this;

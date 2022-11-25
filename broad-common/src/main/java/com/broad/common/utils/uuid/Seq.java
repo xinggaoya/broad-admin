@@ -7,13 +7,21 @@ import com.broad.common.utils.StringUtils;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
+ * The type Seq.
+ *
  * @author XingGao 序列生成类
  */
 public class Seq {
-    // 通用序列类型
+    /**
+     * The constant commSeqType.
+     */
+// 通用序列类型
     public static final String commSeqType = "COMMON";
 
-    // 上传序列类型
+    /**
+     * The constant uploadSeqType.
+     */
+// 上传序列类型
     public static final String uploadSeqType = "UPLOAD";
 
     // 通用接口序列数
@@ -28,7 +36,7 @@ public class Seq {
     /**
      * 获取通用序列号
      *
-     * @return 序列值
+     * @return 序列值 id
      */
     public static String getId() {
         return getId(commSeqType);
@@ -37,7 +45,8 @@ public class Seq {
     /**
      * 默认16位序列号 yyMMddHHmmss + 一位机器标识 + 3长度循环递增字符串
      *
-     * @return 序列值
+     * @param type the type
+     * @return 序列值 id
      */
     public static String getId(String type) {
         AtomicInteger atomicInt = commSeq;
@@ -52,7 +61,7 @@ public class Seq {
      *
      * @param atomicInt 序列数
      * @param length    数值长度
-     * @return 序列值
+     * @return 序列值 id
      */
     public static String getId(AtomicInteger atomicInt, int length) {
         String result = DateUtils.dateTimeNow();

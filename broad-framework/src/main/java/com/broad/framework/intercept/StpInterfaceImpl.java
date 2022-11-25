@@ -13,11 +13,10 @@ import java.util.List;
  * Created with IntelliJ IDEA.
  *
  * @Author: XingGao
- * @Date: 2022/07/10 22:04
+ * @Date: 2022 /07/10 22:04
  * @return 是否有权限
  * @Description:自定义权限验证接口扩展
  */
-
 @Component    // 保证此类被SpringBoot扫描，完成Sa-Token的自定义权限验证扩展
 public class StpInterfaceImpl implements StpInterface {
 

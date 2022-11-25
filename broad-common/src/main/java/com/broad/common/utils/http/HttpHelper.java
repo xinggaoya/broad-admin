@@ -19,6 +19,12 @@ import java.nio.charset.StandardCharsets;
 public class HttpHelper {
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpHelper.class);
 
+    /**
+     * Gets body string.
+     *
+     * @param request the request
+     * @return the body string
+     */
     public static String getBodyString(ServletRequest request) {
         StringBuilder sb = new StringBuilder();
         BufferedReader reader = null;

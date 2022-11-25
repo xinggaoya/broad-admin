@@ -28,6 +28,11 @@ public class SysOnlineController extends BaseController {
     @Autowired
     private SysOnlineService sysOnlineService;
 
+    /**
+     * Gets online list.
+     *
+     * @return the online list
+     */
     @GetMapping
     @SaCheckPermission("online:list")
     public TableDataInfo getOnlineList() {
@@ -35,6 +40,12 @@ public class SysOnlineController extends BaseController {
         return getDataTable(sysOnlineService.getOnlineList());
     }
 
+    /**
+     * Force logout result data.
+     *
+     * @param sysAdmin the sys admin
+     * @return the result data
+     */
     @DeleteMapping("/forceLogout")
     @SaCheckPermission("online:delete")
     public ResultData forceLogout(SysUser sysAdmin) {

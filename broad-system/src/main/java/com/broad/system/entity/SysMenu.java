@@ -12,7 +12,7 @@ import java.util.List;
  * (SysMenu)表实体类
  *
  * @author XingGao
- * @since 2022-10-10 18:59:10
+ * @since 2022 -10-10 18:59:10
  */
 @Data
 @TableName("sys_menu")

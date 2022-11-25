@@ -96,6 +96,12 @@ public class SysUserLogController extends BaseController {
         return ResultData.success(this.sysAdminLogService.removeByIds(idList));
     }
 
+    /**
+     * Export.
+     *
+     * @param sysAdminLog the sys admin log
+     * @param response    the response
+     */
     @PostMapping("export")
     @Log(description = "导出管理员日志", businessType = BusinessType.EXPORT)
     public void export(@RequestBody SysUserLog sysAdminLog, HttpServletResponse response) {

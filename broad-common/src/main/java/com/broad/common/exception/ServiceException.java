@@ -31,15 +31,31 @@ public final class ServiceException extends RuntimeException {
     public ServiceException() {
     }
 
+    /**
+     * Instantiates a new Service exception.
+     *
+     * @param message the message
+     */
     public ServiceException(String message) {
         this.message = message;
     }
 
+    /**
+     * Instantiates a new Service exception.
+     *
+     * @param message the message
+     * @param code    the code
+     */
     public ServiceException(String message, Integer code) {
         this.message = message;
         this.code = code;
     }
 
+    /**
+     * Gets detail message.
+     *
+     * @return the detail message
+     */
     public String getDetailMessage() {
         return detailMessage;
     }
@@ -49,17 +65,34 @@ public final class ServiceException extends RuntimeException {
         return message;
     }
 
+    /**
+     * Sets detail message.
+     *
+     * @param detailMessage the detail message
+     * @return the detail message
+     */
+    public ServiceException setDetailMessage(String detailMessage) {
+        this.detailMessage = detailMessage;
+        return this;
+    }
+
+    /**
+     * Gets code.
+     *
+     * @return the code
+     */
     public Integer getCode() {
         return code;
     }
 
+    /**
+     * Sets message.
+     *
+     * @param message the message
+     * @return the message
+     */
     public ServiceException setMessage(String message) {
         this.message = message;
-        return this;
-    }
-
-    public ServiceException setDetailMessage(String detailMessage) {
-        this.detailMessage = detailMessage;
         return this;
     }
 }

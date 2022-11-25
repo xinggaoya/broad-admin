@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
  * (SysRoleDept)表服务实现类
  *
  * @author XingGao
- * @since 2022-10-19 17:15:02
+ * @since 2022 -10-19 17:15:02
  */
 @Service("sysRoleDeptService")
 public class SysRoleDeptServiceImpl extends ServiceImpl<SysRoleDeptMapper, SysRoleDept> implements SysRoleDeptService {

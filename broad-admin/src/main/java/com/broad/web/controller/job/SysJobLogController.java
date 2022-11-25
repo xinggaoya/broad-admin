@@ -28,6 +28,9 @@ public class SysJobLogController extends BaseController {
 
     /**
      * 查询定时任务调度日志列表
+     *
+     * @param sysJobLog the sys job log
+     * @return the table data info
      */
     @SaCheckPermission("monitor:job:list")
     @GetMapping("/list")
@@ -39,6 +42,9 @@ public class SysJobLogController extends BaseController {
 
     /**
      * 导出定时任务调度日志列表
+     *
+     * @param response  the response
+     * @param sysJobLog the sys job log
      */
     @SaCheckPermission("monitor:job:export")
     @Log(description = "任务调度日志", businessType = BusinessType.EXPORT)
@@ -51,6 +57,9 @@ public class SysJobLogController extends BaseController {
 
     /**
      * 根据调度编号获取详细信息
+     *
+     * @param jobLogId the job log id
+     * @return the info
      */
     @SaCheckPermission("monitor:job:query")
     @GetMapping(value = "/{configId}")
@@ -60,6 +69,9 @@ public class SysJobLogController extends BaseController {
 
     /**
      * 删除定时任务调度日志
+     *
+     * @param jobLogIds the job log ids
+     * @return the result data
      */
     @SaCheckPermission("monitor:job:remove")
     @Log(description = "定时任务调度日志", businessType = BusinessType.DELETE)
@@ -70,6 +82,8 @@ public class SysJobLogController extends BaseController {
 
     /**
      * 清空定时任务调度日志
+     *
+     * @return the result data
      */
     @SaCheckPermission("monitor:job:remove")
     @Log(description = "调度日志", businessType = BusinessType.CLEAN)

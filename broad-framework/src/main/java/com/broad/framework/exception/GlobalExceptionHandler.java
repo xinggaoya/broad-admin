@@ -15,18 +15,17 @@ import java.util.Objects;
  * Created with IntelliJ IDEA.
  *
  * @Author: XingGao
- * @Date: 2022/07/10 21:52
+ * @Date: 2022 /07/10 21:52
  * @Description:
  */
-
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
     /**
      * 全局异常处理
      *
-     * @param e
-     * @return
+     * @param e the e
+     * @return result data
      */
     @ExceptionHandler
     public ResultData handlerException(Exception e) {
@@ -37,8 +36,8 @@ public class GlobalExceptionHandler {
     /**
      * 未登录异常处理
      *
-     * @param e
-     * @return
+     * @param e the e
+     * @return result data
      */
     @ExceptionHandler(value = NotLoginException.class)
     public ResultData handlerNotLoginException(NotLoginException e) {
@@ -63,8 +62,8 @@ public class GlobalExceptionHandler {
     /**
      * 未授权异常处理
      *
-     * @param e
-     * @return
+     * @param e the e
+     * @return result data
      */
     @ExceptionHandler(value = NotPermissionException.class)
     public ResultData handlerNotPermissionException(NotPermissionException e) {
@@ -75,10 +74,9 @@ public class GlobalExceptionHandler {
     /**
      * 服务异常处理
      *
-     * @param e
-     * @return
+     * @param e the e
+     * @return result data
      */
-
     @ExceptionHandler(value = ServiceException.class)
     public ResultData handlerServiceException(ServiceException e) {
         return ResultData.error(e.getMessage());
@@ -87,8 +85,8 @@ public class GlobalExceptionHandler {
     /**
      * 参数校验异常处理
      *
-     * @param e
-     * @return
+     * @param e the e
+     * @return result data
      */
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     public ResultData handlerMethodArgumentNotValidException(MethodArgumentNotValidException e) {

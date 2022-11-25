@@ -20,7 +20,7 @@ import java.util.List;
  * (SysMenu)表控制层
  *
  * @author XingGao
- * @since 2022-10-10 18:46:51
+ * @since 2022 -10-10 18:46:51
  */
 @RestController
 @RequestMapping("sysMenu")
@@ -34,7 +34,8 @@ public class SysMenuController extends BaseController {
     /**
      * 分页查询父级菜单
      *
-     * @return 所有数据
+     * @param sysMenu the sys menu
+     * @return 所有数据 table data info
      */
     @GetMapping
     @SaCheckPermission("sys:menu:list")
@@ -47,7 +48,7 @@ public class SysMenuController extends BaseController {
      * 通过父级菜单id查询子菜单
      *
      * @param sysMenu 主键
-     * @return 单条数据
+     * @return 单条数据 result data
      */
     @GetMapping("getMenuChild")
     @SaCheckPermission("sys:menu:list")
@@ -58,7 +59,7 @@ public class SysMenuController extends BaseController {
     /**
      * 动态获取路由
      *
-     * @return 角色路由
+     * @return 角色路由 result data
      */
     @GetMapping("getRouters")
     @SaCheckLogin
@@ -70,7 +71,7 @@ public class SysMenuController extends BaseController {
      * 通过主键查询单条数据
      *
      * @param id 主键
-     * @return 单条数据
+     * @return 单条数据 result data
      */
     @GetMapping("{id}")
     @SaCheckPermission("sys:menu:list")
@@ -82,7 +83,7 @@ public class SysMenuController extends BaseController {
      * 新增数据
      *
      * @param sysMenu 实体对象
-     * @return 新增结果
+     * @return 新增结果 result data
      */
     @PostMapping
     @SaCheckPermission("sys:menu:add")
@@ -95,7 +96,7 @@ public class SysMenuController extends BaseController {
      * 获取树形角色菜单
      *
      * @param menu 实体对象
-     * @return 新增结果
+     * @return 新增结果 result data
      */
     @GetMapping("tree")
     @SaCheckPermission("sys:menu:list")
@@ -108,7 +109,7 @@ public class SysMenuController extends BaseController {
      * 修改数据
      *
      * @param sysMenu 实体对象
-     * @return 修改结果
+     * @return 修改结果 result data
      */
     @PutMapping
     @SaCheckPermission("sys:menu:update")
@@ -121,7 +122,7 @@ public class SysMenuController extends BaseController {
      * 删除数据
      *
      * @param idList 主键结合
-     * @return 删除结果
+     * @return 删除结果 result data
      */
     @DeleteMapping
     @SaCheckPermission("sys:menu:delete")

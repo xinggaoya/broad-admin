@@ -27,6 +27,10 @@ public class ScheduleUtils {
 
     /**
      * 构建任务触发对象
+     *
+     * @param jobId    the job id
+     * @param jobGroup the job group
+     * @return the trigger key
      */
     public static TriggerKey getTriggerKey(Long jobId, String jobGroup) {
         return TriggerKey.triggerKey(ScheduleConstants.TASK_CLASS_NAME + jobId, jobGroup);
@@ -34,6 +38,10 @@ public class ScheduleUtils {
 
     /**
      * 构建任务键对象
+     *
+     * @param jobId    the job id
+     * @param jobGroup the job group
+     * @return the job key
      */
     public static JobKey getJobKey(Long jobId, String jobGroup) {
         return JobKey.jobKey(ScheduleConstants.TASK_CLASS_NAME + jobId, jobGroup);
@@ -41,6 +49,11 @@ public class ScheduleUtils {
 
     /**
      * 创建定时任务
+     *
+     * @param scheduler the scheduler
+     * @param job       the job
+     * @throws SchedulerException the scheduler exception
+     * @throws TaskException      the task exception
      */
     public static void createScheduleJob(Scheduler scheduler, SysJob job) throws SchedulerException, TaskException {
         Class<? extends Job> jobClass = getQuartzJobClass(job);
@@ -76,6 +89,11 @@ public class ScheduleUtils {
 
     /**
      * 设置定时任务策略
+     *
+     * @param job the job
+     * @param cb  the cb
+     * @return the cron schedule builder
+     * @throws TaskException the task exception
      */
     public static CronScheduleBuilder handleCronScheduleMisfirePolicy(SysJob job, CronScheduleBuilder cb)
             throws TaskException {
@@ -98,7 +116,7 @@ public class ScheduleUtils {
      * 检查包名是否为白名单配置
      *
      * @param invokeTarget 目标字符串
-     * @return 结果
+     * @return 结果 boolean
      */
     public static boolean whiteList(String invokeTarget) {
         String packageName = StringUtils.substringBefore(invokeTarget, "(");

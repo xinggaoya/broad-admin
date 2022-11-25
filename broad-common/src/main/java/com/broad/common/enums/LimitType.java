@@ -1,8 +1,10 @@
 package com.broad.common.enums;
 
 /**
+ * The enum Limit type.
+ *
  * @Author: XingGao
- * @Date: 2022/11/17
+ * @Date: 2022 /11/17
  * @Description:
  */
 public enum LimitType {

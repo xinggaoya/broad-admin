@@ -48,34 +48,74 @@ public class TableDataInfo implements Serializable {
         this.total = total;
     }
 
+    /**
+     * Gets total.
+     *
+     * @return the total
+     */
     public long getTotal() {
         return total;
     }
 
+    /**
+     * Sets total.
+     *
+     * @param total the total
+     */
     public void setTotal(long total) {
         this.total = total;
     }
 
+    /**
+     * Gets rows.
+     *
+     * @return the rows
+     */
     public List<?> getRows() {
         return rows;
     }
 
+    /**
+     * Sets rows.
+     *
+     * @param rows the rows
+     */
     public void setRows(List<?> rows) {
         this.rows = rows;
     }
 
+    /**
+     * Gets code.
+     *
+     * @return the code
+     */
     public int getCode() {
         return code;
     }
 
+    /**
+     * Sets code.
+     *
+     * @param code the code
+     */
     public void setCode(int code) {
         this.code = code;
     }
 
+    /**
+     * Gets message.
+     *
+     * @return the message
+     */
     public String getMessage() {
         return message;
     }
 
+    /**
+     * Sets message.
+     *
+     * @param message the message
+     */
     public void setMessage(String message) {
         this.message = message;
     }

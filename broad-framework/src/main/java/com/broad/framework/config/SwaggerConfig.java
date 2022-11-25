@@ -18,7 +18,7 @@ import java.util.List;
  * Created with IntelliJ IDEA.
  *
  * @Author: XingGao
- * @Date: 2022/07/12 9:30
+ * @Date: 2022 /07/12 9:30
  * @Description:
  */
 
@@ -26,6 +26,11 @@ import java.util.List;
 @Configuration
 @EnableOpenApi
 public class SwaggerConfig {
+    /**
+     * Create rest api docket.
+     *
+     * @return the docket
+     */
     @Bean
     public Docket createRestApi() {
         //返回文档概要信息

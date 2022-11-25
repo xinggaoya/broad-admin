@@ -19,7 +19,7 @@ public class FileTypeUtils {
      * 例如: XingGao.txt, 返回: txt
      *
      * @param file 文件名
-     * @return 后缀（不含".")
+     * @return 后缀 （不含".")
      */
     public static String getFileType(File file) {
         if (null == file) {
@@ -34,7 +34,7 @@ public class FileTypeUtils {
      * 例如: XingGao.txt, 返回: txt
      *
      * @param fileName 文件名
-     * @return 后缀（不含".")
+     * @return 后缀 （不含".")
      */
     public static String getFileType(String fileName) {
         int separatorIndex = fileName.lastIndexOf(".");
@@ -48,7 +48,7 @@ public class FileTypeUtils {
      * 获取文件名的后缀
      *
      * @param file 表单文件
-     * @return 后缀名
+     * @return 后缀名 extension
      */
     public static final String getExtension(MultipartFile file) {
         String extension = FilenameUtils.getExtension(file.getOriginalFilename());
@@ -62,7 +62,7 @@ public class FileTypeUtils {
      * 获取文件类型
      *
      * @param photoByte 文件字节码
-     * @return 后缀（不含".")
+     * @return 后缀 （不含".")
      */
     public static String getFileExtendName(byte[] photoByte) {
         String strFileExtendName = "JPG";

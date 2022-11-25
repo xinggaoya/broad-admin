@@ -27,7 +27,9 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
     /**
      * 获取参数不为空值
      *
-     * @param value defaultValue 要判断的value
+     * @param <T>          the type parameter
+     * @param value        defaultValue 要判断的value
+     * @param defaultValue the default value
      * @return value 返回值
      */
     public static <T> T nvl(T value, T defaultValue) {
@@ -38,7 +40,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
      * * 判断一个Collection是否为空， 包含List，Set，Queue
      *
      * @param coll 要判断的Collection
-     * @return true：为空 false：非空
+     * @return true ：为空 false：非空
      */
     public static boolean isEmpty(Collection<?> coll) {
         return isNull(coll) || coll.isEmpty();
@@ -48,7 +50,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
      * * 判断一个Collection是否非空，包含List，Set，Queue
      *
      * @param coll 要判断的Collection
-     * @return true：非空 false：空
+     * @return true ：非空 false：空
      */
     public static boolean isNotEmpty(Collection<?> coll) {
         return !isEmpty(coll);
@@ -57,8 +59,8 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
     /**
      * * 判断一个对象数组是否为空
      *
-     * @param objects 要判断的对象数组
-     *                * @return true：为空 false：非空
+     * @param objects 要判断的对象数组                * @return true：为空 false：非空
+     * @return the boolean
      */
     public static boolean isEmpty(Object[] objects) {
         return isNull(objects) || (objects.length == 0);
@@ -68,7 +70,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
      * * 判断一个对象数组是否非空
      *
      * @param objects 要判断的对象数组
-     * @return true：非空 false：空
+     * @return true ：非空 false：空
      */
     public static boolean isNotEmpty(Object[] objects) {
         return !isEmpty(objects);
@@ -78,7 +80,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
      * * 判断一个Map是否为空
      *
      * @param map 要判断的Map
-     * @return true：为空 false：非空
+     * @return true ：为空 false：非空
      */
     public static boolean isEmpty(Map<?, ?> map) {
         return isNull(map) || map.isEmpty();
@@ -88,7 +90,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
      * * 判断一个Map是否为空
      *
      * @param map 要判断的Map
-     * @return true：非空 false：空
+     * @return true ：非空 false：空
      */
     public static boolean isNotEmpty(Map<?, ?> map) {
         return !isEmpty(map);
@@ -98,7 +100,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
      * * 判断一个字符串是否为空串
      *
      * @param str String
-     * @return true：为空 false：非空
+     * @return true ：为空 false：非空
      */
     public static boolean isEmpty(String str) {
         return isNull(str) || NULLSTR.equals(str.trim());
@@ -108,7 +110,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
      * * 判断一个字符串是否为非空串
      *
      * @param str String
-     * @return true：非空串 false：空串
+     * @return true ：非空串 false：空串
      */
     public static boolean isNotEmpty(String str) {
         return !isEmpty(str);
@@ -118,7 +120,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
      * * 判断一个对象是否为空
      *
      * @param object Object
-     * @return true：为空 false：非空
+     * @return true ：为空 false：非空
      */
     public static boolean isNull(Object object) {
         return object == null;
@@ -128,7 +130,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
      * * 判断一个对象是否非空
      *
      * @param object Object
-     * @return true：非空 false：空
+     * @return true ：非空 false：空
      */
     public static boolean isNotNull(Object object) {
         return !isNull(object);
@@ -138,7 +140,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
      * * 判断一个对象是否是数组类型（Java基本型别的数组）
      *
      * @param object 对象
-     * @return true：是数组 false：不是数组
+     * @return true ：是数组 false：不是数组
      */
     public static boolean isArray(Object object) {
         return isNotNull(object) && object.getClass().isArray();
@@ -146,6 +148,9 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
 
     /**
      * 去空格
+     *
+     * @param str the str
+     * @return the string
      */
     public static String trim(String str) {
         return (str == null ? "" : str.trim());
@@ -156,7 +161,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
      *
      * @param str   字符串
      * @param start 开始
-     * @return 结果
+     * @return 结果 string
      */
     public static String substring(final String str, int start) {
         if (str == null) {
@@ -183,7 +188,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
      * @param str   字符串
      * @param start 开始
      * @param end   结束
-     * @return 结果
+     * @return 结果 string
      */
     public static String substring(final String str, int start, int end) {
         if (str == null) {
@@ -219,7 +224,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
      * 判断是否为空，并且不是空白字符
      *
      * @param str 要判断的value
-     * @return 结果
+     * @return 结果 boolean
      */
     public static boolean hasText(String str) {
         return (str != null && !str.isEmpty() && containsText(str));
@@ -246,7 +251,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
      *
      * @param template 文本模板，被替换的部分用 {} 表示
      * @param params   参数值
-     * @return 格式化后的文本
+     * @return 格式化后的文本 string
      */
     public static String format(String template, Object... params) {
         if (isEmpty(params) || isEmpty(template)) {
@@ -259,7 +264,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
      * 是否为http(s)://开头
      *
      * @param link 链接
-     * @return 结果
+     * @return 结果 boolean
      */
     public static boolean ishttp(String link) {
         return StringUtils.startsWithAny(link, Constants.HTTP, Constants.HTTPS);
@@ -267,6 +272,9 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
 
     /**
      * 驼峰转下划线命名
+     *
+     * @param str the str
+     * @return the string
      */
     public static String toUnderScoreCase(String str) {
         if (str == null) {
@@ -309,7 +317,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
      *
      * @param str  验证字符串
      * @param strs 字符串组
-     * @return 包含返回true
+     * @return 包含返回true boolean
      */
     public static boolean inStringIgnoreCase(String str, String... strs) {
         if (str != null && strs != null) {
@@ -326,7 +334,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
      * 将下划线大写方式命名的字符串转换为驼峰式。如果转换前的下划线大写方式命名的字符串为空，则返回空字符串。 例如：HELLO_WORLD->HelloWorld
      *
      * @param name 转换前的下划线大写方式命名的字符串
-     * @return 转换后的驼峰式命名的字符串
+     * @return 转换后的驼峰式命名的字符串 string
      */
     public static String convertToCamelCase(String name) {
         StringBuilder result = new StringBuilder();
@@ -354,6 +362,9 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
 
     /**
      * 驼峰式命名法 例如：user_name->userName
+     *
+     * @param s the s
+     * @return the string
      */
     public static String toCamelCase(String s) {
         if (s == null) {
@@ -382,7 +393,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
      *
      * @param str  指定字符串
      * @param strs 需要检查的字符串数组
-     * @return 是否匹配
+     * @return 是否匹配 boolean
      */
     public static boolean matches(String str, List<String> strs) {
         if (isEmpty(str) || isEmpty(strs)) {
@@ -404,13 +415,20 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
      *
      * @param pattern 匹配规则
      * @param url     需要匹配的url
-     * @return
+     * @return boolean
      */
     public static boolean isMatch(String pattern, String url) {
         AntPathMatcher matcher = new AntPathMatcher();
         return matcher.match(pattern, url);
     }
 
+    /**
+     * Cast t.
+     *
+     * @param <T> the type parameter
+     * @param obj the obj
+     * @return the t
+     */
     @SuppressWarnings("unchecked")
     public static <T> T cast(Object obj) {
         return (T) obj;
@@ -421,7 +439,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
      *
      * @param num  数字对象
      * @param size 字符串指定长度
-     * @return 返回数字的字符串格式，该字符串为指定长度。
+     * @return 返回数字的字符串格式 ，该字符串为指定长度。
      */
     public static final String padl(final Number num, final int size) {
         return padl(num.toString(), size, '0');
@@ -433,7 +451,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
      * @param s    原始字符串
      * @param size 字符串指定长度
      * @param c    用于补齐的字符
-     * @return 返回指定长度的字符串，由原字符串左补齐或截取得到。
+     * @return 返回指定长度的字符串 ，由原字符串左补齐或截取得到。
      */
     public static final String padl(final String s, final int size, final char c) {
         final StringBuilder sb = new StringBuilder(size);

@@ -1,7 +1,6 @@
 package com.broad.system.mapper;
 
 
-
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.broad.system.entity.SysRole;
 import org.apache.ibatis.annotations.Mapper;

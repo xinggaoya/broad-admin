@@ -44,6 +44,7 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
     /**
      * 通过ids批量查询
      *
+     * @param ids the ids
      * @return 单条数据 SysUser
      */
     List<SysUser> selectAllByIds(@Param("ids") List<Long> ids);

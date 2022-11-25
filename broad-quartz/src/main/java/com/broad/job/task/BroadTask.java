@@ -16,6 +16,8 @@ import java.util.HashMap;
 public class BroadTask {
     /**
      * 定时签到
+     *
+     * @param token the token
      */
     public void v2FreeCheckin(String token) {
         HashMap<String, String> map = new HashMap<>(1);

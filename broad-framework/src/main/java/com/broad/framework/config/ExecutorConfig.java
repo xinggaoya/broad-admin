@@ -11,8 +11,10 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
+ * The type Executor config.
+ *
  * @Author XingGao
- * @Date 2022/8/29 9:45
+ * @Date 2022 /8/29 9:45
  * @Version 1.0
  */
 @Configuration
@@ -28,6 +30,11 @@ public class ExecutorConfig {
     @Value("${async.executor.thread.name.prefix}")
     private String namePrefix;
 
+    /**
+     * Async service executor executor.
+     *
+     * @return the executor
+     */
     @Bean(name = "asyncServiceExecutor")
     public Executor asyncServiceExecutor() {
         log.info("start asyncServiceExecutor");

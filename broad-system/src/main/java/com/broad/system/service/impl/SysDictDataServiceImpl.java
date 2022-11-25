@@ -20,7 +20,7 @@ import java.util.List;
  * 字典数据表(SysDictData)表服务实现类
  *
  * @author XingGao
- * @since 2022-10-13 15:00:02
+ * @since 2022 -10-13 15:00:02
  */
 @Service("sysDictDataService")
 @CacheConfig(cacheNames = Constants.SYS_DICT_KEY, keyGenerator = CacheConstants.CACHE_PREFIX_GENERATION)

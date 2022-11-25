@@ -24,7 +24,7 @@ public class IpUtils {
      * 获取客户端IP
      *
      * @param request 请求对象
-     * @return IP地址
+     * @return IP地址 ip
      */
     public static String getIp(HttpServletRequest request) {
         if (request == null) {
@@ -55,7 +55,7 @@ public class IpUtils {
      * 获取城市信息
      *
      * @param ip ip
-     * @return 城市信息
+     * @return 城市信息 ip address
      */
     public static String getIpAddress(String ip) {
 
@@ -107,7 +107,7 @@ public class IpUtils {
      * 检查是否为内部IP地址
      *
      * @param ip IP地址
-     * @return 结果
+     * @return 结果 boolean
      */
     public static boolean internalIp(String ip) {
         byte[] addr = textToNumericFormatV4(ip);
@@ -229,7 +229,7 @@ public class IpUtils {
     /**
      * 获取IP地址
      *
-     * @return 本地IP地址
+     * @return 本地IP地址 host ip
      */
     public static String getHostIp() {
         try {
@@ -242,7 +242,7 @@ public class IpUtils {
     /**
      * 获取主机名
      *
-     * @return 本地主机名
+     * @return 本地主机名 host name
      */
     public static String getHostName() {
         try {
@@ -276,7 +276,7 @@ public class IpUtils {
      * 检测给定字符串是否为未知，多用于检测HTTP请求相关
      *
      * @param checkString 被检测的字符串
-     * @return 是否未知
+     * @return 是否未知 boolean
      */
     public static boolean isUnknown(String checkString) {
         return StringUtils.isBlank(checkString) || "unknown".equalsIgnoreCase(checkString);

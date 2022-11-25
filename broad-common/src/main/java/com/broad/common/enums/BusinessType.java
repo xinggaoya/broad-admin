@@ -5,10 +5,9 @@ package com.broad.common.enums;
  * 业务操作类型
  *
  * @Author: XingGao
- * @Date: 2022/07/11 22:40
+ * @Date: 2022 /07/11 22:40
  * @Description:
  */
-
 public enum BusinessType {
     /**
      * 其它

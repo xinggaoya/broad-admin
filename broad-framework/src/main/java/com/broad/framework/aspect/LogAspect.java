@@ -32,10 +32,9 @@ import java.util.Map;
  * 定义切面
  *
  * @Author: XingGao
- * @Date: 2022/07/11 22:46
+ * @Date: 2022 /07/11 22:46
  * @Description:
  */
-
 @Aspect
 @Component
 @Slf4j
@@ -47,7 +46,9 @@ public class LogAspect {
     /**
      * 处理完请求后执行
      *
-     * @param joinPoint 切点
+     * @param joinPoint     切点
+     * @param controllerLog the controller log
+     * @param jsonResult    the json result
      */
     @AfterReturning(pointcut = "@annotation(controllerLog)", returning = "jsonResult")
     public void doAfterReturning(JoinPoint joinPoint, Log controllerLog, Object jsonResult) {
@@ -57,14 +58,23 @@ public class LogAspect {
     /**
      * 拦截异常操作
      *
-     * @param joinPoint 切点
-     * @param e         异常
+     * @param joinPoint     切点
+     * @param controllerLog the controller log
+     * @param e             异常
      */
     @AfterThrowing(value = "@annotation(controllerLog)", throwing = "e")
     public void doAfterThrowing(JoinPoint joinPoint, Log controllerLog, Exception e) {
         handleLog(joinPoint, controllerLog, e, null);
     }
 
+    /**
+     * Handle log.
+     *
+     * @param joinPoint     the join point
+     * @param controllerLog the controller log
+     * @param e             the e
+     * @param jsonResult    the json result
+     */
     protected void handleLog(final JoinPoint joinPoint, Log controllerLog, final Exception e, Object jsonResult) {
         try {
 
@@ -102,8 +112,10 @@ public class LogAspect {
     /**
      * 获取注解中对方法的描述信息 用于Controller层注解
      *
-     * @param log     日志
-     * @param operLog 操作日志
+     * @param joinPoint  the join point
+     * @param log        日志
+     * @param operLog    操作日志
+     * @param jsonResult the json result
      */
     public void getControllerMethodDescription(JoinPoint joinPoint, Log log, SysUserLog operLog, Object jsonResult) {
         // 设置action动作
@@ -182,7 +194,7 @@ public class LogAspect {
      * 判断是否需要过滤的对象。
      *
      * @param o 对象信息。
-     * @return 如果是需要过滤的对象，则返回true；否则返回false。
+     * @return 如果是需要过滤的对象 ，则返回true；否则返回false。
      */
     @SuppressWarnings("rawtypes")
     public boolean isFilterObject(final Object o) {

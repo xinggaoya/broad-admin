@@ -10,8 +10,10 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
+ * The type Visible thread pool task executor.
+ *
  * @Author XingGao
- * @Date 2022/8/29 10:02
+ * @Date 2022 /8/29 10:02
  * @Version 1.0
  * @Description ThreadPoolTaskExecutor 子类
  */

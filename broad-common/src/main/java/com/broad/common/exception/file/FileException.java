@@ -11,6 +11,12 @@ import com.broad.common.exception.base.BaseException;
 public class FileException extends BaseException {
     private static final long serialVersionUID = 1L;
 
+    /**
+     * Instantiates a new File exception.
+     *
+     * @param code the code
+     * @param args the args
+     */
     public FileException(String code, Object[] args) {
         super("file", code, args, null);
     }

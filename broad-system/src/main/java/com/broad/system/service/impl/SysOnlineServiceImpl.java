@@ -12,8 +12,10 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
+ * The type Sys online service.
+ *
  * @Author: XingGao
- * @Date: 2022/10/4
+ * @Date: 2022 /10/4
  * @Description:
  */
 @Service("sysOnlineService")

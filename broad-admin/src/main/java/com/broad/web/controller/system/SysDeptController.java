@@ -17,7 +17,7 @@ import java.util.List;
  * 部门表(SysDept)表控制层
  *
  * @author XingGao
- * @since 2022-10-02 19:54:52
+ * @since 2022 -10-02 19:54:52
  */
 @RestController
 @RequestMapping("sysDept")
@@ -32,7 +32,7 @@ public class SysDeptController extends BaseController {
      * 查询所有数据
      *
      * @param sysDept 查询实体
-     * @return 所有数据
+     * @return 所有数据 result data
      */
     @GetMapping
     @SaCheckPermission("sys:dept:list")
@@ -44,7 +44,7 @@ public class SysDeptController extends BaseController {
      * 通过主键查询单条数据
      *
      * @param id 主键
-     * @return 单条数据
+     * @return 单条数据 result data
      */
     @GetMapping("{id}")
     @SaCheckPermission("sys:dept:list")
@@ -56,7 +56,7 @@ public class SysDeptController extends BaseController {
      * 新增数据
      *
      * @param sysDept 实体对象
-     * @return 新增结果
+     * @return 新增结果 result data
      */
     @PostMapping
     @SaCheckPermission("sys:dept:add")
@@ -69,7 +69,7 @@ public class SysDeptController extends BaseController {
      * 修改数据
      *
      * @param sysDept 实体对象
-     * @return 修改结果
+     * @return 修改结果 result data
      */
     @PutMapping
     @SaCheckPermission("sys:dept:update")
@@ -82,7 +82,7 @@ public class SysDeptController extends BaseController {
      * 删除数据
      *
      * @param idList 主键结合
-     * @return 删除结果
+     * @return 删除结果 result data
      */
     @DeleteMapping
     @SaCheckPermission("sys:dept:delete")

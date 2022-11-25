@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
  * Created with IntelliJ IDEA.
  *
  * @Author: XingGao
- * @Date: 2022/07/15 13:51
+ * @Date: 2022 /07/15 13:51
  * @Description:
  */
 @Configuration
@@ -19,6 +19,8 @@ public class MybatisPlusConfig {
 
     /**
      * 分页插件
+     *
+     * @return the mybatis plus interceptor
      */
     @Bean
     public MybatisPlusInterceptor mybatisPlusInterceptor() {

@@ -13,7 +13,7 @@ import java.io.Serializable;
  * (SysRoleDept)表实体类
  *
  * @author XingGao
- * @since 2022-10-19 17:15:01
+ * @since 2022 -10-19 17:15:01
  */
 @Data
 @Builder

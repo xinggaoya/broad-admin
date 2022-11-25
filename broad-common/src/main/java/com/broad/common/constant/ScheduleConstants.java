@@ -6,6 +6,9 @@ package com.broad.common.constant;
  * @author XingGao
  */
 public class ScheduleConstants {
+    /**
+     * The constant TASK_CLASS_NAME.
+     */
     public static final String TASK_CLASS_NAME = "TASK_CLASS_NAME";
 
     /**
@@ -33,6 +36,9 @@ public class ScheduleConstants {
      */
     public static final String MISFIRE_DO_NOTHING = "3";
 
+    /**
+     * The enum Status.
+     */
     public enum Status {
         /**
          * 正常
@@ -49,6 +55,11 @@ public class ScheduleConstants {
             this.value = value;
         }
 
+        /**
+         * Gets value.
+         *
+         * @return the value
+         */
         public String getValue() {
             return value;
         }

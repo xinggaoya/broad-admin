@@ -10,17 +10,28 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 /**
+ * The type Fast json json redis serializer.
+ *
+ * @param <T> the type parameter
  * @Author: XingGao
- * @Date: 2022/10/23 18:57
+ * @Date: 2022 /10/23 18:57
  * @Description:
  */
 public class FastJsonJsonRedisSerializer<T> implements RedisSerializer<T> {
 
+    /**
+     * The constant DEFAULT_CHARSET.
+     */
     public static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
     private Class<T> clazz;
 
 
+    /**
+     * Instantiates a new Fast json json redis serializer.
+     *
+     * @param clazz the clazz
+     */
     public FastJsonJsonRedisSerializer(Class<T> clazz) {
         super();
         this.clazz = clazz;

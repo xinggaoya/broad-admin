@@ -31,6 +31,9 @@ public class FileUtils {
      */
     public static final char BACKSLASH = '\\';
 
+    /**
+     * The constant FILENAME_PATTERN.
+     */
     public static String FILENAME_PATTERN = "[a-zA-Z0-9_\\-\\|\\.\\u4e00-\\u9fa5]+";
 
     /**
@@ -39,6 +42,7 @@ public class FileUtils {
      * @param filePath 文件路径
      * @param os       输出流
      * @return
+     * @throws IOException the io exception
      */
     public static void writeBytes(String filePath, OutputStream os) throws IOException {
         FileInputStream fis = null;
@@ -77,7 +81,7 @@ public class FileUtils {
      * 删除文件
      *
      * @param filePath 文件
-     * @return
+     * @return boolean
      */
     public static boolean deleteFile(String filePath) {
         boolean flag = false;
@@ -125,6 +129,7 @@ public class FileUtils {
      * 保存文件到本地
      *
      * @param file 文件
+     * @return the string
      * @throws IOException IO异常
      */
     public static String saveFileToLocal(MultipartFile file) {
@@ -157,7 +162,8 @@ public class FileUtils {
      *
      * @param request  请求对象
      * @param fileName 文件名
-     * @return 编码后的文件名
+     * @return 编码后的文件名 file download header
+     * @throws UnsupportedEncodingException the unsupported encoding exception
      */
     public static String setFileDownloadHeader(HttpServletRequest request, String fileName) throws UnsupportedEncodingException {
         final String agent = request.getHeader("USER-AGENT");
@@ -183,7 +189,7 @@ public class FileUtils {
      * 返回文件名
      *
      * @param filePath 文件
-     * @return 文件名
+     * @return 文件名 name
      */
     public static String getName(String filePath) {
         if (null == filePath) {
@@ -217,7 +223,7 @@ public class FileUtils {
      * Windows平台下分隔符为\，Linux（Unix）为/
      *
      * @param c 字符
-     * @return 是否为Windows或者Linux（Unix）文件分隔符
+     * @return 是否为Windows或者Linux （Unix）文件分隔符
      */
     public static boolean isFileSeparator(char c) {
         return SLASH == c || BACKSLASH == c;
@@ -229,6 +235,7 @@ public class FileUtils {
      * @param response     响应对象
      * @param realFileName 真实文件名
      * @return
+     * @throws UnsupportedEncodingException the unsupported encoding exception
      */
     public static void setAttachmentResponseHeader(HttpServletResponse response, String realFileName) throws UnsupportedEncodingException {
         String percentEncodedFileName = percentEncode(realFileName);
@@ -249,7 +256,8 @@ public class FileUtils {
      * 百分号编码工具方法
      *
      * @param s 需要百分号编码的字符串
-     * @return 百分号编码后的字符串
+     * @return 百分号编码后的字符串 string
+     * @throws UnsupportedEncodingException the unsupported encoding exception
      */
     public static String percentEncode(String s) throws UnsupportedEncodingException {
         String encode = URLEncoder.encode(s, StandardCharsets.UTF_8.toString());

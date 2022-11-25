@@ -36,6 +36,8 @@ public class TableSupport {
 
     /**
      * 封装分页对象
+     *
+     * @return the page domain
      */
     public static PageDomain getPageDomain() {
         PageDomain pageDomain = new PageDomain();
@@ -47,6 +49,11 @@ public class TableSupport {
         return pageDomain;
     }
 
+    /**
+     * Build page request page domain.
+     *
+     * @return the page domain
+     */
     public static PageDomain buildPageRequest() {
         return getPageDomain();
     }

@@ -21,8 +21,10 @@ import java.util.Collections;
 import java.util.List;
 
 /**
+ * The type Rate limiter aspect.
+ *
  * @Author: XingGao
- * @Date: 2022/11/17
+ * @Date: 2022 /11/17
  * @Description:
  */
 @Aspect
@@ -36,6 +38,12 @@ public class RateLimiterAspect {
     @Autowired
     private RedisScript limitScript;
 
+    /**
+     * Do before.
+     *
+     * @param point       the point
+     * @param rateLimiter the rate limiter
+     */
     @Before("@annotation(rateLimiter)")
     public void doBefore(JoinPoint point, RateLimiter rateLimiter) {
         String key = rateLimiter.key();
@@ -57,6 +65,13 @@ public class RateLimiterAspect {
         }
     }
 
+    /**
+     * Gets combine key.
+     *
+     * @param rateLimiter the rate limiter
+     * @param point       the point
+     * @return the combine key
+     */
     public String getCombineKey(RateLimiter rateLimiter, JoinPoint point) {
         StringBuffer stringBuffer = new StringBuffer(rateLimiter.key());
         if (rateLimiter.limitType() == LimitType.IP) {

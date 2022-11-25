@@ -10,7 +10,7 @@ import java.util.List;
  * 字典数据表(SysDictData)表服务接口
  *
  * @author XingGao
- * @since 2022-10-13 15:00:02
+ * @since 2022 -10-13 15:00:02
  */
 public interface SysDictDataService extends IService<SysDictData> {
 
@@ -22,12 +22,27 @@ public interface SysDictDataService extends IService<SysDictData> {
      */
     List<SysDictData> selectDictList(SysDictData dictData);
 
+    /**
+     * Insert dict data.
+     *
+     * @param dictData the dict data
+     */
     @Transactional(rollbackFor = Exception.class)
     void insertDictData(SysDictData dictData);
 
+    /**
+     * Update dict data.
+     *
+     * @param dictData the dict data
+     */
     @Transactional(rollbackFor = Exception.class)
     void updateDictData(SysDictData dictData);
 
+    /**
+     * Delete dict data by id.
+     *
+     * @param dictData the dict data
+     */
     @Transactional(rollbackFor = Exception.class)
     void deleteDictDataById(SysDictData dictData);
 }

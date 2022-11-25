@@ -8,6 +8,9 @@ package com.broad.common.exception.user;
 public class CaptchaExpireException extends UserException {
     private static final long serialVersionUID = 1L;
 
+    /**
+     * Instantiates a new Captcha expire exception.
+     */
     public CaptchaExpireException() {
         super("user.jcaptcha.expire", null);
     }

@@ -21,8 +21,10 @@ import org.springframework.data.redis.serializer.RedisSerializer;
 import java.time.Duration;
 
 /**
+ * The type Redis config.
+ *
  * @Author: XingGao
- * @Date: 2022/10/23 18:58
+ * @Date: 2022 /10/23 18:58
  * @Description:
  */
 @Configuration
@@ -30,6 +32,12 @@ import java.time.Duration;
 @EnableCaching
 public class RedisConfig {
 
+    /**
+     * Redis template redis template.
+     *
+     * @param connectionFactory the connection factory
+     * @return the redis template
+     */
     @Bean
     @SuppressWarnings(value = {"unchecked", "rawtypes"})
     public RedisTemplate<Object, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
@@ -49,6 +57,11 @@ public class RedisConfig {
         return template;
     }
 
+    /**
+     * Limit script default redis script.
+     *
+     * @return the default redis script
+     */
     @Bean
     public DefaultRedisScript<Long> limitScript() {
         DefaultRedisScript<Long> redisScript = new DefaultRedisScript<>();
@@ -57,6 +70,11 @@ public class RedisConfig {
         return redisScript;
     }
 
+    /**
+     * Sass key generator key generator.
+     *
+     * @return the key generator
+     */
     @Bean(name = "selfKeyGenerator")
     public KeyGenerator sassKeyGenerator() {
         final String prefix = "self";
@@ -75,6 +93,12 @@ public class RedisConfig {
         };
     }
 
+    /**
+     * Cache manager cache manager.
+     *
+     * @param connectionFactory the connection factory
+     * @return the cache manager
+     */
     @Bean
     public CacheManager cacheManager(LettuceConnectionFactory connectionFactory) {
         RedisSerializationContext.SerializationPair<Object> pair = RedisSerializationContext.SerializationPair

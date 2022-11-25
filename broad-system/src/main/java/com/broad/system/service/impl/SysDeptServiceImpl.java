@@ -16,7 +16,7 @@ import java.util.List;
  * 部门表(SysDept)表服务实现类
  *
  * @author XingGao
- * @since 2022-10-02 19:54:53
+ * @since 2022 -10-02 19:54:53
  */
 @Service("sysDeptService")
 public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> implements SysDeptService {

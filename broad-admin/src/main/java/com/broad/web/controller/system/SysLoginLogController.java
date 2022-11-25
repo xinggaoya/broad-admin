@@ -18,7 +18,7 @@ import java.io.Serializable;
  * (SysLoginLog)表控制层
  *
  * @author XingGao
- * @since 2022-11-22 19:57:59
+ * @since 2022 -11-22 19:57:59
  */
 @RestController
 @RequestMapping("sysLoginLog")
@@ -33,7 +33,7 @@ public class SysLoginLogController extends BaseController {
      * 分页查询所有数据
      *
      * @param sysLoginLog 查询实体
-     * @return 所有数据
+     * @return 所有数据 table data info
      */
     @GetMapping
     @SaCheckPermission("sys:loginLog:list")
@@ -46,7 +46,7 @@ public class SysLoginLogController extends BaseController {
      * 通过主键查询单条数据
      *
      * @param id 主键
-     * @return 单条数据
+     * @return 单条数据 result data
      */
     @GetMapping("{id}")
     @SaCheckPermission("sys:loginLog:list")

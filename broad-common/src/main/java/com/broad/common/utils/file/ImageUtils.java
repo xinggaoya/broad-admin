@@ -18,6 +18,12 @@ import java.util.Arrays;
 public class ImageUtils {
     private static final Logger log = LoggerFactory.getLogger(ImageUtils.class);
 
+    /**
+     * Get image byte [ ].
+     *
+     * @param imagePath the image path
+     * @return the byte [ ]
+     */
     public static byte[] getImage(String imagePath) {
         InputStream is = getFile(imagePath);
         try {
@@ -30,6 +36,12 @@ public class ImageUtils {
         }
     }
 
+    /**
+     * Gets file.
+     *
+     * @param imagePath the image path
+     * @return the file
+     */
     public static InputStream getFile(String imagePath) {
         try {
             byte[] result = readFile(imagePath);
@@ -45,7 +57,7 @@ public class ImageUtils {
      * 读取文件为字节数据
      *
      * @param url 地址
-     * @return 字节数据
+     * @return 字节数据 byte [ ]
      */
     public static byte[] readFile(String url) {
         InputStream in = null;

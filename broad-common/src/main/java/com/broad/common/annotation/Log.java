@@ -8,7 +8,7 @@ import java.lang.annotation.*;
  * Created with IntelliJ IDEA.
  *
  * @Author: XingGao
- * @Date: 2022/07/11 22:35
+ * @Date: 2022 /07/11 22:35
  * @Description:
  */
 @Target({ElementType.PARAMETER, ElementType.METHOD})
@@ -18,11 +18,15 @@ public @interface Log {
 
     /**
      * 描述
+     *
+     * @return the string
      */
     String description() default "";
 
     /**
      * 方法类型 INSERT DELETE UPDATE OTHER
+     *
+     * @return the business type
      */
     BusinessType businessType() default BusinessType.OTHER;
 }

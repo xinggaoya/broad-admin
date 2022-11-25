@@ -17,7 +17,7 @@ import java.util.List;
  * (SysUserRole)表控制层
  *
  * @author XingGao
- * @since 2022-10-21 01:03:46
+ * @since 2022 -10-21 01:03:46
  */
 @RestController
 @RequestMapping("sysUserRole")
@@ -33,7 +33,7 @@ public class SysUserRoleController extends BaseController {
      * 通过主键查询单条数据
      *
      * @param id 主键
-     * @return 单条数据
+     * @return 单条数据 result data
      */
     @GetMapping("{id}")
     @SaCheckPermission("sys:user:list")
@@ -45,7 +45,7 @@ public class SysUserRoleController extends BaseController {
      * 新增数据
      *
      * @param sysUserRole 实体对象
-     * @return 新增结果
+     * @return 新增结果 result data
      */
     @PostMapping
     @SaCheckPermission("sys:user:add")
@@ -58,7 +58,7 @@ public class SysUserRoleController extends BaseController {
      * 修改数据
      *
      * @param sysUserRole 实体对象
-     * @return 修改结果
+     * @return 修改结果 result data
      */
     @PutMapping
     @SaCheckPermission("sys:user:update")
@@ -71,7 +71,7 @@ public class SysUserRoleController extends BaseController {
      * 删除数据
      *
      * @param idList 主键结合
-     * @return 删除结果
+     * @return 删除结果 result data
      */
     @DeleteMapping
     @SaCheckPermission("sys:user:delete")

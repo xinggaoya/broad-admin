@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
  * spring redis 工具类
  *
  * @author XingGao
- **/
+ */
 @Component
 public class RedisService {
 
@@ -25,6 +25,7 @@ public class RedisService {
     /**
      * 缓存基本的对象，Integer、String、实体类等
      *
+     * @param <T>   the type parameter
      * @param key   缓存的键值
      * @param value 缓存的值
      */
@@ -35,6 +36,7 @@ public class RedisService {
     /**
      * 缓存基本的对象，Integer、String、实体类等
      *
+     * @param <T>     the type parameter
      * @param key     缓存的键值
      * @param value   缓存的值
      * @param timeout 时间(分钟)
@@ -48,7 +50,7 @@ public class RedisService {
      *
      * @param key     Redis键
      * @param timeout 超时时间
-     * @return true=设置成功；false=设置失败
+     * @return true =设置成功；false=设置失败
      */
     public boolean expire(final String key, final long timeout) {
         return expire(key, timeout, TimeUnit.SECONDS);
@@ -60,7 +62,7 @@ public class RedisService {
      * @param key     Redis键
      * @param timeout 超时时间
      * @param unit    时间单位
-     * @return true=设置成功；false=设置失败
+     * @return true =设置成功；false=设置失败
      */
     public boolean expire(final String key, final long timeout, final TimeUnit unit) {
         return redisTemplate.expire(key, timeout, unit);
@@ -70,7 +72,7 @@ public class RedisService {
      * 获取有效时间
      *
      * @param key Redis键
-     * @return 有效时间
+     * @return 有效时间 expire
      */
     public long getExpire(final String key) {
         return redisTemplate.getExpire(key);
@@ -89,8 +91,9 @@ public class RedisService {
     /**
      * 获得缓存的基本对象。
      *
+     * @param <T> the type parameter
      * @param key 缓存键值
-     * @return 缓存键值对应的数据
+     * @return 缓存键值对应的数据 cache object
      */
     public <T> T getCacheObject(final String key) {
         ValueOperations<String, T> operation = redisTemplate.opsForValue();
@@ -100,7 +103,8 @@ public class RedisService {
     /**
      * 删除单个对象
      *
-     * @param key
+     * @param key the key
+     * @return the boolean
      */
     public boolean deleteObject(final String key) {
         return redisTemplate.delete(key);
@@ -110,7 +114,7 @@ public class RedisService {
      * 删除集合对象
      *
      * @param collection 多个对象
-     * @return
+     * @return long
      */
     public long deleteObject(final Collection collection) {
         return redisTemplate.delete(collection);
@@ -120,9 +124,10 @@ public class RedisService {
     /**
      * 缓存List数据
      *
+     * @param <T>      the type parameter
      * @param key      缓存的键值
      * @param dataList 待缓存的List数据
-     * @return 缓存的对象
+     * @return 缓存的对象 cache list
      */
     public <T> long setCacheList(final String key, final List<T> dataList) {
         Long count = redisTemplate.opsForList().rightPushAll(key, dataList);
@@ -132,10 +137,11 @@ public class RedisService {
     /**
      * 缓存List数据
      *
+     * @param <T>      the type parameter
      * @param key      缓存的键值
      * @param dataList 待缓存的List数据
      * @param timeout  时间
-     * @return 缓存的对象
+     * @return 缓存的对象 cache list
      */
     public <T> long setCacheList(final String key, final List<T> dataList, final long timeout) {
         Long count = redisTemplate.opsForList().rightPushAll(key, dataList);
@@ -148,8 +154,9 @@ public class RedisService {
     /**
      * 获得缓存的list对象
      *
+     * @param <T> the type parameter
      * @param key 缓存的键值
-     * @return 缓存键值对应的数据
+     * @return 缓存键值对应的数据 cache list
      */
     public <T> List<T> getCacheList(final String key) {
         return redisTemplate.opsForList().range(key, 0, -1);
@@ -158,9 +165,10 @@ public class RedisService {
     /**
      * 缓存Set
      *
+     * @param <T>     the type parameter
      * @param key     缓存键值
      * @param dataSet 缓存的数据
-     * @return 缓存数据的对象
+     * @return 缓存数据的对象 cache set
      */
     public <T> BoundSetOperations<String, T> setCacheSet(final String key, final Set<T> dataSet) {
         BoundSetOperations<String, T> setOperation = redisTemplate.boundSetOps(key);
@@ -174,8 +182,9 @@ public class RedisService {
     /**
      * 获得缓存的set
      *
-     * @param key
-     * @return
+     * @param <T> the type parameter
+     * @param key the key
+     * @return cache set
      */
     public <T> Set<T> getCacheSet(final String key) {
         return redisTemplate.opsForSet().members(key);
@@ -184,8 +193,9 @@ public class RedisService {
     /**
      * 缓存Map
      *
-     * @param key
-     * @param dataMap
+     * @param <T>     the type parameter
+     * @param key     the key
+     * @param dataMap the data map
      */
     public <T> void setCacheMap(final String key, final Map<String, T> dataMap) {
         if (dataMap != null) {
@@ -196,8 +206,9 @@ public class RedisService {
     /**
      * 获得缓存的Map
      *
-     * @param key
-     * @return
+     * @param <T> the type parameter
+     * @param key the key
+     * @return cache map
      */
     public <T> Map<String, T> getCacheMap(final String key) {
         return redisTemplate.opsForHash().entries(key);
@@ -206,6 +217,7 @@ public class RedisService {
     /**
      * 往Hash中存入数据
      *
+     * @param <T>   the type parameter
      * @param key   Redis键
      * @param hKey  Hash键
      * @param value 值
@@ -217,9 +229,10 @@ public class RedisService {
     /**
      * 获取Hash中的数据
      *
+     * @param <T>  the type parameter
      * @param key  Redis键
      * @param hKey Hash键
-     * @return Hash中的对象
+     * @return Hash中的对象 cache map value
      */
     public <T> T getCacheMapValue(final String key, final String hKey) {
         HashOperations<String, String, T> opsForHash = redisTemplate.opsForHash();
@@ -229,9 +242,10 @@ public class RedisService {
     /**
      * 获取多个Hash中的数据
      *
+     * @param <T>   the type parameter
      * @param key   Redis键
      * @param hKeys Hash键集合
-     * @return Hash对象集合
+     * @return Hash对象集合 multi cache map value
      */
     public <T> List<T> getMultiCacheMapValue(final String key, final Collection<Object> hKeys) {
         return redisTemplate.opsForHash().multiGet(key, hKeys);
@@ -241,7 +255,7 @@ public class RedisService {
      * 获得缓存的基本对象列表
      *
      * @param pattern 字符串前缀
-     * @return 对象列表
+     * @return 对象列表 collection
      */
     public Collection<String> keys(final String pattern) {
         return redisTemplate.keys(pattern);

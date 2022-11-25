@@ -5,8 +5,10 @@ import cn.dev33.satoken.stp.SaLoginModel;
 import org.springframework.stereotype.Component;
 
 /**
+ * The type Sa token listener.
+ *
  * @Author: XingGao
- * @Date: 2022/10/13 13:54
+ * @Date: 2022 /10/13 13:54
  * @Description: 自定义侦听器的实现
  */
 @Component

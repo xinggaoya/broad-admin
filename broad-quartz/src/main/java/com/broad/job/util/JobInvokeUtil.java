@@ -19,6 +19,7 @@ public class JobInvokeUtil {
      * 执行方法
      *
      * @param sysJob 系统任务
+     * @throws Exception the exception
      */
     public static void invokeMethod(SysJob sysJob) throws Exception {
         String invokeTarget = sysJob.getInvokeTarget();
@@ -68,7 +69,7 @@ public class JobInvokeUtil {
      * 获取bean名称
      *
      * @param invokeTarget 目标字符串
-     * @return bean名称
+     * @return bean名称 bean name
      */
     public static String getBeanName(String invokeTarget) {
         String beanName = StringUtils.substringBefore(invokeTarget, "(");
@@ -79,7 +80,7 @@ public class JobInvokeUtil {
      * 获取bean方法
      *
      * @param invokeTarget 目标字符串
-     * @return method方法
+     * @return method方法 method name
      */
     public static String getMethodName(String invokeTarget) {
         String methodName = StringUtils.substringBefore(invokeTarget, "(");
@@ -90,7 +91,7 @@ public class JobInvokeUtil {
      * 获取method方法参数相关列表
      *
      * @param invokeTarget 目标字符串
-     * @return method方法相关参数列表
+     * @return method方法相关参数列表 method params
      */
     public static List<Object[]> getMethodParams(String invokeTarget) {
         String methodStr = StringUtils.substringBetween(invokeTarget, "(", ")");
@@ -129,7 +130,7 @@ public class JobInvokeUtil {
      * 获取参数类型
      *
      * @param methodParams 参数相关列表
-     * @return 参数类型列表
+     * @return 参数类型列表 class [ ]
      */
     public static Class<?>[] getMethodParamsType(List<Object[]> methodParams) {
         Class<?>[] classs = new Class<?>[methodParams.size()];
@@ -145,7 +146,7 @@ public class JobInvokeUtil {
      * 获取参数值
      *
      * @param methodParams 参数相关列表
-     * @return 参数值列表
+     * @return 参数值列表 object [ ]
      */
     public static Object[] getMethodParamsValue(List<Object[]> methodParams) {
         Object[] classs = new Object[methodParams.size()];

@@ -37,13 +37,20 @@ import java.util.stream.Collectors;
 /**
  * Excel相关处理
  *
+ * @param <T> the type parameter
  * @author XingGao
  */
 public class ExcelUtil<T> {
     private static final Logger log = LoggerFactory.getLogger(ExcelUtil.class);
 
+    /**
+     * The constant FORMULA_REGEX_STR.
+     */
     public static final String FORMULA_REGEX_STR = "=|-|\\+|@";
 
+    /**
+     * The constant FORMULA_STR.
+     */
     public static final String[] FORMULA_STR = {"=", "-", "+", "@"};
 
     /**
@@ -121,6 +128,11 @@ public class ExcelUtil<T> {
      */
     public String[] excludeFields;
 
+    /**
+     * Instantiates a new Excel util.
+     *
+     * @param clazz the clazz
+     */
     public ExcelUtil(Class<T> clazz) {
         this.clazz = clazz;
     }
@@ -135,17 +147,17 @@ public class ExcelUtil<T> {
         this.excludeFields = fields;
     }
 
-    public void init(List<T> list, String sheetName, String title, Type type) {
-        if (list == null) {
-            list = new ArrayList<T>();
+    /**
+     * 获取画布
+     *
+     * @param sheet the sheet
+     * @return the drawing patriarch
+     */
+    public static Drawing<?> getDrawingPatriarch(Sheet sheet) {
+        if (sheet.getDrawingPatriarch() == null) {
+            sheet.createDrawingPatriarch();
         }
-        this.list = list;
-        this.sheetName = sheetName;
-        this.type = type;
-        this.title = title;
-        createExcelField();
-        createWorkbook();
-        createTitle();
+        return sheet.getDrawingPatriarch();
     }
 
     /**
@@ -164,10 +176,120 @@ public class ExcelUtil<T> {
     }
 
     /**
+     * 解析导出值 0=男,1=女,2=未知
+     *
+     * @param propertyValue 参数值
+     * @param converterExp  翻译注解
+     * @param separator     分隔符
+     * @return 解析后值 string
+     */
+    public static String convertByExp(String propertyValue, String converterExp, String separator) {
+        StringBuilder propertyString = new StringBuilder();
+        String[] convertSource = converterExp.split(",");
+        for (String item : convertSource) {
+            String[] itemArray = item.split("=");
+            if (StringUtils.containsAny(separator, propertyValue)) {
+                for (String value : propertyValue.split(separator)) {
+                    if (itemArray[0].equals(value)) {
+                        propertyString.append(itemArray[1] + separator);
+                        break;
+                    }
+                }
+            } else {
+                if (itemArray[0].equals(propertyValue)) {
+                    return itemArray[1];
+                }
+            }
+        }
+        return StringUtils.stripEnd(propertyString.toString(), separator);
+    }
+
+    /**
+     * 反向解析值 男=0,女=1,未知=2
+     *
+     * @param propertyValue 参数值
+     * @param converterExp  翻译注解
+     * @param separator     分隔符
+     * @return 解析后值 string
+     */
+    public static String reverseByExp(String propertyValue, String converterExp, String separator) {
+        StringBuilder propertyString = new StringBuilder();
+        String[] convertSource = converterExp.split(",");
+        for (String item : convertSource) {
+            String[] itemArray = item.split("=");
+            if (StringUtils.containsAny(separator, propertyValue)) {
+                for (String value : propertyValue.split(separator)) {
+                    if (itemArray[1].equals(value)) {
+                        propertyString.append(itemArray[0] + separator);
+                        break;
+                    }
+                }
+            } else {
+                if (itemArray[1].equals(propertyValue)) {
+                    return itemArray[0];
+                }
+            }
+        }
+        return StringUtils.stripEnd(propertyString.toString(), separator);
+    }
+
+    /**
+     * Init.
+     *
+     * @param list      the list
+     * @param sheetName the sheet name
+     * @param title     the title
+     * @param type      the type
+     */
+    public void init(List<T> list, String sheetName, String title, Type type) {
+        if (list == null) {
+            list = new ArrayList<T>();
+        }
+        this.list = list;
+        this.sheetName = sheetName;
+        this.type = type;
+        this.title = title;
+        createExcelField();
+        createWorkbook();
+        createTitle();
+    }
+
+    /**
+     * 对list数据源将其里面的数据导入到excel表单
+     *
+     * @param response  返回数据
+     * @param list      导出数据集合
+     * @param sheetName 工作表的名称
+     * @return 结果
+     * @throws IOException
+     */
+    public void exportExcel(HttpServletResponse response, List<T> list, String sheetName) {
+        exportExcel(response, list, sheetName, StringUtils.EMPTY);
+    }
+
+    /**
+     * 对list数据源将其里面的数据导入到excel表单
+     *
+     * @param response  返回数据
+     * @param list      导出数据集合
+     * @param sheetName 工作表的名称
+     * @param title     标题
+     * @return 结果
+     * @throws IOException
+     */
+    public void exportExcel(HttpServletResponse response, List<T> list, String sheetName, String title) {
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setCharacterEncoding("utf-8");
+        this.init(list, sheetName, title, Type.EXPORT);
+        exportExcel(response);
+    }
+
+    /**
      * 对excel表单默认第一个索引名转换成list
      *
      * @param is 输入流
-     * @return 转换后集合
+     * @return 转换后集合 list
+     * @throws Exception the exception
      */
     public List<T> importExcel(InputStream is) throws Exception {
         return importExcel(is, 0);
@@ -178,7 +300,8 @@ public class ExcelUtil<T> {
      *
      * @param is       输入流
      * @param titleNum 标题占用行数
-     * @return 转换后集合
+     * @return 转换后集合 list
+     * @throws Exception the exception
      */
     public List<T> importExcel(InputStream is, int titleNum) throws Exception {
         return importExcel(StringUtils.EMPTY, is, titleNum);
@@ -188,9 +311,10 @@ public class ExcelUtil<T> {
      * 对excel表单指定表格索引名转换成list
      *
      * @param sheetName 表格索引名
-     * @param titleNum  标题占用行数
      * @param is        输入流
-     * @return 转换后集合
+     * @param titleNum  标题占用行数
+     * @return 转换后集合 list
+     * @throws Exception the exception
      */
     public List<T> importExcel(String sheetName, InputStream is, int titleNum) throws Exception {
         this.type = Type.IMPORT;
@@ -294,76 +418,6 @@ public class ExcelUtil<T> {
             }
         }
         return list;
-    }
-
-    /**
-     * 对list数据源将其里面的数据导入到excel表单
-     *
-     * @param response  返回数据
-     * @param list      导出数据集合
-     * @param sheetName 工作表的名称
-     * @return 结果
-     * @throws IOException
-     */
-    public void exportExcel(HttpServletResponse response, List<T> list, String sheetName) {
-        exportExcel(response, list, sheetName, StringUtils.EMPTY);
-    }
-
-    /**
-     * 对list数据源将其里面的数据导入到excel表单
-     *
-     * @param response  返回数据
-     * @param list      导出数据集合
-     * @param sheetName 工作表的名称
-     * @param title     标题
-     * @return 结果
-     * @throws IOException
-     */
-    public void exportExcel(HttpServletResponse response, List<T> list, String sheetName, String title) {
-        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-        response.setCharacterEncoding("utf-8");
-        this.init(list, sheetName, title, Type.EXPORT);
-        exportExcel(response);
-    }
-
-    /**
-     * 对list数据源将其里面的数据导入到excel表单
-     *
-     * @param sheetName 工作表的名称
-     * @return 结果
-     */
-    public void importTemplateExcel(HttpServletResponse response, String sheetName) {
-        importTemplateExcel(response, sheetName, StringUtils.EMPTY);
-    }
-
-    /**
-     * 对list数据源将其里面的数据导入到excel表单
-     *
-     * @param sheetName 工作表的名称
-     * @param title     标题
-     * @return 结果
-     */
-    public void importTemplateExcel(HttpServletResponse response, String sheetName, String title) {
-        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-        response.setCharacterEncoding("utf-8");
-        this.init(null, sheetName, title, Type.IMPORT);
-        exportExcel(response);
-    }
-
-    /**
-     * 对list数据源将其里面的数据导入到excel表单
-     *
-     * @return 结果
-     */
-    public void exportExcel(HttpServletResponse response) {
-        try {
-            writeSheet();
-            wb.write(response.getOutputStream());
-        } catch (Exception e) {
-            log.error("导出Excel异常{}", e.getMessage());
-        } finally {
-            IOUtils.closeQuietly(wb);
-        }
     }
 
     /**
@@ -533,16 +587,14 @@ public class ExcelUtil<T> {
     }
 
     /**
-     * 创建单元格
+     * 对list数据源将其里面的数据导入到excel表单
+     *
+     * @param response  the response
+     * @param sheetName 工作表的名称
+     * @return 结果
      */
-    public Cell createCell(Excel attr, Row row, int column) {
-        // 创建列
-        Cell cell = row.createCell(column);
-        // 写入列信息
-        cell.setCellValue(attr.name());
-        setDataValidation(attr, row, column);
-        cell.setCellStyle(styles.get(StringUtils.format("header_{}_{}", attr.headerColor(), attr.headerBackgroundColor())));
-        return cell;
+    public void importTemplateExcel(HttpServletResponse response, String sheetName) {
+        importTemplateExcel(response, sheetName, StringUtils.EMPTY);
     }
 
     /**
@@ -576,17 +628,60 @@ public class ExcelUtil<T> {
     }
 
     /**
-     * 获取画布
+     * 对list数据源将其里面的数据导入到excel表单
+     *
+     * @param response  the response
+     * @param sheetName 工作表的名称
+     * @param title     标题
+     * @return 结果
      */
-    public static Drawing<?> getDrawingPatriarch(Sheet sheet) {
-        if (sheet.getDrawingPatriarch() == null) {
-            sheet.createDrawingPatriarch();
+    public void importTemplateExcel(HttpServletResponse response, String sheetName, String title) {
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setCharacterEncoding("utf-8");
+        this.init(null, sheetName, title, Type.IMPORT);
+        exportExcel(response);
+    }
+
+    /**
+     * 对list数据源将其里面的数据导入到excel表单
+     *
+     * @param response the response
+     * @return 结果
+     */
+    public void exportExcel(HttpServletResponse response) {
+        try {
+            writeSheet();
+            wb.write(response.getOutputStream());
+        } catch (Exception e) {
+            log.error("导出Excel异常{}", e.getMessage());
+        } finally {
+            IOUtils.closeQuietly(wb);
         }
-        return sheet.getDrawingPatriarch();
+    }
+
+    /**
+     * 创建单元格
+     *
+     * @param attr   the attr
+     * @param row    the row
+     * @param column the column
+     * @return the cell
+     */
+    public Cell createCell(Excel attr, Row row, int column) {
+        // 创建列
+        Cell cell = row.createCell(column);
+        // 写入列信息
+        cell.setCellValue(attr.name());
+        setDataValidation(attr, row, column);
+        cell.setCellStyle(styles.get(StringUtils.format("header_{}_{}", attr.headerColor(), attr.headerBackgroundColor())));
+        return cell;
     }
 
     /**
      * 获取图片类型,设置图片插入类型
+     *
+     * @param value the value
+     * @return the image type
      */
     public int getImageType(byte[] value) {
         String type = FileTypeUtils.getFileExtendName(value);
@@ -599,7 +694,43 @@ public class ExcelUtil<T> {
     }
 
     /**
+     * 设置 POI XSSFSheet 单元格提示或选择框
+     *
+     * @param sheet         表单
+     * @param textlist      下拉框显示的内容
+     * @param promptContent 提示内容
+     * @param firstRow      开始行
+     * @param endRow        结束行
+     * @param firstCol      开始列
+     * @param endCol        结束列
+     */
+    public void setPromptOrValidation(Sheet sheet, String[] textlist, String promptContent, int firstRow, int endRow,
+                                      int firstCol, int endCol) {
+        DataValidationHelper helper = sheet.getDataValidationHelper();
+        DataValidationConstraint constraint = textlist.length > 0 ? helper.createExplicitListConstraint(textlist) : helper.createCustomConstraint("DD1");
+        CellRangeAddressList regions = new CellRangeAddressList(firstRow, endRow, firstCol, endCol);
+        DataValidation dataValidation = helper.createValidation(constraint, regions);
+        if (StringUtils.isNotEmpty(promptContent)) {
+            // 如果设置了提示信息则鼠标放上去提示
+            dataValidation.createPromptBox("", promptContent);
+            dataValidation.setShowPromptBox(true);
+        }
+        // 处理Excel兼容性问题
+        if (dataValidation instanceof XSSFDataValidation) {
+            dataValidation.setSuppressDropDownArrow(true);
+            dataValidation.setShowErrorBox(true);
+        } else {
+            dataValidation.setSuppressDropDownArrow(false);
+        }
+        sheet.addValidationData(dataValidation);
+    }
+
+    /**
      * 创建表格样式
+     *
+     * @param attr   the attr
+     * @param row    the row
+     * @param column the column
      */
     public void setDataValidation(Excel attr, Row row, int column) {
         if (attr.name().indexOf("注：") >= 0) {
@@ -616,6 +747,13 @@ public class ExcelUtil<T> {
 
     /**
      * 添加单元格
+     *
+     * @param attr   the attr
+     * @param row    the row
+     * @param vo     the vo
+     * @param field  the field
+     * @param column the column
+     * @return the cell
      */
     public Cell addCell(Excel attr, Row row, T vo, Field field, int column) {
         Cell cell = null;
@@ -654,101 +792,11 @@ public class ExcelUtil<T> {
     }
 
     /**
-     * 设置 POI XSSFSheet 单元格提示或选择框
-     *
-     * @param sheet         表单
-     * @param textlist      下拉框显示的内容
-     * @param promptContent 提示内容
-     * @param firstRow      开始行
-     * @param endRow        结束行
-     * @param firstCol      开始列
-     * @param endCol        结束列
-     */
-    public void setPromptOrValidation(Sheet sheet, String[] textlist, String promptContent, int firstRow, int endRow,
-                                      int firstCol, int endCol) {
-        DataValidationHelper helper = sheet.getDataValidationHelper();
-        DataValidationConstraint constraint = textlist.length > 0 ? helper.createExplicitListConstraint(textlist) : helper.createCustomConstraint("DD1");
-        CellRangeAddressList regions = new CellRangeAddressList(firstRow, endRow, firstCol, endCol);
-        DataValidation dataValidation = helper.createValidation(constraint, regions);
-        if (StringUtils.isNotEmpty(promptContent)) {
-            // 如果设置了提示信息则鼠标放上去提示
-            dataValidation.createPromptBox("", promptContent);
-            dataValidation.setShowPromptBox(true);
-        }
-        // 处理Excel兼容性问题
-        if (dataValidation instanceof XSSFDataValidation) {
-            dataValidation.setSuppressDropDownArrow(true);
-            dataValidation.setShowErrorBox(true);
-        } else {
-            dataValidation.setSuppressDropDownArrow(false);
-        }
-        sheet.addValidationData(dataValidation);
-    }
-
-    /**
-     * 解析导出值 0=男,1=女,2=未知
-     *
-     * @param propertyValue 参数值
-     * @param converterExp  翻译注解
-     * @param separator     分隔符
-     * @return 解析后值
-     */
-    public static String convertByExp(String propertyValue, String converterExp, String separator) {
-        StringBuilder propertyString = new StringBuilder();
-        String[] convertSource = converterExp.split(",");
-        for (String item : convertSource) {
-            String[] itemArray = item.split("=");
-            if (StringUtils.containsAny(separator, propertyValue)) {
-                for (String value : propertyValue.split(separator)) {
-                    if (itemArray[0].equals(value)) {
-                        propertyString.append(itemArray[1] + separator);
-                        break;
-                    }
-                }
-            } else {
-                if (itemArray[0].equals(propertyValue)) {
-                    return itemArray[1];
-                }
-            }
-        }
-        return StringUtils.stripEnd(propertyString.toString(), separator);
-    }
-
-    /**
-     * 反向解析值 男=0,女=1,未知=2
-     *
-     * @param propertyValue 参数值
-     * @param converterExp  翻译注解
-     * @param separator     分隔符
-     * @return 解析后值
-     */
-    public static String reverseByExp(String propertyValue, String converterExp, String separator) {
-        StringBuilder propertyString = new StringBuilder();
-        String[] convertSource = converterExp.split(",");
-        for (String item : convertSource) {
-            String[] itemArray = item.split("=");
-            if (StringUtils.containsAny(separator, propertyValue)) {
-                for (String value : propertyValue.split(separator)) {
-                    if (itemArray[1].equals(value)) {
-                        propertyString.append(itemArray[0] + separator);
-                        break;
-                    }
-                }
-            } else {
-                if (itemArray[1].equals(propertyValue)) {
-                    return itemArray[0];
-                }
-            }
-        }
-        return StringUtils.stripEnd(propertyString.toString(), separator);
-    }
-
-    /**
      * 数据处理器
      *
      * @param value 数据值
      * @param excel 数据注解
-     * @return
+     * @return string
      */
     public String dataFormatHandlerAdapter(Object value, Excel excel) {
         try {
@@ -852,6 +900,8 @@ public class ExcelUtil<T> {
 
     /**
      * 获取字段注解信息
+     *
+     * @return the fields
      */
     public List<Object[]> getFields() {
         List<Object[]> fields = new ArrayList<Object[]>();
@@ -887,6 +937,8 @@ public class ExcelUtil<T> {
 
     /**
      * 根据注解获取最大行高
+     *
+     * @return the row height
      */
     public short getRowHeight() {
         double maxHeight = 0;
@@ -927,7 +979,7 @@ public class ExcelUtil<T> {
      *
      * @param row    获取的行
      * @param column 获取单元格列号
-     * @return 单元格值
+     * @return 单元格值 cell value
      */
     public Object getCellValue(Row row, int column) {
         if (row == null) {
@@ -987,7 +1039,7 @@ public class ExcelUtil<T> {
      *
      * @param dateFormat 日期格式
      * @param val        被格式化的日期对象
-     * @return 格式化后的日期字符
+     * @return 格式化后的日期字符 string
      */
     public String parseDateToStr(String dateFormat, Object val) {
         if (val == null) {

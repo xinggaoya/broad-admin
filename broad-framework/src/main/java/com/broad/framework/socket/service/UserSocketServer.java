@@ -14,8 +14,10 @@ import java.io.IOException;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
+ * The type User socket server.
+ *
  * @Author: XingGao
- * @Date: 2022/11/22
+ * @Date: 2022 /11/22
  * @Description:
  */
 @Component
@@ -38,6 +40,9 @@ public class UserSocketServer {
 
     /**
      * 群发自定义消息
+     *
+     * @param message the message
+     * @param sid     the sid
      */
     public static void sendInfo(Object message, @PathParam("sid") String sid) {
         log.info("推送消息到窗口" + sid + "，推送内容:" + message);
@@ -71,24 +76,44 @@ public class UserSocketServer {
         }
     }
 
+    /**
+     * Gets online count.
+     *
+     * @return the online count
+     */
     public static synchronized int getOnlineCount() {
         return onlineCount;
     }
 
+    /**
+     * Add online count.
+     */
     public static synchronized void addOnlineCount() {
         UserSocketServer.onlineCount++;
     }
 
+    /**
+     * Sub online count.
+     */
     public static synchronized void subOnlineCount() {
         UserSocketServer.onlineCount--;
     }
 
+    /**
+     * Gets web socket set.
+     *
+     * @return the web socket set
+     */
     public static CopyOnWriteArraySet<UserSocketServer> getWebSocketSet() {
         return webSocketSet;
     }
 
     /**
      * 连接建立成功调用的方法
+     *
+     * @param session the session
+     * @param sid     the sid
+     * @throws IOException the io exception
      */
     @OnOpen
     public void onOpen(Session session, @PathParam("sid") String sid) throws IOException {
@@ -124,6 +149,8 @@ public class UserSocketServer {
     /**
      * 收到客户端消息后调用的方法
      *
+     * @param message the message
+     * @param session the session
      * @ Param message 客户端发送过来的消息
      */
     @OnMessage
@@ -142,6 +169,8 @@ public class UserSocketServer {
     }
 
     /**
+     * @param session the session
+     * @param error   the error
      * @ Param session
      * @ Param error
      */
@@ -153,6 +182,9 @@ public class UserSocketServer {
 
     /**
      * 实现服务器主动推送
+     *
+     * @param message the message
+     * @throws IOException the io exception
      */
     public void sendMessage(String message) throws IOException {
         this.session.getBasicRemote().sendText(message);

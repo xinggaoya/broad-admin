@@ -19,7 +19,7 @@ import java.util.List;
  * 管理权限分组表(SysRoleMenu)表服务实现类
  *
  * @author XingGao
- * @since 2022-10-19 17:15:02
+ * @since 2022 -10-19 17:15:02
  */
 @Service("sysRoleMenuService")
 @CacheConfig(cacheNames = CacheConstants.ROUTE_KEY, keyGenerator = CacheConstants.CACHE_PREFIX_GENERATION)

@@ -162,12 +162,24 @@ public final class HTMLFilter {
         vTagCounts.clear();
     }
 
-    // ---------------------------------------------------------------
+    /**
+     * Chr string.
+     *
+     * @param decimal the decimal
+     * @return the string
+     */
+// ---------------------------------------------------------------
     // my versions of some PHP library functions
     public static String chr(final int decimal) {
         return String.valueOf((char) decimal);
     }
 
+    /**
+     * Html special chars string.
+     *
+     * @param s the s
+     * @return the string
+     */
     public static String htmlSpecialChars(final String s) {
         String result = s;
         result = regexReplace(P_AMP, "&amp;", result);
@@ -202,10 +214,20 @@ public final class HTMLFilter {
         return s;
     }
 
+    /**
+     * Is always make tags boolean.
+     *
+     * @return the boolean
+     */
     public boolean isAlwaysMakeTags() {
         return alwaysMakeTags;
     }
 
+    /**
+     * Is strip comments boolean.
+     *
+     * @return the boolean
+     */
     public boolean isStripComments() {
         return stripComment;
     }

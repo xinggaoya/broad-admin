@@ -60,6 +60,7 @@ public abstract class AbstractQuartzJob implements Job {
      *
      * @param context 工作执行上下文对象
      * @param sysJob  系统计划任务
+     * @param e       the e
      */
     protected void after(JobExecutionContext context, SysJob sysJob, Exception e) {
         Date startTime = threadLocal.get();

@@ -35,6 +35,9 @@ public class SysJobController extends BaseController {
 
     /**
      * 查询定时任务列表
+     *
+     * @param sysJob the sys job
+     * @return the table data info
      */
     @SaCheckPermission("job:list")
     @GetMapping("/list")
@@ -46,6 +49,9 @@ public class SysJobController extends BaseController {
 
     /**
      * 导出定时任务列表
+     *
+     * @param response the response
+     * @param sysJob   the sys job
      */
     @SaCheckPermission("job:export")
     @Log(description = "导出定时任务数据", businessType = BusinessType.EXPORT)
@@ -58,6 +64,9 @@ public class SysJobController extends BaseController {
 
     /**
      * 获取定时任务详细信息
+     *
+     * @param jobId the job id
+     * @return the info
      */
     @SaCheckPermission("job:list")
     @GetMapping(value = "/{jobId}")
@@ -67,6 +76,11 @@ public class SysJobController extends BaseController {
 
     /**
      * 新增定时任务
+     *
+     * @param job the job
+     * @return the result data
+     * @throws SchedulerException the scheduler exception
+     * @throws TaskException      the task exception
      */
     @SaCheckPermission("job:add")
     @Log(description = "新增定时任务", businessType = BusinessType.INSERT)
@@ -90,6 +104,11 @@ public class SysJobController extends BaseController {
 
     /**
      * 修改定时任务
+     *
+     * @param job the job
+     * @return the result data
+     * @throws SchedulerException the scheduler exception
+     * @throws TaskException      the task exception
      */
     @SaCheckPermission("job:update")
     @Log(description = "修改定时任务", businessType = BusinessType.UPDATE)
@@ -113,6 +132,10 @@ public class SysJobController extends BaseController {
 
     /**
      * 定时任务状态修改
+     *
+     * @param job the job
+     * @return the result data
+     * @throws SchedulerException the scheduler exception
      */
     @SaCheckPermission("job:update")
     @Log(description = "修改定时任务状态", businessType = BusinessType.UPDATE)
@@ -125,6 +148,10 @@ public class SysJobController extends BaseController {
 
     /**
      * 定时任务立即执行一次
+     *
+     * @param job the job
+     * @return the result data
+     * @throws SchedulerException the scheduler exception
      */
     @SaCheckPermission("job:update")
     @Log(description = "执行定时任务", businessType = BusinessType.UPDATE)
@@ -136,6 +163,10 @@ public class SysJobController extends BaseController {
 
     /**
      * 删除定时任务
+     *
+     * @param jobIds the job ids
+     * @return the result data
+     * @throws SchedulerException the scheduler exception
      */
     @SaCheckPermission("job:delete")
     @Log(description = "删除定时任务", businessType = BusinessType.DELETE)

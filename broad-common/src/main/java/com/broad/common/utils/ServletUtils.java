@@ -25,6 +25,9 @@ import java.util.Map;
 public class ServletUtils {
     /**
      * 获取String参数
+     *
+     * @param name the name
+     * @return the parameter
      */
     public static String getParameter(String name) {
         return getRequest().getParameter(name);
@@ -32,6 +35,10 @@ public class ServletUtils {
 
     /**
      * 获取String参数
+     *
+     * @param name         the name
+     * @param defaultValue the default value
+     * @return the parameter
      */
     public static String getParameter(String name, String defaultValue) {
         return Convert.toStr(getRequest().getParameter(name), defaultValue);
@@ -39,6 +46,9 @@ public class ServletUtils {
 
     /**
      * 获取Integer参数
+     *
+     * @param name the name
+     * @return the parameter to int
      */
     public static Integer getParameterToInt(String name) {
         return Convert.toInt(getRequest().getParameter(name));
@@ -46,6 +56,10 @@ public class ServletUtils {
 
     /**
      * 获取Integer参数
+     *
+     * @param name         the name
+     * @param defaultValue the default value
+     * @return the parameter to int
      */
     public static Integer getParameterToInt(String name, Integer defaultValue) {
         return Convert.toInt(getRequest().getParameter(name), defaultValue);
@@ -53,6 +67,9 @@ public class ServletUtils {
 
     /**
      * 获取Boolean参数
+     *
+     * @param name the name
+     * @return the parameter to bool
      */
     public static Boolean getParameterToBool(String name) {
         return Convert.toBool(getRequest().getParameter(name));
@@ -60,6 +77,10 @@ public class ServletUtils {
 
     /**
      * 获取Boolean参数
+     *
+     * @param name         the name
+     * @param defaultValue the default value
+     * @return the parameter to bool
      */
     public static Boolean getParameterToBool(String name, Boolean defaultValue) {
         return Convert.toBool(getRequest().getParameter(name), defaultValue);
@@ -67,6 +88,8 @@ public class ServletUtils {
 
     /**
      * 获取request
+     *
+     * @return the request
      */
     public static HttpServletRequest getRequest() {
         try {
@@ -78,6 +101,8 @@ public class ServletUtils {
 
     /**
      * 获取response
+     *
+     * @return the response
      */
     public static HttpServletResponse getResponse() {
         try {
@@ -89,11 +114,18 @@ public class ServletUtils {
 
     /**
      * 获取session
+     *
+     * @return the session
      */
     public static HttpSession getSession() {
         return getRequest().getSession();
     }
 
+    /**
+     * Gets request attributes.
+     *
+     * @return the request attributes
+     */
     public static ServletRequestAttributes getRequestAttributes() {
         try {
             RequestAttributes attributes = RequestContextHolder.getRequestAttributes();
@@ -103,6 +135,13 @@ public class ServletUtils {
         }
     }
 
+    /**
+     * Gets header.
+     *
+     * @param request the request
+     * @param name    the name
+     * @return the header
+     */
     public static String getHeader(HttpServletRequest request, String name) {
         String value = request.getHeader(name);
         if (StringUtils.isEmpty(value)) {
@@ -111,6 +150,12 @@ public class ServletUtils {
         return urlDecode(value);
     }
 
+    /**
+     * Gets headers.
+     *
+     * @param request the request
+     * @return the headers
+     */
     public static Map<String, String> getHeaders(HttpServletRequest request) {
         Map<String, String> map = new LinkedCaseInsensitiveMap<>();
         Enumeration<String> enumeration = request.getHeaderNames();
@@ -144,7 +189,8 @@ public class ServletUtils {
     /**
      * 是否是Ajax异步请求
      *
-     * @param request
+     * @param request the request
+     * @return the boolean
      */
     public static boolean isAjaxRequest(HttpServletRequest request) {
         String accept = request.getHeader("accept");
@@ -170,7 +216,7 @@ public class ServletUtils {
      * 内容编码
      *
      * @param str 内容
-     * @return 编码后的内容
+     * @return 编码后的内容 string
      */
     public static String urlEncode(String str) {
         try {
@@ -184,7 +230,7 @@ public class ServletUtils {
      * 内容解码
      *
      * @param str 内容
-     * @return 解码后的内容
+     * @return 解码后的内容 string
      */
     public static String urlDecode(String str) {
         try {
