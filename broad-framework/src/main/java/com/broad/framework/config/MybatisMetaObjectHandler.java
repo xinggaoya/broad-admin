@@ -11,14 +11,13 @@ import java.util.Date;
  *
  * @Author: XingGao
  * @Date: 2022 /07/11 22:55
- * @Description:
+ * @Description: MybatisPlus自动填充
  */
 @Component
 public class MybatisMetaObjectHandler implements MetaObjectHandler {
 
     @Override
     public void insertFill(MetaObject metaObject) {
-
         this.strictInsertFill(metaObject, "createTime", Date::new, Date.class);
 
     }

@@ -5,6 +5,7 @@ import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.annotation.SaIgnore;
 import com.broad.common.annotation.Log;
+import com.broad.common.annotation.RateLimiter;
 import com.broad.common.enums.BusinessType;
 import com.broad.common.web.controller.BaseController;
 import com.broad.common.web.entity.ResultData;
@@ -98,7 +99,7 @@ public class SysUserController extends BaseController {
     @SaCheckPermission("sys:user:delete")
     @Log(description = "删除管理员", businessType = BusinessType.DELETE)
     public ResultData delete(@RequestParam("idList") List<Long> idList) {
-        return ResultData.success(this.sysAdminService.removeByIds(idList));
+        return toResult(this.sysAdminService.removeByIds(idList));
     }
 
     /**
@@ -110,6 +111,7 @@ public class SysUserController extends BaseController {
      * @throws IOException the io exception
      */
     @PostMapping("/login")
+    @RateLimiter(key = "ADMIN_LOGIN", count = 5, time = 1)
     @SaIgnore
     public ResultData login(@RequestBody SysUser sysAdmin, HttpServletRequest request) throws IOException {
         return ResultData.success(this.sysAdminService.administratorLogin(sysAdmin, request)).setMsg("登录成功!");

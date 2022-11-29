@@ -26,6 +26,15 @@
             <if test="deptId != null and deptId != ''">
                 and su.dept_id = #{deptId}
             </if>
+            <if test="userStatus != null and userStatus != ''">
+                and su.user_status = #{userStatus}
+            </if>
+            <if test="email != null and email != ''">
+                and su.email = #{email}
+            </if>
+            <if test="mobile != null and mobile != ''">
+                and su.mobile = #{mobile}
+            </if>
         </where>
     </select>
 
@@ -43,7 +52,7 @@
     <!-- 批量插入 -->
     <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
         insert into db_template_database.sys_user(user_name, nick_name, avatar, email, mobile, login_failure,
-        last_logintime, last_loginip, password, salt, motto, create_time, update_time, status)
+        last_logintime, last_loginip, password, salt, motto, create_time, update_time, user_status)
         values
         <foreach collection="entities" item="entity" separator=",">
             (#{entity.userName}, #{entity.nickName}, #{entity.avatar}, #{entity.email}, #{entity.mobile},
@@ -54,7 +63,7 @@
     <!-- 批量插入或按主键更新 -->
     <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
         insert into db_template_database.sys_user(user_name, nick_name, avatar, email, mobile, login_failure,
-        last_logintime, last_loginip, password, salt, motto, create_time, update_time, status)
+        last_logintime, last_loginip, password, salt, motto, create_time, update_time, user_status)
         values
         <foreach collection="entities" item="entity" separator=",">
             (#{entity.userName}, #{entity.nickName}, #{entity.avatar}, #{entity.email}, #{entity.mobile},
@@ -65,7 +74,7 @@
         user_name = values(user_name) , nick_name = values(nick_name) , avatar = values(avatar) , email = values(email)
         , mobile = values(mobile) , login_failure = values(login_failure) , last_logintime = values(last_logintime) ,
         last_loginip = values(last_loginip) , password = values(password) , salt = values(salt) , motto = values(motto)
-        , create_time = values(create_time) , update_time = values(update_time) , status = values(status)
+        , create_time = values(create_time) , update_time = values(update_time) , user_status = values(user_status)
     </insert>
 
 </mapper>

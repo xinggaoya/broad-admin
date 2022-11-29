@@ -112,6 +112,11 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             admin.setLastLoginip(IpUtils.getIpAddress(ip));
             admin.setLastIp(ip);
             baseMapper.updateById(admin);
+
+            // 效验是否被封禁
+            if (StpUtil.isDisable(admin.getId())) {
+                throw new ServiceException("账号已被封禁,请联系管理员");
+            }
             // 标记登录状态
             StpUtil.login(admin.getId());
             admin.setTokenValue(StpUtil.getTokenValue());
@@ -126,8 +131,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             sysLoginLog.setMessage(msg);
             sysLoginLog.setUserId(admin.getId());
             loginLogService.saveLoginLog(request, sysLoginLog);
-            throw new ServiceException(msg);
         }
+        return null;
     }
 
     /**

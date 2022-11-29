@@ -68,14 +68,15 @@ public class UserSocketServer {
      *
      * @param sid 用户id
      */
-    private static void removeUser(String sid) throws IOException {
+    private static Boolean removeUser(String sid) {
+        boolean flag = false;
         for (UserSocketServer item : webSocketSet) {
             if (item.sid.equals(sid)) {
-                item.session.close();
-                webSocketSet.remove(item);
+                flag = true;
                 break;
             }
         }
+        return flag;
     }
 
     /**
@@ -138,7 +139,10 @@ public class UserSocketServer {
             return;
         }
         // 禁止重复登录
-        removeUser(sid);
+        if (removeUser(sid)) {
+            log.info("用户已登录，禁止重复登录");
+            return;
+        }
         webSocketSet.add(this);
         this.sid = sid;
         addOnlineCount();

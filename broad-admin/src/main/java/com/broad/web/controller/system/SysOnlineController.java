@@ -29,7 +29,7 @@ public class SysOnlineController extends BaseController {
     private SysOnlineService sysOnlineService;
 
     /**
-     * Gets online list.
+     * 分页查询在线用户
      *
      * @return the online list
      */
@@ -41,7 +41,7 @@ public class SysOnlineController extends BaseController {
     }
 
     /**
-     * Force logout result data.
+     * 强退用户
      *
      * @param sysAdmin the sys admin
      * @return the result data
@@ -50,6 +50,18 @@ public class SysOnlineController extends BaseController {
     @SaCheckPermission("online:delete")
     public ResultData forceLogout(SysUser sysAdmin) {
         StpUtil.kickout(sysAdmin.getId());
+        UserSocketServer.sendInfo(ResultData.error(), sysAdmin.getId().toString());
+        return ResultData.ok();
+    }
+
+    /**
+     * 封禁用户
+     */
+    @DeleteMapping("/ban")
+    @SaCheckPermission("online:delete")
+    public ResultData ban(SysUser sysAdmin) {
+        StpUtil.kickout(sysAdmin.getId());
+        StpUtil.disable(sysAdmin.getId(), 60 * 60 * 1000);
         UserSocketServer.sendInfo(ResultData.error(), sysAdmin.getId().toString());
         return ResultData.ok();
     }
