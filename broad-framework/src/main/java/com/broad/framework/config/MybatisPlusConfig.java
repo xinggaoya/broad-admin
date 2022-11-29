@@ -18,41 +18,42 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class MybatisPlusConfig {
 
-
-    /**
-     * 分页插件
-     *
-     * @return the mybatis plus interceptor
-     */
     @Bean
-    public MybatisPlusInterceptor paginationInterceptor() {
+    public MybatisPlusInterceptor mybatisPlusInterceptor() {
         MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
-        interceptor.addInnerInterceptor(new PaginationInnerInterceptor(DbType.MYSQL));
+        // 分页插件
+        interceptor.addInnerInterceptor(paginationInnerInterceptor());
+        // 乐观锁插件
+        interceptor.addInnerInterceptor(optimisticLockerInnerInterceptor());
+        // 阻断插件
+        interceptor.addInnerInterceptor(blockAttackInnerInterceptor());
         return interceptor;
     }
 
     /**
-     * 乐观锁插件
-     *
-     * @return the mybatis plus interceptor
+     * 分页插件，自动识别数据库类型 https://baomidou.com/guide/interceptor-pagination.html
      */
-    @Bean
-    public MybatisPlusInterceptor optimisticLockInterceptor() {
-        MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
-        interceptor.addInnerInterceptor(new OptimisticLockerInnerInterceptor());
-        return interceptor;
+    public PaginationInnerInterceptor paginationInnerInterceptor() {
+        PaginationInnerInterceptor paginationInnerInterceptor = new PaginationInnerInterceptor();
+        // 设置数据库类型为mysql
+        paginationInnerInterceptor.setDbType(DbType.MYSQL);
+        // 设置最大单页限制数量，默认 500 条，-1 不受限制
+        paginationInnerInterceptor.setMaxLimit(-1L);
+        return paginationInnerInterceptor;
     }
 
     /**
-     * 防止全表更新与删除
-     *
-     * @return the mybatis plus interceptor
+     * 乐观锁插件 https://baomidou.com/guide/interceptor-optimistic-locker.html
      */
-    @Bean
-    public MybatisPlusInterceptor fullTableOperationInterceptor() {
-        MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
-        interceptor.addInnerInterceptor(new BlockAttackInnerInterceptor());
-        return interceptor;
+    public OptimisticLockerInnerInterceptor optimisticLockerInnerInterceptor() {
+        return new OptimisticLockerInnerInterceptor();
+    }
+
+    /**
+     * 如果是对全表的删除或更新操作，就会终止该操作 https://baomidou.com/guide/interceptor-block-attack.html
+     */
+    public BlockAttackInnerInterceptor blockAttackInnerInterceptor() {
+        return new BlockAttackInnerInterceptor();
     }
 
 }
