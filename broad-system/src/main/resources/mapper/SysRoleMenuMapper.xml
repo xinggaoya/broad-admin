@@ -33,14 +33,19 @@
         on duplicate key update
         role_id = values(role_id) , menu_id = values(menu_id)
     </insert>
-    <select id="findRoleMenu" resultType="com.broad.system.entity.SysMenu">
+
+    <select id="findRoleMenuByUserId" resultType="com.broad.system.entity.SysMenu">
         SELECT
         <include refid="Menu_Column_List"/>
         FROM sys_menu sm
-        WHERE menu_id IN (
-        SELECT menu_id
-        FROM sys_role_menu
-        WHERE role_id = #{roleId}
+        WHERE
+        menu_id IN (
+        SELECT
+        menu_id
+        FROM
+        sys_role_menu
+        WHERE
+        role_id IN ( SELECT role_id FROM sys_user_role WHERE user_id =#{userId} )
         )
     </select>
 

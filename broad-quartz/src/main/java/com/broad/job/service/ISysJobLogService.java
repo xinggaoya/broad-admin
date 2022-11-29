@@ -1,6 +1,7 @@
 package com.broad.job.service;
 
 
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.broad.job.entity.SysJobLog;
 
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.List;
  *
  * @author XingGao
  */
-public interface ISysJobLogService {
+public interface ISysJobLogService extends IService<SysJobLog> {
     /**
      * 获取quartz调度器日志的计划任务
      *

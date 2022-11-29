@@ -36,4 +36,10 @@ public class CacheConstants {
      */
     public final static String CACHE_PREFIX_GENERATION = "selfKeyGenerator";
 
+    /**
+     * 角色缓存前缀
+     */
+    public final static String ROLE_KEY = "role_codes";
+
+
 }

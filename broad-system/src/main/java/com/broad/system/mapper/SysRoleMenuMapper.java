@@ -20,10 +20,10 @@ public interface SysRoleMenuMapper extends BaseMapper<SysRoleMenu> {
     /**
      * 查询角色菜单
      *
-     * @param roleId 查询实体
+     * @param userId 查询实体
      * @return 所有数据 list
      */
-    List<SysMenu> findRoleMenu(@Param("roleId") Integer roleId);
+    List<SysMenu> findRoleMenuByUserId(@Param("userId") Integer userId);
 
     /**
      * 批量新增数据（MyBatis原生foreach方法）

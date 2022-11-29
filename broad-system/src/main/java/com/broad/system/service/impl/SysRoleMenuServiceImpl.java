@@ -9,6 +9,7 @@ import com.broad.system.mapper.SysRoleMenuMapper;
 import com.broad.system.service.SysRoleMenuService;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,8 +27,20 @@ import java.util.List;
 public class SysRoleMenuServiceImpl extends ServiceImpl<SysRoleMenuMapper, SysRoleMenu> implements SysRoleMenuService {
 
     @Override
-    public List<SysMenu> findRoleMenu(Integer roleId) {
-        return this.baseMapper.findRoleMenu(roleId);
+    public List<SysMenu> findRoleMenuByUserId(Integer userId) {
+        return this.baseMapper.findRoleMenuByUserId(userId);
+    }
+
+    /**
+     * 查询权限码
+     *
+     * @param userId 查询实体
+     * @return 所有数据 list
+     */
+    @Override
+    @Cacheable(key = "#userId+'_roleMenuCodes'", unless = "null == #result")
+    public List<String> findRoleMenuCodeByUserId(Integer userId) {
+        return findRoleMenuByUserId(userId).stream().map(SysMenu::getPerme).collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
     }
 
     @Override

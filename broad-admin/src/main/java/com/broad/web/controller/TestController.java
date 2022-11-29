@@ -1,5 +1,6 @@
 package com.broad.web.controller;
 
+import cn.dev33.satoken.annotation.SaIgnore;
 import com.broad.common.socket.service.UserSocketServer;
 import com.broad.common.utils.ServletUtils;
 import com.broad.common.utils.ip.IpUtils;
@@ -25,6 +26,7 @@ public class TestController {
      * @param sid     the sid
      */
     @GetMapping("/test")
+    @SaIgnore
     public void testSimple(String message, String sid) {
         UserSocketServer.sendInfo(message, sid);
     }

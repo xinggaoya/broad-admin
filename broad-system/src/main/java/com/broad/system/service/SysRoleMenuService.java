@@ -25,9 +25,17 @@ public interface SysRoleMenuService extends IService<SysRoleMenu> {
     /**
      * 查询角色菜单
      *
-     * @param roleId 查询实体
+     * @param userId 查询实体
      * @return 所有数据 list
      */
-    List<SysMenu> findRoleMenu(Integer roleId);
+    List<SysMenu> findRoleMenuByUserId(Integer userId);
+
+    /**
+     * 查询权限码
+     *
+     * @param userId 查询实体
+     * @return 所有数据 list
+     */
+    List<String> findRoleMenuCodeByUserId(Integer userId);
 }
 

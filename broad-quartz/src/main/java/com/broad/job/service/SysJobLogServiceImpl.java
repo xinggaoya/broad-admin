@@ -1,5 +1,6 @@
 package com.broad.job.service;
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.broad.job.entity.SysJobLog;
 import com.broad.job.mapper.SysJobLogMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,7 @@ import java.util.List;
  * @author XingGao
  */
 @Service
-public class SysJobLogServiceImpl implements ISysJobLogService {
+public class SysJobLogServiceImpl extends ServiceImpl<SysJobLogMapper, SysJobLog> implements ISysJobLogService {
     @Autowired
     private SysJobLogMapper jobLogMapper;
 

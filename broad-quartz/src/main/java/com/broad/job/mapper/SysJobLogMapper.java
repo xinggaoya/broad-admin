@@ -1,6 +1,7 @@
 package com.broad.job.mapper;
 
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.broad.job.entity.SysJobLog;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -12,7 +13,7 @@ import java.util.List;
  * @author XingGao
  */
 @Mapper
-public interface SysJobLogMapper {
+public interface SysJobLogMapper extends BaseMapper<SysJobLog> {
     /**
      * 获取quartz调度器日志的计划任务
      *

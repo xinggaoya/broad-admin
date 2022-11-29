@@ -28,5 +28,12 @@ public interface SysUserRoleService extends IService<SysUserRole> {
      * @param user 用户
      */
     void insertUserRole(SysUser user);
+
+    /**
+     * 查询用户拥有角色码
+     *
+     * @param userId 用户ID
+     */
+    List<String> selectUserRoleCodes(Long userId);
 }
 
