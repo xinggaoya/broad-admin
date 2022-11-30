@@ -50,7 +50,7 @@ public class FileTypeUtils {
      * @param file 表单文件
      * @return 后缀名 extension
      */
-    public static final String getExtension(MultipartFile file) {
+    public static String getExtension(MultipartFile file) {
         String extension = FilenameUtils.getExtension(file.getOriginalFilename());
         if (StringUtils.isEmpty(extension)) {
             extension = MimeTypeUtils.getExtension(Objects.requireNonNull(file.getContentType()));

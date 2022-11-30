@@ -14,6 +14,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 文件处理工具类
@@ -35,6 +37,11 @@ public class FileUtils {
      * The constant FILENAME_PATTERN.
      */
     public static String FILENAME_PATTERN = "[a-zA-Z0-9_\\-\\|\\.\\u4e00-\\u9fa5]+";
+
+    /**
+     * 上传文件目录
+     */
+    public static String LOCAL_UPLOAD_PATH = SpringUtils.getBean(BroadConfig.class).getSystemFileDir().concat(Constants.UPLOAD_FILE).concat(File.separator);
 
     /**
      * 输出指定文件的byte数组
@@ -130,16 +137,15 @@ public class FileUtils {
      *
      * @param file 文件
      * @return the string
-     * @throws IOException IO异常
      */
     public static String saveFileToLocal(MultipartFile file) {
         if (file.isEmpty()) {
             throw new FileException("file.not.exist", null);
         }
-        String localPath = SpringUtils.getBean(BroadConfig.class).getSystemFileDir().concat(Constants.UPLOAD_FILE).concat(File.separator);
+        String localPath = LOCAL_UPLOAD_PATH;
         String originalFilename = file.getOriginalFilename();
         // 重复名文件
-        String fileName = UUID.randomUUID().toString().concat(originalFilename.substring(originalFilename.lastIndexOf(".")));
+        String fileName = UUID.randomUUID().toString().concat(".").concat(FileTypeUtils.getFileType(originalFilename));
         // 拼接访问路径
         String localFilePath = Constants.UPLOAD_FILE.concat("/").concat(fileName);
         File dest = new File(localPath.concat(fileName));
@@ -154,6 +160,28 @@ public class FileUtils {
             throw new FileException("file.upload.error", null);
         }
         return localFilePath;
+    }
+
+    /**
+     * 获取所有文件
+     *
+     * @param path 文件路径
+     * @return 文件列表
+     */
+    public static List<File> getAllFiles(String path) {
+        List<File> fileList = new ArrayList<>();
+        File file = new File(path);
+        File[] files = file.listFiles();
+        if (files != null) {
+            for (File f : files) {
+                if (f.isDirectory()) {
+                    fileList.addAll(getAllFiles(f.getAbsolutePath()));
+                } else {
+                    fileList.add(f);
+                }
+            }
+        }
+        return fileList;
     }
 
 

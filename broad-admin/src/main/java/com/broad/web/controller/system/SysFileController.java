@@ -20,7 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class SysFileController extends BaseController {
 
     /**
-     * Upload file result data.
+     * 上传文件
      *
      * @param file the file
      * @return the result data
@@ -29,5 +29,16 @@ public class SysFileController extends BaseController {
     @SaCheckLogin
     public ResultData uploadFile(@RequestParam("file") MultipartFile file) {
         return ResultData.success(FileUtils.saveFileToLocal(file));
+    }
+
+    /**
+     * 查询文件列表
+     *
+     * @return the result data
+     */
+    @GetMapping("/list")
+    @SaCheckLogin
+    public ResultData list() {
+        return ResultData.success(FileUtils.getAllFiles(FileUtils.LOCAL_UPLOAD_PATH));
     }
 }

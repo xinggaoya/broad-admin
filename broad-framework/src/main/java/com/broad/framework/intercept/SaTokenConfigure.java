@@ -1,8 +1,6 @@
 package com.broad.framework.intercept;
 
 import cn.dev33.satoken.interceptor.SaInterceptor;
-import cn.dev33.satoken.router.SaRouter;
-import cn.dev33.satoken.stp.StpUtil;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -27,10 +25,10 @@ public class SaTokenConfigure implements WebMvcConfigurer {
         // 注册拦截器，并排除不需要注解鉴权的接口地址
         registry.addInterceptor(new SaInterceptor(handle -> {
                     // 对所有的路由进行登录鉴权
-                    SaRouter.match("/**", r -> StpUtil.checkLogin());
+//                    SaRouter.match("/**", r -> StpUtil.checkLogin());
                 }))
                 .addPathPatterns("/**")
-                .excludePathPatterns("/**/*.js", "/**/*.css", "/**/*.gif", "/**/*.png", "/**/*.jpg",
+                .excludePathPatterns("/**/*.js", "/**/*.css", "/**/*.gif", "/**/*.png", "/**/*.jpg", "/upload/**",
                         "/**/*.jpeg", "/**/*.html", "/**/*.svg", "/**/*.woff", "/**/*.ttf", "/**/*.woff2", "/**/*.ico",
                         "/swagger-resources", "/sysAdmin/login", "/captchaImage", "/doc.html", "/test/**"
                         , "/druid/**");
