@@ -1,6 +1,5 @@
 package com.broad.web.controller.system;
 
-import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.stp.StpUtil;
 import com.broad.common.annotation.Log;
@@ -11,6 +10,7 @@ import com.broad.common.web.page.TableDataInfo;
 import com.broad.system.entity.SysMenu;
 import com.broad.system.service.SysMenuService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.Serializable;
@@ -62,7 +62,7 @@ public class SysMenuController extends BaseController {
      * @return 角色路由 result data
      */
     @GetMapping("getRouters")
-    @SaCheckLogin
+    @PreAuthorize("@ss.hasPerm('sys:menu:list')")
     public ResultData findMenuByRole() {
         return ResultData.success(this.sysMenuService.findMenuByRole(StpUtil.getLoginIdAsInt()));
     }
