@@ -1,18 +1,16 @@
 package com.broad.web.controller.system;
 
-import cn.dev33.satoken.annotation.SaCheckDisable;
-import cn.dev33.satoken.annotation.SaCheckLogin;
-import cn.dev33.satoken.annotation.SaCheckPermission;
-import cn.dev33.satoken.annotation.SaIgnore;
+
 import com.broad.common.annotation.Log;
 import com.broad.common.annotation.RateLimiter;
 import com.broad.common.enums.BusinessType;
 import com.broad.common.web.controller.BaseController;
 import com.broad.common.web.entity.ResultData;
+import com.broad.common.web.entity.SysUser;
 import com.broad.common.web.page.TableDataInfo;
-import com.broad.system.entity.SysUser;
 import com.broad.system.service.SysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -45,7 +43,7 @@ public class SysUserController extends BaseController {
      * @return 所有数据 result data
      */
     @GetMapping
-    @SaCheckPermission("sys:user:list")
+    @PreAuthorize("@ss.hasPerm('sys:user:list')")
     public TableDataInfo selectAll(SysUser sysAdmin) {
         startPage();
         return getDataTable(this.sysAdminService.selectAll(sysAdmin));
@@ -58,7 +56,7 @@ public class SysUserController extends BaseController {
      * @return 单条数据 result data
      */
     @GetMapping("{id}")
-    @SaCheckPermission("sys:user:list")
+    @PreAuthorize("@ss.hasPerm('sys:user:list')")
     public ResultData selectOne(@PathVariable Serializable id) {
         return ResultData.success(this.sysAdminService.getById(id));
     }
@@ -70,7 +68,7 @@ public class SysUserController extends BaseController {
      * @return 新增结果 result data
      */
     @PostMapping
-    @SaCheckPermission("sys:user:add")
+    @PreAuthorize("@ss.hasPerm('sys:user:add')")
     @Log(description = "新增管理员表", businessType = BusinessType.INSERT)
     public ResultData insert(@RequestBody @Valid SysUser sysAdmin) {
         return ResultData.success(this.sysAdminService.saveAdmin(sysAdmin));
@@ -83,7 +81,7 @@ public class SysUserController extends BaseController {
      * @return 修改结果 result data
      */
     @PutMapping
-    @SaCheckPermission("sys:user:update")
+    @PreAuthorize("@ss.hasPerm('sys:user:update')")
     @Log(description = "修改管理员表", businessType = BusinessType.UPDATE)
     public ResultData update(@RequestBody SysUser sysAdmin) {
         return ResultData.success(this.sysAdminService.updateAdmin(sysAdmin));
@@ -96,7 +94,7 @@ public class SysUserController extends BaseController {
      * @return 删除结果 result data
      */
     @DeleteMapping
-    @SaCheckPermission("sys:user:delete")
+    @PreAuthorize("@ss.hasPerm('sys:user:delete')")
     @Log(description = "删除管理员", businessType = BusinessType.DELETE)
     public ResultData delete(@RequestParam("idList") List<Long> idList) {
         return toResult(this.sysAdminService.removeByIds(idList));
@@ -112,7 +110,6 @@ public class SysUserController extends BaseController {
      */
     @PostMapping("/login")
     @RateLimiter(key = "ADMIN_LOGIN", count = 5, time = 1)
-    @SaIgnore
     public ResultData login(@RequestBody SysUser sysAdmin, HttpServletRequest request) throws IOException {
         return ResultData.success(this.sysAdminService.administratorLogin(sysAdmin, request)).setMsg("登录成功!");
     }
@@ -123,8 +120,6 @@ public class SysUserController extends BaseController {
      * @return result data
      */
     @GetMapping("/checkLogin")
-    @SaCheckLogin
-    @SaCheckDisable
     public ResultData checkLogin() {
         return ResultData.ok();
     }
@@ -135,7 +130,6 @@ public class SysUserController extends BaseController {
      * @return the result data
      */
     @GetMapping("/logout")
-    @SaCheckLogin
     public ResultData logout() {
         this.sysAdminService.logout();
         return ResultData.ok();

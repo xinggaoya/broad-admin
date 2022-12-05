@@ -33,13 +33,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
-        // 获取当请求头中的token，其实这里多余，完全可以使用HttpServletRequest来获取
-        String authToken = httpServletRequest.getHeader("Authorization");
-
         // 获取到当前用户的account
-        String account = JwtUtils.getMemberAccountByJwtToken(authToken);
-
-        log.info("自定义JWT过滤器获得用户名为=" + account);
+        String account = JwtUtils.getMemberAccountByJwtToken(httpServletRequest);
 
         // 当token中的username不为空时进行验证token是否是有效的token
         if (!"".equals(account) && SecurityContextHolder.getContext().getAuthentication() == null) {
@@ -48,7 +43,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             // 获取到用户的信息，也就是获取到用户的权限
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(account);
             // 验证当前token是否有效
-            if (JwtUtils.checkToken(authToken)) {
+            if (JwtUtils.checkToken(httpServletRequest)) {
 
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());

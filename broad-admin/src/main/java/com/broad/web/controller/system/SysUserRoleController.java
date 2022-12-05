@@ -1,6 +1,5 @@
 package com.broad.web.controller.system;
 
-import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.broad.common.annotation.Log;
 import com.broad.common.enums.BusinessType;
 import com.broad.common.web.controller.BaseController;
@@ -8,6 +7,7 @@ import com.broad.common.web.entity.ResultData;
 import com.broad.system.entity.SysUserRole;
 import com.broad.system.service.SysUserRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.Serializable;
@@ -36,7 +36,7 @@ public class SysUserRoleController extends BaseController {
      * @return 单条数据 result data
      */
     @GetMapping("{id}")
-    @SaCheckPermission("sys:user:list")
+    @PreAuthorize("@ss.hasPerm('sys:user:list')")
     public ResultData selectOne(@PathVariable Serializable id) {
         return ResultData.success(this.sysUserRoleService.selectUserRoleIds(Long.valueOf((id.toString()))));
     }
@@ -48,7 +48,7 @@ public class SysUserRoleController extends BaseController {
      * @return 新增结果 result data
      */
     @PostMapping
-    @SaCheckPermission("sys:user:add")
+    @PreAuthorize("@ss.hasPerm('sys:user:add')")
     @Log(description = "新增用户角色", businessType = BusinessType.INSERT)
     public ResultData insert(@RequestBody SysUserRole sysUserRole) {
         return ResultData.success(this.sysUserRoleService.save(sysUserRole));
@@ -61,7 +61,7 @@ public class SysUserRoleController extends BaseController {
      * @return 修改结果 result data
      */
     @PutMapping
-    @SaCheckPermission("sys:user:update")
+    @PreAuthorize("@ss.hasPerm('sys:user:update')")
     @Log(description = "修改用户角色", businessType = BusinessType.UPDATE)
     public ResultData update(@RequestBody SysUserRole sysUserRole) {
         return ResultData.success(this.sysUserRoleService.updateById(sysUserRole));
@@ -74,7 +74,7 @@ public class SysUserRoleController extends BaseController {
      * @return 删除结果 result data
      */
     @DeleteMapping
-    @SaCheckPermission("sys:user:delete")
+    @PreAuthorize("@ss.hasPerm('sys:user:delete')")
     @Log(description = "删除用户角色", businessType = BusinessType.DELETE)
     public ResultData delete(@RequestParam("idList") List<Long> idList) {
         return ResultData.success(this.sysUserRoleService.removeByIds(idList));

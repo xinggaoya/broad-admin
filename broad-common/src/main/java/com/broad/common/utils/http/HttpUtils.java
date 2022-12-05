@@ -19,7 +19,7 @@ import java.util.Map;
 /**
  * 通用http发送方法
  *
- * @author JinJun
+ * @author XingGao
  */
 public class HttpUtils {
     private static final Logger log = LoggerFactory.getLogger(HttpUtils.class);

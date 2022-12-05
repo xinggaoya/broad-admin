@@ -1,10 +1,10 @@
 package com.broad.framework.aspect;
 
-import cn.dev33.satoken.stp.StpUtil;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import com.broad.common.annotation.Log;
 import com.broad.common.enums.LogType;
+import com.broad.common.utils.SecurityUtils;
 import com.broad.common.utils.ServletUtils;
 import com.broad.common.utils.StringUtils;
 import com.broad.common.utils.ip.IpUtils;
@@ -86,7 +86,7 @@ public class LogAspect {
             operLog.setLogIp(ip);
             operLog.setLogIpAddress(IpUtils.getIpAddress(ip));
             operLog.setLogUrl(response.getRequestURI());
-            operLog.setAdminId(StpUtil.getLoginIdAsInt());
+            operLog.setAdminId(SecurityUtils.getUserId());
 
             if (e != null) {
                 operLog.setLogStatus(LogType.FAILURE.getInfo());

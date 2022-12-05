@@ -1,8 +1,7 @@
 package com.broad.system.service.impl;
 
-import cn.dev33.satoken.stp.StpUtil;
 import com.broad.common.socket.service.UserSocketServer;
-import com.broad.system.entity.SysUser;
+import com.broad.common.web.entity.SysUser;
 import com.broad.system.service.SysOnlineService;
 import com.broad.system.service.SysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,9 +30,9 @@ public class SysOnlineServiceImpl implements SysOnlineService {
             return new ArrayList<>();
         }
         List<SysUser> sysAdminList = sysAdminService.getAdminByIds(ids);
-        for (SysUser sysAdmin : sysAdminList) {
-            sysAdmin.setTokenValue(StpUtil.getTokenValueByLoginId(sysAdmin.getId()));
-        }
+//        for (SysUser sysAdmin : sysAdminList) {
+//            sysAdmin.setTokenValue(StpUtil.getTokenValueByLoginId(sysAdmin.getId()));
+//        }
         return sysAdminList;
     }
 }

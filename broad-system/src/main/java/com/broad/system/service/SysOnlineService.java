@@ -1,6 +1,6 @@
 package com.broad.system.service;
 
-import com.broad.system.entity.SysUser;
+import com.broad.common.web.entity.SysUser;
 
 import java.util.List;
 

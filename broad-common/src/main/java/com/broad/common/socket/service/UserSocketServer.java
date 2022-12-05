@@ -1,6 +1,5 @@
 package com.broad.common.socket.service;
 
-import cn.dev33.satoken.stp.StpUtil;
 import com.alibaba.fastjson2.JSON;
 import com.broad.common.web.entity.ResultData;
 import lombok.extern.slf4j.Slf4j;
@@ -134,10 +133,6 @@ public class UserSocketServer {
     @OnOpen
     public void onOpen(Session session, @PathParam("sid") String sid) throws IOException {
         this.session = session;
-        if (StpUtil.getTokenValueByLoginId(sid) == null) {
-            log.info("未登录用户，禁止连接");
-            return;
-        }
         // 禁止重复登录
         if (removeUser(sid)) {
             log.info("用户已登录，禁止重复登录");

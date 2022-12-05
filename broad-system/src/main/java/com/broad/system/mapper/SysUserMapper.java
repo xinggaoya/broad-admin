@@ -1,7 +1,7 @@
 package com.broad.system.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.broad.system.entity.SysUser;
+import com.broad.common.web.entity.SysUser;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
