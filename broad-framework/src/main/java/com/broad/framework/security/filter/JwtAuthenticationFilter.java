@@ -1,7 +1,8 @@
 package com.broad.framework.security.filter;
 
-import com.broad.common.utils.JwtUtils;
+import com.broad.common.utils.StringUtils;
 import com.broad.framework.security.service.SecurityUserService;
+import com.broad.framework.web.service.TokenService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -30,20 +31,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
      */
     @Autowired
     private SecurityUserService userDetailsService;
+    @Autowired
+    private TokenService tokenService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
         // 获取到当前用户的account
-        String account = JwtUtils.getMemberAccountByJwtToken(httpServletRequest);
+        String account = tokenService.getMemberAccountByJwtToken(httpServletRequest);
 
         // 当token中的username不为空时进行验证token是否是有效的token
-        if (!"".equals(account) && SecurityContextHolder.getContext().getAuthentication() == null) {
+        if (StringUtils.isNotNull(account) && SecurityContextHolder.getContext().getAuthentication() == null) {
             // token中username不为空，并且Context中的认证为空，进行token验证
 
             // 获取到用户的信息，也就是获取到用户的权限
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(account);
             // 验证当前token是否有效
-            if (JwtUtils.checkToken(httpServletRequest)) {
+            if (tokenService.checkToken(httpServletRequest)) {
 
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());

@@ -1,6 +1,5 @@
 package com.broad.system.service.impl;
 
-import com.broad.common.socket.service.UserSocketServer;
 import com.broad.common.web.entity.SysUser;
 import com.broad.system.service.SysOnlineService;
 import com.broad.system.service.SysUserService;
@@ -25,11 +24,11 @@ public class SysOnlineServiceImpl implements SysOnlineService {
 
     @Override
     public List<SysUser> getOnlineList() {
-        List<Long> ids = UserSocketServer.getLoginId();
-        if (ids.size() == 0) {
-            return new ArrayList<>();
-        }
-        List<SysUser> sysAdminList = sysAdminService.getAdminByIds(ids);
+//        List<Long> ids = UserSocketServer.getLoginId();
+//        if (ids.size() == 0) {
+//            return new ArrayList<>();
+//        }
+        List<SysUser> sysAdminList = new ArrayList<>();
 //        for (SysUser sysAdmin : sysAdminList) {
 //            sysAdmin.setTokenValue(StpUtil.getTokenValueByLoginId(sysAdmin.getId()));
 //        }

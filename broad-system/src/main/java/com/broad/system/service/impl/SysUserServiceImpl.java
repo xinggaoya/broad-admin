@@ -112,7 +112,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             admin.setLastIp(ip);
             baseMapper.updateById(admin);
 
-
             sysLoginLog.setMessage("登录成功");
             sysLoginLog.setUserId(admin.getId());
             loginLogService.saveLoginLog(request, sysLoginLog);

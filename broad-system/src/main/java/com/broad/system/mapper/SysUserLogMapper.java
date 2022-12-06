@@ -2,7 +2,7 @@ package com.broad.system.mapper;
 
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.broad.system.entity.SysUserLog;
+import com.broad.common.web.entity.SysUserLog;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;

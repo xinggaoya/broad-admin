@@ -2,7 +2,7 @@ package com.broad.system.service.impl;
 
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.broad.system.entity.SysUserLog;
+import com.broad.common.web.entity.SysUserLog;
 import com.broad.system.mapper.SysUserLogMapper;
 import com.broad.system.service.SysUserLogService;
 import org.springframework.stereotype.Service;

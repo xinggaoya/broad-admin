@@ -65,9 +65,9 @@ jwt:
   # 请求头
   header: Authorization
   # 密钥
-  secret: springkhbd
-  # 过期时间
-  expiration: 360000
+  secret: abcdefghijklmnopqrstuvwxyz
+  # 过期时间(分钟)
+  expiration: 43200
 
 
 # 异步线程配置
