@@ -61,13 +61,15 @@ sa-token:
   is-log: true
 
 
-jwt:
+broad-security:
   # 请求头
   header: Authorization
   # 密钥
   secret: abcdefghijklmnopqrstuvwxyz
   # 过期时间(分钟)
   expiration: 43200
+  # 是否单点登录
+  isSingle: true
 
 
 # 异步线程配置
