@@ -1,7 +1,7 @@
 package com.broad.framework.rabbit.consumer;
 
 import com.broad.common.constant.SimpleMqConstant;
-import com.broad.common.web.entity.SysUserLog;
+import com.broad.system.entity.SysUserLog;
 import com.broad.system.service.SysUserLogService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.Queue;

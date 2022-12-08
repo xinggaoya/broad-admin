@@ -1,12 +1,13 @@
-package com.broad.framework.config;
+package com.broad.framework.security.config;
 
+import com.broad.common.service.RedisService;
 import com.broad.framework.security.CustomizeAccessDeniedHandler;
 import com.broad.framework.security.filter.JwtAuthenticationFilter;
+import com.broad.framework.security.filter.ValidateImageCodeFilter;
 import com.broad.framework.security.service.SecurityUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -47,6 +48,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private LogoutSuccessHandler logoutSuccessHandler;
 
+    @Autowired
+    private ValidateImageCodeFilter validateImageCodeFilter;
 
     @Autowired
     private AuthenticationSuccessHandler authenticationSuccessHandler;
@@ -57,17 +60,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    /**
-     * 解决 无法直接注入 AuthenticationManager
-     *
-     * @return
-     * @throws Exception
-     */
-    @Bean
-    @Override
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
-    }
+    @Autowired
+    private RedisService redisService;
 
     /**
      * 对请求进行鉴权的配置
@@ -83,7 +77,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/admin/login", "/captchaImage", "/test").anonymous()
+                .antMatchers("/sysUser/login", "/captchaImage", "/test").anonymous()
                 .anyRequest().authenticated()
                 .and()
                 .cors();
@@ -111,12 +105,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .logout()      // 退出
                 .permitAll()   //允许所有用户
-                .logoutUrl("/logout")
                 .logoutSuccessHandler(logoutSuccessHandler)  //退出成功处理逻辑
                 .and()
                 .sessionManagement()    //会话管理
                 .maximumSessions(1);     //同一账号同时登录最大用户数
 
+        http.addFilterBefore(validateImageCodeFilter, UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         http.headers().cacheControl();
     }

@@ -1,7 +1,7 @@
 package com.broad.framework.rabbit.producer;
 
 import com.broad.common.constant.SimpleMqConstant;
-import com.broad.common.web.entity.SysUserLog;
+import com.broad.system.entity.SysUserLog;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

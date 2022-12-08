@@ -1,4 +1,4 @@
-package com.broad.common.web.entity;
+package com.broad.system.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 import com.baomidou.mybatisplus.extension.activerecord.Model;

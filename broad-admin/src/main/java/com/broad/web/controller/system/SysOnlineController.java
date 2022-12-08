@@ -1,5 +1,6 @@
 package com.broad.web.controller.system;
 
+import com.broad.common.socket.service.UserSocketServer;
 import com.broad.common.web.controller.BaseController;
 import com.broad.common.web.entity.ResultData;
 import com.broad.common.web.entity.SysUser;
@@ -47,6 +48,7 @@ public class SysOnlineController extends BaseController {
     @DeleteMapping("/forceLogout")
     @PreAuthorize("@ss.hasPerm('online:delete')")
     public ResultData forceLogout(SysUser sysAdmin) {
+        UserSocketServer.sendInfo(ResultData.error(), sysAdmin.getId().toString());
         return ResultData.ok();
     }
 
@@ -56,6 +58,7 @@ public class SysOnlineController extends BaseController {
     @DeleteMapping("/ban")
     @PreAuthorize("@ss.hasPerm('online:delete')")
     public ResultData ban(SysUser sysAdmin) {
+        UserSocketServer.sendInfo(ResultData.error(), sysAdmin.getId().toString());
         return ResultData.ok();
     }
 }

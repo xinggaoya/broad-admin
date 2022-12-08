@@ -1,12 +1,11 @@
 package com.broad.framework.security;
 
 import com.alibaba.fastjson2.JSON;
-import com.broad.common.service.RedisService;
+import com.broad.common.utils.JwtUtils;
 import com.broad.common.utils.SecurityUtils;
 import com.broad.common.utils.ip.IpUtils;
 import com.broad.common.web.entity.ResultData;
 import com.broad.common.web.entity.SysUser;
-import com.broad.framework.web.service.TokenService;
 import com.broad.system.service.SysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -29,10 +28,6 @@ import java.util.Map;
 public class CustomizeAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
     @Autowired
     private SysUserService sysUserService;
-    @Autowired
-    private RedisService redisService;
-    @Autowired
-    private TokenService tokenService;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Authentication authentication) throws IOException {
@@ -46,13 +41,13 @@ public class CustomizeAuthenticationSuccessHandler implements AuthenticationSucc
         sysUserService.updateById(sysUser);
 
         // 根据用户的id和account生成token并返回
-        String jwtToken = tokenService.createJwtToken(sysUser);
+        String jwtToken = JwtUtils.createJwtToken(sysUser.getId().toString(), sysUser.getUsername());
         Map<String, String> results = new HashMap<>(1);
         results.put("token", jwtToken);
 
         //处理编码方式，防止中文乱码的情况
         httpServletResponse.setContentType("text/json;charset=utf-8");
         // 把Json数据放入HttpServletResponse中返回给前台
-        httpServletResponse.getWriter().write(JSON.toJSONString(ResultData.success(sysUser).setMsg("登录成功123").setMap(results)));
+        httpServletResponse.getWriter().write(JSON.toJSONString(ResultData.success(sysUser).setMsg("登录成功").setMap(results)));
     }
 }

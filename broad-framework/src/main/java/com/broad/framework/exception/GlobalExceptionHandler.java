@@ -3,7 +3,6 @@ package com.broad.framework.exception;
 import com.broad.common.constant.HttpStatus;
 import com.broad.common.exception.ServiceException;
 import com.broad.common.exception.auth.NotPermissionException;
-import com.broad.common.exception.user.UserPasswordNotMatchException;
 import com.broad.common.web.entity.ResultData;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -58,10 +57,6 @@ public class GlobalExceptionHandler {
 //        }
 //        return new ResultData(HttpStatus.FORBIDDEN, message);
 //    }
-    @ExceptionHandler(value = UserPasswordNotMatchException.class)
-    public ResultData handlerUserPasswordNotMatchException(UserPasswordNotMatchException e) {
-        return new ResultData(HttpStatus.ERROR, "账号或密码错误");
-    }
 
     /**
      * 未授权异常处理

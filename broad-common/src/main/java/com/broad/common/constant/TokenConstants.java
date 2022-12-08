@@ -7,10 +7,9 @@ package com.broad.common.constant;
  */
 public class TokenConstants {
     /**
-     * 登录用户ID
+     * 令牌自定义标识
      */
-    public static final String LOGIN_KEY = ":login:sessions:";
-
+    public static final String AUTHENTICATION = "Authorization";
 
     /**
      * 令牌前缀
