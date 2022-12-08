@@ -1,5 +1,6 @@
 package com.broad.common.utils;
 
+import com.alibaba.fastjson2.JSON;
 import com.broad.common.constant.Constants;
 import com.broad.common.text.Convert;
 import org.springframework.util.LinkedCaseInsensitiveMap;
@@ -181,6 +182,23 @@ public class ServletUtils {
             response.setContentType("application/json");
             response.setCharacterEncoding("utf-8");
             response.getWriter().print(string);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 将JSON字符串渲染到客户端
+     *
+     * @param response 渲染对象
+     * @param object   待渲染的字符串
+     */
+    public static void renderJsonString(HttpServletResponse response, Object object) {
+        try {
+            response.setStatus(200);
+            response.setContentType("application/json");
+            response.setCharacterEncoding("utf-8");
+            response.getWriter().print(JSON.toJSONString(object));
         } catch (IOException e) {
             e.printStackTrace();
         }

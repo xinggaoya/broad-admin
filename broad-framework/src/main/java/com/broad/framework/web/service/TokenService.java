@@ -1,23 +1,18 @@
 package com.broad.framework.web.service;
 
 import com.broad.common.constant.TokenConstants;
+import com.broad.common.exception.auth.NotLoginException;
 import com.broad.common.service.RedisService;
 import com.broad.common.utils.StringUtils;
-import com.broad.common.web.entity.SysUser;
 import com.broad.framework.web.entity.TokenEntity;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.AccountExpiredException;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -42,86 +37,6 @@ public class TokenService {
     @Autowired
     private RedisService redisService;
 
-    public String createJwtToken(SysUser user) {
-        Calendar nowTime = Calendar.getInstance();
-        nowTime.add(Calendar.MINUTE, Integer.parseInt(String.valueOf(expire)));
-        String JwtToken = Jwts.builder()
-                .setHeaderParam("typ", "JWT")
-                .setHeaderParam("alg", "HS256")
-                .setSubject("jacob-user")
-                .setIssuedAt(new Date())
-                .setExpiration(nowTime.getTime())
-                .claim("id", user.getId())
-                .claim("account", user.getUsername())
-                .signWith(SignatureAlgorithm.HS256, appSecret)
-                .compact();
-
-        return JwtToken;
-    }
-
-    /**
-     * 根据token获取会员id
-     *
-     * @param request request
-     * @return 会员id
-     */
-    public String getMemberIdByJwtToken(HttpServletRequest request) {
-        String jwtToken = request.getHeader(header);
-        if (StringUtils.isEmpty(jwtToken)) {
-            return null;
-        }
-        try {
-            // 这里解析可能会抛异常，所以try catch来捕捉
-            Jws<Claims> claimsJws = Jwts.parser().setSigningKey(appSecret).parseClaimsJws(jwtToken);
-            Claims claims = claimsJws.getBody();
-            return (String) claims.get("id");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    /**
-     * 根据token获取用户的account
-     *
-     * @param request request
-     * @return account
-     */
-    public String getMemberAccountByJwtToken(HttpServletRequest request) {
-        String jwtToken = request.getHeader(header);
-        if (StringUtils.isEmpty(jwtToken)) {
-            return null;
-        }
-        try {
-            Jws<Claims> claimsJws = Jwts.parser().setSigningKey(appSecret).parseClaimsJws(jwtToken);
-            Claims claims = claimsJws.getBody();
-            return (String) claims.get("account");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    /**
-     * 根据request判断token是否存在与有效（也就是把token取出来罢了）
-     *
-     * @param request
-     * @return
-     */
-    public boolean checkToken(HttpServletRequest request) {
-        try {
-            String jwtToken = request.getHeader(header);
-            if (StringUtils.isEmpty(jwtToken)) {
-                return false;
-            }
-            Jwts.parser().setSigningKey(appSecret).parseClaimsJws(jwtToken);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-        return true;
-    }
-
     /**
      * 存入redis
      *
@@ -141,6 +56,9 @@ public class TokenService {
             tokenEntity.setTokenSignList(tokenSignList);
             tokenEntity.setId(key);
             tokenEntity.setCreateTime(System.currentTimeMillis());
+
+            // 用户登录时，修改之前的token状态
+            updateTokenStatus(key, TokenConstants.LOGIN_DOWN_LINE);
         }
         // 保存session
         redisService.setCacheObject(key, tokenEntity, expire);
@@ -157,8 +75,22 @@ public class TokenService {
      */
     public Object getLoginId(HttpServletRequest request) {
         String token = request.getHeader(header);
-        String key = header.concat(TokenConstants.TOKEN_KEY).concat(String.valueOf(token));
-        return redisService.getCacheObject(key);
+        if (StringUtils.isBlank(token)) {
+            throw new AccountExpiredException("请先登录");
+        }
+        String key = header.concat(TokenConstants.TOKEN_KEY).concat(token);
+
+        Integer code = redisService.getCacheObject(key);
+        if (code == null) {
+            throw new AccountExpiredException("登录无效");
+        }
+        if (code == TokenConstants.LOGIN_DOWN_LINE) {
+            throw new NotLoginException("您的账号已在其他地方登录");
+        }
+        if (code == TokenConstants.LOGIN_EXPIRE) {
+            throw new NotLoginException("登录已过期");
+        }
+        return code;
     }
 
     public Integer getLoginIdAsInt(HttpServletRequest request) {
@@ -177,5 +109,26 @@ public class TokenService {
     public void logout(String uuid) {
         redisService.deleteObject(header.concat(TokenConstants.LOGIN_KEY).concat(uuid));
     }
+
+
+    /**
+     * 修改token状态
+     *
+     * @param key  key
+     * @param code code
+     */
+    public void updateTokenStatus(String key, int code) {
+        if (redisService.hasKey(key)) {
+            String tokenKey = header.concat(TokenConstants.TOKEN_KEY);
+            TokenEntity tokenEntity = redisService.getCacheObject(key);
+            List<String> tokenSignList = tokenEntity.getTokenSignList();
+            tokenSignList.forEach(token -> {
+                redisService.setCacheObject(tokenKey.concat(token), code);
+            });
+        }
+    }
+
+    // 处理异常
+
 
 }

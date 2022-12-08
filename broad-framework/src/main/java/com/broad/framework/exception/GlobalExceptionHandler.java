@@ -2,6 +2,7 @@ package com.broad.framework.exception;
 
 import com.broad.common.constant.HttpStatus;
 import com.broad.common.exception.ServiceException;
+import com.broad.common.exception.auth.NotLoginException;
 import com.broad.common.exception.auth.NotPermissionException;
 import com.broad.common.exception.user.UserPasswordNotMatchException;
 import com.broad.common.web.entity.ResultData;
@@ -27,8 +28,14 @@ public class GlobalExceptionHandler {
      * @param e the e
      * @return result data
      */
-    @ExceptionHandler
+    @ExceptionHandler(Exception.class)
     public ResultData handlerException(Exception e) {
+        e.printStackTrace();
+        return ResultData.error("系统异常,请联系管理员");
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResultData handlerRuntimeException(RuntimeException e) {
         e.printStackTrace();
         return ResultData.error("系统异常,请联系管理员");
     }
@@ -71,8 +78,18 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(value = NotPermissionException.class)
     public ResultData handlerNotPermissionException(NotPermissionException e) {
-        // 判断场景值，定制化异常信息
         return new ResultData(HttpStatus.UNAUTHORIZED, "无操作权限，请联系管理员");
+    }
+
+    /**
+     * 无效登录异常
+     *
+     * @param e the e
+     * @return result data
+     */
+    @ExceptionHandler(value = NotLoginException.class)
+    public ResultData handlerNotLoginException(NotLoginException e) {
+        return new ResultData(HttpStatus.UNAUTHORIZED, "登录无效");
     }
 
     /**
