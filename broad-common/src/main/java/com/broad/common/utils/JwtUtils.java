@@ -35,57 +35,13 @@ public class JwtUtils {
                 .setHeaderParam("alg", "HS256")
                 .setSubject("jacob-user")
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + expire * 24))
+                .setExpiration(new Date(System.currentTimeMillis() + expire))
                 .claim("id", id)
                 .claim("account", account)
                 .signWith(SignatureAlgorithm.HS256, appSecret)
                 .compact();
 
         return JwtToken;
-    }
-
-    /**
-     * 根据token获取会员id
-     *
-     * @param request request
-     * @return 会员id
-     */
-    public static String getMemberIdByJwtToken(HttpServletRequest request) {
-        String jwtToken = request.getHeader(header);
-        if (StringUtils.isEmpty(jwtToken)) {
-            return "";
-        }
-        try {
-            // 这里解析可能会抛异常，所以try catch来捕捉
-            Jws<Claims> claimsJws = Jwts.parser().setSigningKey(appSecret).parseClaimsJws(jwtToken);
-            Claims claims = claimsJws.getBody();
-            return (String) claims.get("id");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "";
-        }
-    }
-
-    /**
-     * 根据token获取用户的account
-     *
-     * @param request request
-     * @return account
-     */
-    public static String getMemberAccountByJwtToken(HttpServletRequest request) {
-        String jwtToken = request.getHeader(header);
-        if (StringUtils.isEmpty(jwtToken)) {
-            return "";
-        }
-        try {
-            Jws<Claims> claimsJws = Jwts.parser().setSigningKey(appSecret).parseClaimsJws(jwtToken);
-            Claims claims = claimsJws.getBody();
-            return (String) claims.get("account");
-        } catch (Exception e) {
-            log.error("解析token出错");
-            e.printStackTrace();
-            return "";
-        }
     }
 
     public static String createJwtToken(String id) {
@@ -142,13 +98,55 @@ public class JwtUtils {
         return true;
     }
 
+    /**
+     * 根据token获取会员id
+     *
+     * @param request
+     * @return
+     */
+    public static String getMemberIdByJwtToken(HttpServletRequest request) {
+        String jwtToken = request.getHeader(header);
+        if (StringUtils.isEmpty(jwtToken)) {
+            return "";
+        }
+        try {
+            // 这里解析可能会抛异常，所以try catch来捕捉
+            Jws<Claims> claimsJws = Jwts.parser().setSigningKey(appSecret).parseClaimsJws(jwtToken);
+            Claims claims = claimsJws.getBody();
+            return (String) claims.get("id");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+
+    /**
+     * 根据token获取用户的account
+     *
+     * @param jwtToken token
+     * @return account
+     */
+    public static String getMemberAccountByJwtToken(String jwtToken) {
+        if (StringUtils.isEmpty(jwtToken)) {
+            return "";
+        }
+        try {
+            Jws<Claims> claimsJws = Jwts.parser().setSigningKey(appSecret).parseClaimsJws(jwtToken);
+            Claims claims = claimsJws.getBody();
+            return (String) claims.get("account");
+        } catch (Exception e) {
+            log.error("解析token出错");
+            return "";
+        }
+    }
+
     @Value("${jwt.expiration}")
-    public void setAppSecret(long expire) {
-        JwtUtils.expire = expire;
+    public void setAppSecret(long EXPIRE) {
+        JwtUtils.expire = EXPIRE;
     }
 
     @Value("${jwt.secret}")
-    public void setAppSecret(String appSecret) {
-        JwtUtils.appSecret = appSecret;
+    public void setAppSecret(String APP_SECRET) {
+        JwtUtils.appSecret = APP_SECRET;
     }
 }

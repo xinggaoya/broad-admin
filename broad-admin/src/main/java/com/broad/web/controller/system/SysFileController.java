@@ -1,5 +1,6 @@
 package com.broad.web.controller.system;
 
+import cn.dev33.satoken.annotation.SaCheckLogin;
 import com.broad.common.utils.file.FileUtils;
 import com.broad.common.web.controller.BaseController;
 import com.broad.common.web.entity.ResultData;
@@ -25,6 +26,7 @@ public class SysFileController extends BaseController {
      * @return the result data
      */
     @PostMapping("/upload")
+    @SaCheckLogin
     public ResultData uploadFile(@RequestParam("file") MultipartFile file) {
         return ResultData.success(FileUtils.saveFileToLocal(file));
     }
@@ -35,6 +37,7 @@ public class SysFileController extends BaseController {
      * @return the result data
      */
     @GetMapping("/list")
+    @SaCheckLogin
     public ResultData list() {
         return ResultData.success(FileUtils.getAllFiles(FileUtils.LOCAL_UPLOAD_PATH));
     }

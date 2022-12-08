@@ -1,8 +1,9 @@
 package com.broad.web.controller.system;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
+import cn.dev33.satoken.stp.StpUtil;
 import com.broad.common.annotation.Log;
 import com.broad.common.enums.BusinessType;
-import com.broad.common.utils.SecurityUtils;
 import com.broad.common.web.controller.BaseController;
 import com.broad.common.web.entity.ResultData;
 import com.broad.common.web.page.TableDataInfo;
@@ -37,7 +38,7 @@ public class SysMenuController extends BaseController {
      * @return 所有数据 table data info
      */
     @GetMapping
-    @PreAuthorize("@ss.hasPerm('sys:menu:list')")
+    @SaCheckPermission("sys:menu:list")
     public TableDataInfo selectAllByPage(SysMenu sysMenu) {
         startPage();
         return getDataTable(this.sysMenuService.selectAllByPage(sysMenu));
@@ -50,7 +51,7 @@ public class SysMenuController extends BaseController {
      * @return 单条数据 result data
      */
     @GetMapping("getMenuChild")
-    @PreAuthorize("@ss.hasPerm('sys:menu:list')")
+    @SaCheckPermission("sys:menu:list")
     public ResultData selectChildListById(SysMenu sysMenu) {
         return ResultData.success(this.sysMenuService.selectChildListById(sysMenu));
     }
@@ -63,7 +64,7 @@ public class SysMenuController extends BaseController {
     @GetMapping("getRouters")
     @PreAuthorize("@ss.hasPerm('sys:menu:list')")
     public ResultData findMenuByRole() {
-        return ResultData.success(this.sysMenuService.findMenuByRole(SecurityUtils.getUserId()));
+        return ResultData.success(this.sysMenuService.findMenuByRole(StpUtil.getLoginIdAsInt()));
     }
 
     /**
@@ -73,7 +74,7 @@ public class SysMenuController extends BaseController {
      * @return 单条数据 result data
      */
     @GetMapping("{id}")
-    @PreAuthorize("@ss.hasPerm('sys:menu:list')")
+    @SaCheckPermission("sys:menu:list")
     public ResultData selectOne(@PathVariable Serializable id) {
         return ResultData.success(this.sysMenuService.getById(id));
     }
@@ -85,7 +86,7 @@ public class SysMenuController extends BaseController {
      * @return 新增结果 result data
      */
     @PostMapping
-    @PreAuthorize("@ss.hasPerm('sys:menu:add')")
+    @SaCheckPermission("sys:menu:add")
     @Log(description = "新增菜单数据", businessType = BusinessType.INSERT)
     public ResultData insert(@RequestBody SysMenu sysMenu) {
         return ResultData.success(this.sysMenuService.saveMenu(sysMenu));
@@ -98,7 +99,7 @@ public class SysMenuController extends BaseController {
      * @return 新增结果 result data
      */
     @GetMapping("tree")
-    @PreAuthorize("@ss.hasPerm('sys:menu:list')")
+    @SaCheckPermission("sys:menu:list")
     public ResultData tree(SysMenu menu) {
         return ResultData.success(this.sysMenuService.menuTree(menu));
     }
@@ -111,7 +112,7 @@ public class SysMenuController extends BaseController {
      * @return 修改结果 result data
      */
     @PutMapping
-    @PreAuthorize("@ss.hasPerm('sys:menu:update')")
+    @SaCheckPermission("sys:menu:update")
     @Log(description = "修改菜单数据", businessType = BusinessType.UPDATE)
     public ResultData update(@RequestBody SysMenu sysMenu) {
         return ResultData.success(this.sysMenuService.updateMenu(sysMenu));
@@ -124,7 +125,7 @@ public class SysMenuController extends BaseController {
      * @return 删除结果 result data
      */
     @DeleteMapping
-    @PreAuthorize("@ss.hasPerm('sys:menu:delete')")
+    @SaCheckPermission("sys:menu:delete")
     @Log(description = "删除菜单", businessType = BusinessType.DELETE)
     public ResultData delete(@RequestParam("idList") List<Long> idList) {
         return ResultData.success(this.sysMenuService.deleteMenu(idList));

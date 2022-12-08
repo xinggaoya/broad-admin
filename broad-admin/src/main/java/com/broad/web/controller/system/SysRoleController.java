@@ -1,5 +1,6 @@
 package com.broad.web.controller.system;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.broad.common.annotation.Log;
 import com.broad.common.enums.BusinessType;
 import com.broad.common.web.controller.BaseController;
@@ -8,7 +9,6 @@ import com.broad.common.web.page.TableDataInfo;
 import com.broad.system.entity.SysRole;
 import com.broad.system.service.SysRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.Serializable;
@@ -35,7 +35,7 @@ public class SysRoleController extends BaseController {
      * @return 所有数据 table data info
      */
     @GetMapping
-    @PreAuthorize("@ss.hasPerm('sys:role:list')")
+    @SaCheckPermission("sys:role:list")
     public TableDataInfo selectAll(SysRole sysUserRole) {
         startPage();
         return getDataTable(this.sysUserRoleService.selectAll(sysUserRole));
@@ -48,7 +48,7 @@ public class SysRoleController extends BaseController {
      * @return 单条数据 result data
      */
     @GetMapping("{id}")
-    @PreAuthorize("@ss.hasPerm('sys:role:list')")
+    @SaCheckPermission("sys:role:list")
     public ResultData selectOne(@PathVariable Serializable id) {
         return ResultData.success(this.sysUserRoleService.getById(id));
     }
@@ -60,7 +60,7 @@ public class SysRoleController extends BaseController {
      * @return 新增结果 result data
      */
     @PostMapping
-    @PreAuthorize("@ss.hasPerm('sys:role:add')")
+    @SaCheckPermission("sys:role:add")
     @Log(description = "新增角色", businessType = BusinessType.INSERT)
     public ResultData insert(@RequestBody SysRole sysUserRole) {
         return ResultData.success(this.sysUserRoleService.saveUserRole(sysUserRole));
@@ -73,7 +73,7 @@ public class SysRoleController extends BaseController {
      * @return 修改结果 result data
      */
     @PutMapping
-    @PreAuthorize("@ss.hasPerm('sys:role:update')")
+    @SaCheckPermission("sys:role:update")
     @Log(description = "修改角色", businessType = BusinessType.UPDATE)
     public ResultData update(@RequestBody SysRole sysUserRole) {
         return ResultData.success(this.sysUserRoleService.updateById(sysUserRole));
@@ -86,7 +86,7 @@ public class SysRoleController extends BaseController {
      * @return 删除结果 result data
      */
     @DeleteMapping("{id}")
-    @PreAuthorize("@ss.hasPerm('sys:role:delete')")
+    @SaCheckPermission("sys:role:delete")
     @Log(description = "删除角色", businessType = BusinessType.DELETE)
     public ResultData delete(@PathVariable("id") Integer idList) {
         return ResultData.success(this.sysUserRoleService.removeById(idList));

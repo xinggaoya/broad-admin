@@ -1,5 +1,6 @@
 package com.broad.web.controller.job;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.broad.common.annotation.Log;
 import com.broad.common.enums.BusinessType;
 import com.broad.common.utils.poi.ExcelUtil;
@@ -9,7 +10,6 @@ import com.broad.common.web.page.TableDataInfo;
 import com.broad.job.entity.SysJobLog;
 import com.broad.job.service.ISysJobLogService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -32,7 +32,7 @@ public class SysJobLogController extends BaseController {
      * @param sysJobLog the sys job log
      * @return the table data info
      */
-    @PreAuthorize("@ss.hasPerm('monitor:job:list')")
+    @SaCheckPermission("monitor:job:list")
     @GetMapping("/list")
     public TableDataInfo list(SysJobLog sysJobLog) {
         startPage();
@@ -46,7 +46,7 @@ public class SysJobLogController extends BaseController {
      * @param response  the response
      * @param sysJobLog the sys job log
      */
-    @PreAuthorize("@ss.hasPerm('monitor:job:export')")
+    @SaCheckPermission("monitor:job:export")
     @Log(description = "任务调度日志", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, SysJobLog sysJobLog) {
@@ -61,7 +61,7 @@ public class SysJobLogController extends BaseController {
      * @param jobLogId the job log id
      * @return the info
      */
-    @PreAuthorize("@ss.hasPerm('monitor:job:query')")
+    @SaCheckPermission("monitor:job:query")
     @GetMapping(value = "/{configId}")
     public ResultData getInfo(@PathVariable Long jobLogId) {
         return ResultData.ok().setData(jobLogService.selectJobLogById(jobLogId));
@@ -73,7 +73,7 @@ public class SysJobLogController extends BaseController {
      * @param jobLogIds the job log ids
      * @return the result data
      */
-    @PreAuthorize("@ss.hasPerm('monitor:job:remove')")
+    @SaCheckPermission("monitor:job:remove")
     @Log(description = "定时任务调度日志", businessType = BusinessType.DELETE)
     @DeleteMapping("/{jobLogIds}")
     public ResultData remove(@PathVariable Long[] jobLogIds) {
@@ -85,7 +85,7 @@ public class SysJobLogController extends BaseController {
      *
      * @return the result data
      */
-    @PreAuthorize("@ss.hasPerm('monitor:job:remove')")
+    @SaCheckPermission("monitor:job:remove")
     @Log(description = "调度日志", businessType = BusinessType.CLEAN)
     @DeleteMapping("/clean")
     public ResultData clean() {

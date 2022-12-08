@@ -31,6 +31,7 @@
         <broad-version>2.0.0</broad-version>
         <druid-version>1.2.8</druid-version>
         <mybatis-plus.version>3.5.2</mybatis-plus.version>
+        <satoken-version>1.33.0</satoken-version>
         <dynamic-version>3.5.0</dynamic-version>
         <swagger-version>3.0.3</swagger-version>
         <kaptcha-version>2.3.2</kaptcha-version>
@@ -76,6 +77,15 @@
                 <groupId>com.baomidou</groupId>
                 <artifactId>mybatis-plus-boot-starter</artifactId>
                 <version>${mybatis-plus.version}</version>
+            </dependency>
+
+            <!-- Sa-Token 权限认证, 在线文档：http://sa-token.dev33.cn/ -->
+            <dependency>
+                <groupId>cn.dev33</groupId>
+                <artifactId>sa-token-dependencies</artifactId>
+                <type>pom</type>
+                <scope>import</scope>
+                <version>${satoken-version}</version>
             </dependency>
 
             <!-- 日志管理log4j2 -->

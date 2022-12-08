@@ -1,5 +1,6 @@
 package com.broad.web.controller.job;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.broad.common.annotation.Log;
 import com.broad.common.constant.Constants;
 import com.broad.common.enums.BusinessType;
@@ -15,7 +16,6 @@ import com.broad.job.util.CronUtils;
 import com.broad.job.util.ScheduleUtils;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -39,7 +39,7 @@ public class SysJobController extends BaseController {
      * @param sysJob the sys job
      * @return the table data info
      */
-    @PreAuthorize("@ss.hasPerm('job:list')")
+    @SaCheckPermission("job:list")
     @GetMapping("/list")
     public TableDataInfo list(SysJob sysJob) {
         startPage();
@@ -53,7 +53,7 @@ public class SysJobController extends BaseController {
      * @param response the response
      * @param sysJob   the sys job
      */
-    @PreAuthorize("@ss.hasPerm('job:export')")
+    @SaCheckPermission("job:export")
     @Log(description = "导出定时任务数据", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, SysJob sysJob) {
@@ -68,7 +68,7 @@ public class SysJobController extends BaseController {
      * @param jobId the job id
      * @return the info
      */
-    @PreAuthorize("@ss.hasPerm('job:list')")
+    @SaCheckPermission("job:list")
     @GetMapping(value = "/{jobId}")
     public ResultData getInfo(@PathVariable("jobId") Long jobId) {
         return ResultData.ok().setData(jobService.selectJobById(jobId));
@@ -82,7 +82,7 @@ public class SysJobController extends BaseController {
      * @throws SchedulerException the scheduler exception
      * @throws TaskException      the task exception
      */
-    @PreAuthorize("@ss.hasPerm('job:add')")
+    @SaCheckPermission("job:add")
     @Log(description = "新增定时任务", businessType = BusinessType.INSERT)
     @PostMapping
     public ResultData add(@RequestBody SysJob job) throws SchedulerException, TaskException {
@@ -110,7 +110,7 @@ public class SysJobController extends BaseController {
      * @throws SchedulerException the scheduler exception
      * @throws TaskException      the task exception
      */
-    @PreAuthorize("@ss.hasPerm('job:update')")
+    @SaCheckPermission("job:update")
     @Log(description = "修改定时任务", businessType = BusinessType.UPDATE)
     @PutMapping
     public ResultData edit(@RequestBody SysJob job) throws SchedulerException, TaskException {
@@ -137,7 +137,7 @@ public class SysJobController extends BaseController {
      * @return the result data
      * @throws SchedulerException the scheduler exception
      */
-    @PreAuthorize("@ss.hasPerm('job:update')")
+    @SaCheckPermission("job:update")
     @Log(description = "修改定时任务状态", businessType = BusinessType.UPDATE)
     @PutMapping("/changeStatus")
     public ResultData changeStatus(@RequestBody SysJob job) throws SchedulerException {
@@ -153,7 +153,7 @@ public class SysJobController extends BaseController {
      * @return the result data
      * @throws SchedulerException the scheduler exception
      */
-    @PreAuthorize("@ss.hasPerm('job:update')")
+    @SaCheckPermission("job:update")
     @Log(description = "执行定时任务", businessType = BusinessType.UPDATE)
     @PutMapping("/run")
     public ResultData run(@RequestBody SysJob job) throws SchedulerException {
@@ -168,7 +168,7 @@ public class SysJobController extends BaseController {
      * @return the result data
      * @throws SchedulerException the scheduler exception
      */
-    @PreAuthorize("@ss.hasPerm('job:delete')")
+    @SaCheckPermission("job:delete")
     @Log(description = "删除定时任务", businessType = BusinessType.DELETE)
     @DeleteMapping("/{jobIds}")
     public ResultData remove(@PathVariable Long[] jobIds) throws SchedulerException {

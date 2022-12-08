@@ -1,12 +1,12 @@
 package com.broad.web.controller.system;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.broad.common.web.controller.BaseController;
 import com.broad.common.web.entity.ResultData;
 import com.broad.common.web.page.TableDataInfo;
 import com.broad.system.entity.SysLoginLog;
 import com.broad.system.service.SysLoginLogService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,7 +36,7 @@ public class SysLoginLogController extends BaseController {
      * @return 所有数据 table data info
      */
     @GetMapping
-    @PreAuthorize("@ss.hasPerm('sys:loginLog:list')")
+    @SaCheckPermission("sys:loginLog:list")
     public TableDataInfo selectAll(SysLoginLog sysLoginLog) {
         startPage();
         return getDataTable(this.sysLoginLogService.findLoginLogList(sysLoginLog));
@@ -49,7 +49,7 @@ public class SysLoginLogController extends BaseController {
      * @return 单条数据 result data
      */
     @GetMapping("{id}")
-    @PreAuthorize("@ss.hasPerm('sys:loginLog:list')")
+    @SaCheckPermission("sys:loginLog:list")
     public ResultData selectOne(@PathVariable Serializable id) {
         return ResultData.success(this.sysLoginLogService.getById(id));
     }

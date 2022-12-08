@@ -11,7 +11,7 @@
             ,su.last_logintime, su.last_loginip ,su.last_ip
     </sql>
 
-    <select id="selectAll" resultType="com.broad.common.web.entity.SysUser">
+    <select id="selectAll" resultType="com.broad.system.entity.SysUser">
         select<include refid="key"/>,
         sd.dept_name as deptName
         from sys_user su
@@ -38,7 +38,7 @@
         </where>
     </select>
 
-    <select id="selectAllByIds" resultType="com.broad.common.web.entity.SysUser">
+    <select id="selectAllByIds" resultType="com.broad.system.entity.SysUser">
         select<include refid="key"/>,
         sd.dept_name as deptName
         from sys_user su

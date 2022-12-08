@@ -67,7 +67,7 @@ jwt:
   # 密钥
   secret: springkhbd
   # 过期时间
-  expiration: 360000
+  expiration: 360
 
 
 # 异步线程配置

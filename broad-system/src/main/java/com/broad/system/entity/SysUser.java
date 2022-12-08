@@ -1,12 +1,12 @@
-package com.broad.common.web.entity;
+package com.broad.system.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
-import lombok.Data;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
+import lombok.*;
 
 import javax.validation.constraints.NotNull;
-import java.util.*;
+import java.io.Serializable;
+import java.util.Date;
+import java.util.List;
 
 /**
  * 管理员表(SysUser)实体类
@@ -15,8 +15,12 @@ import java.util.*;
  * @since 2022 -07-09 17:19:40
  */
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode(callSuper = false)
 @TableName("sys_user")
-public class SysUser implements UserDetails {
+public class SysUser implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -132,61 +136,5 @@ public class SysUser implements UserDetails {
     @TableField(exist = false)
     private String deptName;
 
-    @TableField(exist = false)
-    private Set<String> roleCode;
-    @TableField(exist = false)
-    private Set<String> permissions;
-
-    /**
-     * @return
-     */
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        List<GrantedAuthority> authorities = new ArrayList<>();
-        if (roleCode != null) {
-            roleCode.forEach(role -> authorities.add((GrantedAuthority) () -> role));
-        }
-        return authorities;
-    }
-
-    /**
-     * @return
-     */
-    @Override
-    public String getUsername() {
-        return this.userName;
-    }
-
-    /**
-     * @return
-     */
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    /**
-     * @return
-     */
-    @Override
-    public boolean isAccountNonLocked() {
-        return "0".equals(this.userStatus);
-    }
-
-    /**
-     * @return
-     */
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    /**
-     * @return
-     */
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
 }
 

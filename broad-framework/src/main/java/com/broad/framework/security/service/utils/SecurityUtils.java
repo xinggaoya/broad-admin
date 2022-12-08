@@ -1,8 +1,8 @@
-package com.broad.common.utils;
+package com.broad.framework.security.service.utils;
 
 import com.broad.common.constant.HttpStatus;
 import com.broad.common.exception.ServiceException;
-import com.broad.common.web.entity.SysUser;
+import com.broad.system.entity.SysUser;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -16,7 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 /**
  * 安全服务工具类
  *
- * @author XingGao
+ * @author JinJun
  */
 public class SecurityUtils {
     /**
@@ -46,7 +46,7 @@ public class SecurityUtils {
      **/
     public static String getUsername() {
         try {
-            return getLoginUser().getUsername();
+            return getLoginUser().getUserName();
         } catch (Exception e) {
             throw new ServiceException("获取用户账户异常", HttpStatus.UNAUTHORIZED);
         }
@@ -57,8 +57,7 @@ public class SecurityUtils {
      **/
     public static SysUser getLoginUser() {
         try {
-            SysUser loginUser = (SysUser) getAuthentication().getPrincipal();
-            return loginUser;
+            return (SysUser) getAuthentication().getPrincipal();
         } catch (Exception e) {
             throw new ServiceException("获取用户信息异常", HttpStatus.UNAUTHORIZED);
         }

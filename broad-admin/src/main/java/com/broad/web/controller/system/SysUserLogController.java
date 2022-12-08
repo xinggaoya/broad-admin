@@ -1,6 +1,7 @@
 package com.broad.web.controller.system;
 
-
+import cn.dev33.satoken.annotation.SaCheckLogin;
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.broad.common.annotation.Log;
 import com.broad.common.enums.BusinessType;
 import com.broad.common.utils.poi.ExcelUtil;
@@ -10,7 +11,6 @@ import com.broad.common.web.page.TableDataInfo;
 import com.broad.system.entity.SysUserLog;
 import com.broad.system.service.SysUserLogService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -40,7 +40,7 @@ public class SysUserLogController extends BaseController {
      * @return 所有数据 table data info
      */
     @GetMapping
-    @PreAuthorize("@ss.hasPerm('monitor:log:list')")
+    @SaCheckPermission("monitor:log:list")
     public TableDataInfo selectAll(SysUserLog sysAdminLog) {
         startPage();
         return getDataTable(this.sysAdminLogService.selectAll(sysAdminLog));
@@ -53,7 +53,7 @@ public class SysUserLogController extends BaseController {
      * @return 单条数据 result data
      */
     @GetMapping("{id}")
-    @PreAuthorize("@ss.hasPerm('monitor:log:list')")
+    @SaCheckPermission("monitor:log:list")
     public ResultData selectOne(@PathVariable Serializable id) {
         return ResultData.success(this.sysAdminLogService.getById(id));
     }
@@ -65,6 +65,7 @@ public class SysUserLogController extends BaseController {
      * @return 新增结果 result data
      */
     @PostMapping
+    @SaCheckLogin
     public void insert(@RequestBody SysUserLog sysAdminLog) {
         this.sysAdminLogService.save(sysAdminLog);
     }
@@ -76,7 +77,7 @@ public class SysUserLogController extends BaseController {
      * @return 修改结果 result data
      */
     @PutMapping
-    @PreAuthorize("@ss.hasPerm('monitor:log:update')")
+    @SaCheckPermission("monitor:log:update")
     @Log(description = "修改管理员日志", businessType = BusinessType.UPDATE)
     public ResultData update(@RequestBody SysUserLog sysAdminLog) {
         return ResultData.success(this.sysAdminLogService.updateById(sysAdminLog));
@@ -89,7 +90,7 @@ public class SysUserLogController extends BaseController {
      * @return 删除结果 result data
      */
     @DeleteMapping
-    @PreAuthorize("@ss.hasPerm('monitor:log:delete')")
+    @SaCheckPermission("monitor:log:delete")
     @Log(description = "删除管理员日志", businessType = BusinessType.DELETE)
     public ResultData delete(@RequestParam("idList") List<Long> idList) {
         return ResultData.success(this.sysAdminLogService.removeByIds(idList));
