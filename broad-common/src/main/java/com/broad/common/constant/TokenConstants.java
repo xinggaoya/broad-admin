@@ -20,16 +20,11 @@ public class TokenConstants {
     /**
      * 账户被顶下线
      */
-    public static final int LOGIN_DOWN_LINE = -5;
+    public static final int DOWN_LINE = -5;
 
     /**
-     * 登录无效
+     * 令牌秘钥
      */
-    public static final int LOGIN_INVALID = -4;
-
-    /**
-     * 登录过期
-     */
-    public static final int LOGIN_EXPIRE = -3;
+    public final static String SECRET = "abcdefghijklmnopqrstuvwxyz";
 
 }

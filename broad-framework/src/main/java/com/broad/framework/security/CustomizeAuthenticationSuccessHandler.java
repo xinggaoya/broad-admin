@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * @author: XingGao
@@ -47,9 +46,9 @@ public class CustomizeAuthenticationSuccessHandler implements AuthenticationSucc
         sysUserService.updateById(sysUser);
 
         // 根据用户的id和account生成token并返回
-        String uuid = UUID.randomUUID().toString();
+        String jwtToken = tokenService.createJwtToken(sysUser);
         Map<String, String> results = new HashMap<>(1);
-        results.put("token", uuid);
+        results.put("token", jwtToken);
 
         //处理编码方式，防止中文乱码的情况
         httpServletResponse.setContentType("text/json;charset=utf-8");

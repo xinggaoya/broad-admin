@@ -48,10 +48,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             UserDetails userDetails = this.userDetailsService.loadUserById(Long.valueOf(id));
             // 验证当前token是否有效
             if (StringUtils.isNotNull(userDetails)) {
+
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
+
                 //将authentication放入SecurityContextHolder中
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }

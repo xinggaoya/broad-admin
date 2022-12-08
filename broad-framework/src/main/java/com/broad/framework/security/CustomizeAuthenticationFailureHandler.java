@@ -1,6 +1,7 @@
 package com.broad.framework.security;
 
 import com.alibaba.fastjson2.JSON;
+import com.broad.common.exception.CaptchaException;
 import com.broad.common.utils.ServletUtils;
 import com.broad.common.web.entity.ResultData;
 import org.springframework.security.authentication.*;
@@ -41,6 +42,9 @@ public class CustomizeAuthenticationFailureHandler implements AuthenticationFail
         } else if (e instanceof InternalAuthenticationServiceException) {
             //用户不存在
             result = ResultData.error("用户名不存在");
+        } else if (e instanceof CaptchaException) {
+            //验证码错误
+            result = ResultData.error(e.getMessage());
         } else {
             //其他错误
             result = ResultData.error("认证失败，请联系管理员");
