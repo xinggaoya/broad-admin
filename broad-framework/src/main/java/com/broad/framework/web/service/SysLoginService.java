@@ -7,7 +7,6 @@ import com.broad.common.exception.user.UserPasswordNotMatchException;
 import com.broad.common.service.RedisService;
 import com.broad.common.utils.ServletUtils;
 import com.broad.common.utils.ip.IpUtils;
-import com.broad.common.utils.uuid.UUID;
 import com.broad.common.web.entity.SysUser;
 import com.broad.system.service.SysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,11 +74,9 @@ public class SysLoginService {
         sysUser.setLastLoginip(IpUtils.getIpAddress(ip));
         sysUserService.updateById(sysUser);
 
+        user.setTokenValue(tokenService.createJwtToken(sysUser));
 
-        String uuid = UUID.randomUUID().toString();
-        user.setTokenValue(uuid);
-
-        tokenService.saveLoginToken(uuid, user.getId());
+        tokenService.saveToken(user);
         // 生成token
         return user;
     }

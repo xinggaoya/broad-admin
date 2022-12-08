@@ -53,19 +53,4 @@ public class SecurityUserServiceImpl implements SecurityUserService {
 
         return sysUser;
     }
-
-    @Override
-    public UserDetails loadUserById(Long id) throws UsernameNotFoundException {
-        SysUser sysUser = sysUserService.lambdaQuery().eq(SysUser::getId, id).one();
-        if (StringUtils.isNull(sysUser)) {
-            throw new UsernameNotFoundException("用户不存在");
-        }
-        // 获取用户角色
-        List<String> roleCodes = sysUserRoleService.selectUserRoleCodes(Long.valueOf(sysUser.getId()));
-        // 获取用户权限
-        List<String> sysPermissions = sysRoleMenuService.findRoleMenuCodeByUserId(sysUser.getId());
-        sysUser.setPermissions(new HashSet<>(sysPermissions));
-        sysUser.setRoleCode(new HashSet<>(roleCodes));
-        return sysUser;
-    }
 }
