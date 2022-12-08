@@ -1,6 +1,7 @@
 package com.broad.web.controller;
 
 import cn.dev33.satoken.annotation.SaIgnore;
+import com.broad.common.socket.service.UserSocketServer;
 import com.broad.common.utils.file.FileUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -30,8 +31,7 @@ public class TestController {
     @GetMapping("/test")
     @SaIgnore
     public void testSimple(String message, String sid) {
-//        UserSocketServer.sendInfo(message, sid);
-//        BroadSecurity.login("login","123456");
+        UserSocketServer.sendInfo(message, sid);
     }
 
     /**

@@ -58,16 +58,7 @@ sa-token:
   # token风格
   token-style: uuid
   # 是否输出操作日志
-  is-log: true
-
-
-jwt:
-  # 请求头
-  header: Authorization
-  # 密钥
-  secret: springkhbd
-  # 过期时间
-  expiration: 360
+  is-log: false
 
 
 # 异步线程配置

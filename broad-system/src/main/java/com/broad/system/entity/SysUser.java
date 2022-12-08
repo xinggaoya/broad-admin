@@ -80,7 +80,7 @@ public class SysUser implements Serializable {
     private Date lastLogintime;
 
     /**
-     * 登录地址
+     * 登录IP
      */
     @TableField(value = "last_loginip")
     private String lastLoginip;
