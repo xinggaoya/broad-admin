@@ -1,4 +1,4 @@
-package com.broad.framework.intercept;
+package com.broad.framework.security;
 
 import cn.dev33.satoken.interceptor.SaInterceptor;
 import org.springframework.context.annotation.Configuration;

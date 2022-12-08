@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.broad.common.config.BroadConfig;
 import com.broad.common.constant.Constants;
 import com.broad.common.exception.ServiceException;
+import com.broad.common.exception.user.UserPasswordNotMatchException;
 import com.broad.common.service.RedisService;
 import com.broad.common.utils.ip.IpUtils;
 import com.broad.system.entity.SysLoginLog;
@@ -105,7 +106,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 throw new ServiceException("用户名不存在");
             }
             if (!admin.getPassword().equals(SaSecureUtil.md5BySalt(sysAdmin.getPassword(), admin.getSalt()))) {
-                throw new ServiceException("密码错误");
+                throw new UserPasswordNotMatchException();
             }
             String ip = IpUtils.getIp(request);
             admin.setLastLogintime(new Date());

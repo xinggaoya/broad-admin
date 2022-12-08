@@ -140,7 +140,7 @@ public class UserSocketServer {
         }
         // 禁止重复登录
         if (removeUser(sid)) {
-            log.info("用户已登录，禁止重复登录");
+            log.info("id-{}已登录，禁止重复登录", sid);
             return;
         }
         webSocketSet.add(this);

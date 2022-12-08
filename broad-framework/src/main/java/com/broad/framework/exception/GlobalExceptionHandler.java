@@ -42,9 +42,9 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = NotLoginException.class)
     public ResultData handlerNotLoginException(NotLoginException e) {
         // 判断场景值，定制化异常信息
-        String message = "";
+        String message;
         if (e.getType().equals(NotLoginException.NOT_TOKEN)) {
-            message = "无权限，请登录后操作";
+            message = "认证失败，请登录后操作";
         } else if (e.getType().equals(NotLoginException.INVALID_TOKEN)) {
             message = "登录无效，请重新登录";
         } else if (e.getType().equals(NotLoginException.TOKEN_TIMEOUT)) {
@@ -56,7 +56,7 @@ public class GlobalExceptionHandler {
         } else {
             message = "当前会话未登录";
         }
-        return new ResultData(HttpStatus.FORBIDDEN, message);
+        return new ResultData(HttpStatus.UNAUTHORIZED, message);
     }
 
     /**
@@ -68,7 +68,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = NotPermissionException.class)
     public ResultData handlerNotPermissionException(NotPermissionException e) {
         // 判断场景值，定制化异常信息
-        return new ResultData(HttpStatus.UNAUTHORIZED, "无操作权限，请联系管理员");
+        return new ResultData(HttpStatus.FORBIDDEN, "无该操作权限，请联系管理员");
     }
 
     /**
