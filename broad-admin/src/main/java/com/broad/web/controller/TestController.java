@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -41,7 +41,7 @@ public class TestController {
         sysNotice.setContent("登录成功");
         sysNotice.setType(NoticeConstants.NOTICE_TYPE);
         sysNotice.setConfirm(NoticeConstants.NOTICE_CONFIRM);
-        sysNotice.setMeta(LocalDateTime.now());
+        sysNotice.setMeta(new Date());
         ResultData resultData = ResultData.success(sysNotice);
         UserSocketServer.sendMessageById(resultData, sid);
 //        return TokenUtil.getLoginUser();

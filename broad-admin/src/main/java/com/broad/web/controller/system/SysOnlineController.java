@@ -54,16 +54,4 @@ public class SysOnlineController extends BaseController {
         UserSocketServer.sendMessageById(ResultData.error().setCode(HttpStatus.UNAUTHORIZED), sysAdmin.getId().toString());
         return ResultData.ok();
     }
-
-    /**
-     * 封禁用户
-     */
-    @DeleteMapping("/ban")
-    @SaCheckPermission("online:delete")
-    public ResultData ban(SysUser sysAdmin) {
-        StpUtil.kickout(sysAdmin.getId());
-        StpUtil.disable(sysAdmin.getId(), 60 * 60 * 1000);
-        UserSocketServer.sendMessageById(ResultData.error().setCode(HttpStatus.UNAUTHORIZED), sysAdmin.getId().toString());
-        return ResultData.ok();
-    }
 }

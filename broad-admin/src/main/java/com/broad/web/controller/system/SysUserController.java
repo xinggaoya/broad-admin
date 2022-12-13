@@ -60,7 +60,9 @@ public class SysUserController extends BaseController {
     @GetMapping("{id}")
     @SaCheckPermission("sys:user:list")
     public ResultData selectOne(@PathVariable Serializable id) {
-        return ResultData.success(this.sysAdminService.getById(id));
+        SysUser sysAdmin = this.sysAdminService.getById(id);
+        sysAdmin.setPassword(null);
+        return ResultData.success(sysAdmin);
     }
 
     /**

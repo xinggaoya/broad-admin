@@ -1,5 +1,6 @@
 package com.broad.framework.exception;
 
+import cn.dev33.satoken.exception.DisableServiceException;
 import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.exception.NotPermissionException;
 import com.broad.common.constant.HttpStatus;
@@ -58,6 +59,17 @@ public class GlobalExceptionHandler {
             message = "当前会话未登录";
         }
         return new ResultData(HttpStatus.UNAUTHORIZED, message);
+    }
+
+    /**
+     * 封禁异常处理
+     *
+     * @param e the e
+     * @return result data
+     */
+    @ExceptionHandler(value = DisableServiceException.class)
+    public ResultData handleSaTokenException(DisableServiceException e) {
+        return new ResultData(HttpStatus.UNAUTHORIZED, "此账号已被禁用，请联系管理员");
     }
 
     /**

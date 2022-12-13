@@ -2,8 +2,11 @@ package com.broad.common.web.socket.service;
 
 import cn.dev33.satoken.stp.StpUtil;
 import com.alibaba.fastjson2.JSON;
+import com.broad.common.constant.CacheConstants;
 import com.broad.common.constant.HttpStatus;
 import com.broad.common.exception.ServiceException;
+import com.broad.common.service.RedisService;
+import com.broad.common.utils.SpringUtils;
 import com.broad.common.web.entity.ResultData;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -40,14 +43,19 @@ public class UserSocketServer {
      */
     private String sid = "";
 
+
     /**
      * 自检查
      */
     public static synchronized void sendSelfCheck(String sid) {
+        // 使用redis防止短时间重复推送
+        RedisService redisService = SpringUtils.getBean(RedisService.class);
+        // 防止重复发送
         for (UserSocketServer item : webSocketSet) {
             try {
-                if (item.sid.equals(sid)) {
+                if (item.sid.equals(sid) && redisService.getCacheObject(CacheConstants.SELF_CHECK + sid) == null) {
                     item.sendMessage(JSON.toJSONString(ResultData.code(HttpStatus.UNAUTHORIZED)));
+                    redisService.setCacheObject(CacheConstants.SELF_CHECK + sid, System.currentTimeMillis(), 5L);
                 }
             } catch (IOException e) {
                 throw new ServiceException("发送消息失败");

@@ -5,6 +5,7 @@ import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.broad.common.config.BroadConfig;
 import com.broad.common.constant.Constants;
+import com.broad.common.enums.UserStatus;
 import com.broad.common.exception.ServiceException;
 import com.broad.common.exception.user.UserPasswordNotMatchException;
 import com.broad.common.service.RedisService;
@@ -43,6 +44,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Autowired
     private SysLoginLogService loginLogService;
 
+
     @Override
     public List<SysUser> selectAll(SysUser sysAdmin) {
         return baseMapper.selectAll(sysAdmin);
@@ -77,6 +79,14 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             String uid = java.util.UUID.randomUUID().toString();
             sysAdmin.setPassword(SaSecureUtil.md5BySalt(sysAdmin.getPassword(), uid));
             sysAdmin.setSalt(uid);
+        }
+        if (sysAdmin.getUserStatus() != null) {
+            if (UserStatus.OK.getCode().equals(sysAdmin.getUserStatus())) {
+                unban(Long.valueOf(sysAdmin.getId()));
+            }
+            if (UserStatus.DISABLE.getCode().equals(sysAdmin.getUserStatus())) {
+                forceLogout(Long.valueOf(sysAdmin.getId()));
+            }
         }
         int res = baseMapper.updateById(sysAdmin);
         // 查询是否有角色
@@ -146,6 +156,15 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Transactional(rollbackFor = Exception.class)
     public void logout() {
         StpUtil.logout();
+    }
+
+    private void forceLogout(Long id) {
+        StpUtil.kickout(id);
+        StpUtil.disable(id, 60 * 60 * 1000);
+    }
+
+    private void unban(Long id) {
+        StpUtil.untieDisable(id);
     }
 
 }

@@ -41,5 +41,10 @@ public class CacheConstants {
      */
     public final static String ROLE_KEY = "role_codes";
 
+    /**
+     * 消息发送记录缓存前缀
+     */
+    public final static String SELF_CHECK = "message:self_check";
+
 
 }

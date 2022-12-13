@@ -9,20 +9,20 @@ public enum UserStatus {
     /**
      * Ok user status.
      */
-    OK(0, "正常"),
+    OK("0", "正常"),
     /**
      * Disable user status.
      */
-    DISABLE(1, "停用"),
+    DISABLE("1", "停用"),
     /**
      * Deleted user status.
      */
-    DELETED(2, "删除");
+    DELETED("2", "删除");
 
-    private final int code;
+    private final String code;
     private final String info;
 
-    UserStatus(int code, String info) {
+    UserStatus(String code, String info) {
         this.code = code;
         this.info = info;
     }
@@ -32,7 +32,7 @@ public enum UserStatus {
      *
      * @return the code
      */
-    public int getCode() {
+    public String getCode() {
         return code;
     }
 
