@@ -1,7 +1,9 @@
-package com.broad.common.socket.service;
+package com.broad.common.web.socket.service;
 
 import cn.dev33.satoken.stp.StpUtil;
 import com.alibaba.fastjson2.JSON;
+import com.broad.common.constant.HttpStatus;
+import com.broad.common.exception.ServiceException;
 import com.broad.common.web.entity.ResultData;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -27,56 +29,80 @@ import java.util.concurrent.CopyOnWriteArraySet;
 @Service
 @ServerEndpoint("/api/websocket/{sid}")
 public class UserSocketServer {
-    private static int onlineCount = 0;
     /**
      * concurrent包的线程安全Set，用来存放每个客户端对应的MyWebSocket对象。
      */
     private static CopyOnWriteArraySet<UserSocketServer> webSocketSet = new CopyOnWriteArraySet<>();
 
     private Session session;
-
     /**
-     * 接收sid
+     * 接收窗口Id
      */
     private String sid = "";
 
     /**
-     * 群发自定义消息
-     *
-     * @param message the message
-     * @param sid     the sid
+     * 自检查
      */
-    public static void sendInfo(Object message, @PathParam("sid") String sid) {
-        log.info("推送消息到窗口" + sid + "，推送内容:" + message);
-        String msg = JSON.toJSONString(ResultData.success(message));
+    public static synchronized void sendSelfCheck(String sid) {
         for (UserSocketServer item : webSocketSet) {
             try {
-                //这里可以设定只推送给这个sid的，为null则全部推送
-                if (sid == null) {
-                    item.sendMessage(msg);
-                } else if (item.sid.equals(sid)) {
-                    item.sendMessage(msg);
+                if (item.sid.equals(sid)) {
+                    item.sendMessage(JSON.toJSONString(ResultData.code(HttpStatus.UNAUTHORIZED)));
                 }
             } catch (IOException e) {
-                log.error(e.getMessage());
+                throw new ServiceException("发送消息失败");
             }
         }
     }
 
     /**
-     * 禁止重复登录
+     * 根据id发送消息
+     *
+     * @param result the result
+     * @param sid    the sid
+     */
+    public static void sendMessageById(Object result, @PathParam("sid") String sid) {
+        log.info("发送消息到:" + sid + "，报文:" + result);
+        for (UserSocketServer item : webSocketSet) {
+            try {
+                if (item.sid.equals(sid)) {
+                    item.sendMessage(JSON.toJSONString(result));
+                }
+            } catch (IOException e) {
+                throw new ServiceException("发送消息失败");
+            }
+        }
+    }
+
+    /**
+     * 群发自定义消息
+     *
+     * @param result the result
+     */
+    public static void sendMass(Object result) {
+        log.info("群发消息，报文:" + result);
+        String msg = JSON.toJSONString(result);
+        for (UserSocketServer item : webSocketSet) {
+            try {
+                item.sendMessage(msg);
+            } catch (IOException e) {
+                throw new ServiceException("发送消息失败");
+            }
+        }
+    }
+
+    /**
+     * 清理已登录用户
      *
      * @param sid 用户id
      */
-    private static Boolean removeUser(String sid) {
-        boolean flag = false;
+    private static void removeUser(String sid) {
         for (UserSocketServer item : webSocketSet) {
             if (item.sid.equals(sid)) {
-                flag = true;
-                break;
+                webSocketSet.remove(item);
+                log.info("清理用户:" + sid + ",当前在线人数为:" + getOnlineCount());
             }
         }
-        return flag;
     }
 
     /**
@@ -85,21 +111,7 @@ public class UserSocketServer {
      * @return the online count
      */
     public static synchronized int getOnlineCount() {
-        return onlineCount;
-    }
-
-    /**
-     * Add online count.
-     */
-    public static synchronized void addOnlineCount() {
-        UserSocketServer.onlineCount++;
-    }
-
-    /**
-     * Sub online count.
-     */
-    public static synchronized void subOnlineCount() {
-        UserSocketServer.onlineCount--;
+        return webSocketSet.size();
     }
 
     /**
@@ -109,9 +121,7 @@ public class UserSocketServer {
      */
     public static synchronized List<Long> getLoginId() {
         List<Long> ids = new ArrayList<>();
-        webSocketSet.forEach(item -> {
-            ids.add(Long.parseLong(item.sid));
-        });
+        webSocketSet.forEach(item -> ids.add(Long.parseLong(item.sid)));
         return ids;
     }
 
@@ -138,14 +148,11 @@ public class UserSocketServer {
             log.info("未登录用户，禁止连接");
             return;
         }
-        // 禁止重复登录
-        if (removeUser(sid)) {
-            log.info("id-{}已登录，禁止重复登录", sid);
-            return;
-        }
-        webSocketSet.add(this);
+        // 清理已登录重复用户
+        removeUser(sid);
+
         this.sid = sid;
-        addOnlineCount();
+        webSocketSet.add(this);
 //        sendInfo(ResultData.success("连接成功"), sid);
         log.info("有新用户开始连接:" + sid + ",当前在线人数为:" + getOnlineCount());
 
@@ -157,9 +164,6 @@ public class UserSocketServer {
     @OnClose
     public void onClose() {
         webSocketSet.remove(this);
-        subOnlineCount();
-        //断开连接情况下，更新主板占用情况为释放
-        log.info("释放的sid为：" + sid);
         //这里写你 释放的时候，要处理的业务
         log.info("有一连接关闭！当前在线人数为" + getOnlineCount());
 

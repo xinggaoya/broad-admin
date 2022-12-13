@@ -1,5 +1,6 @@
 package com.broad.web.controller.system;
 
+import cn.dev33.satoken.annotation.SaIgnore;
 import com.broad.common.annotation.RateLimiter;
 import com.broad.common.config.BroadConfig;
 import com.broad.common.constant.Constants;
@@ -48,6 +49,7 @@ public class CaptchaController {
      */
     @GetMapping("/captchaImage")
     @RateLimiter(key = "captchaImage", count = 10, time = 5)
+    @SaIgnore
     public ResultData getCode() {
         LinkedHashMap<String, Object> linkedHashMap = new LinkedHashMap<>();
         // 保存验证码信息

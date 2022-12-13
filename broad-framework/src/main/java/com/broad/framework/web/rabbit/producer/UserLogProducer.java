@@ -1,4 +1,4 @@
-package com.broad.framework.rabbit.producer;
+package com.broad.framework.web.rabbit.producer;
 
 import com.broad.common.constant.SimpleMqConstant;
 import com.broad.system.entity.SysUserLog;

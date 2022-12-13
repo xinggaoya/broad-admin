@@ -1,6 +1,9 @@
 package com.broad.framework.security;
 
 import cn.dev33.satoken.interceptor.SaInterceptor;
+import cn.dev33.satoken.router.SaRouter;
+import cn.dev33.satoken.stp.StpUtil;
+import com.broad.framework.web.TokenUtil;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -22,16 +25,24 @@ public class SaTokenConfigure implements WebMvcConfigurer {
      */
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        // 注册拦截器，并排除不需要注解鉴权的接口地址
         registry.addInterceptor(new SaInterceptor(handle -> {
                     // 对所有的路由进行登录鉴权
-//                    SaRouter.match("/**", r -> StpUtil.checkLogin());
+                    SaRouter.match("/**", r -> StpUtil.checkLogin());
+                    // 检查过期时间 低于30分钟的时候刷新token
+                    TokenUtil.refreshToken();
                 }))
-                .addPathPatterns("/**")
-                .excludePathPatterns("/**/*.js", "/**/*.css", "/**/*.gif", "/**/*.png", "/**/*.jpg", "/upload/**",
-                        "/**/*.jpeg", "/**/*.html", "/**/*.svg", "/**/*.woff", "/**/*.ttf", "/**/*.woff2", "/**/*.ico",
-                        "/swagger-resources", "/sysAdmin/login", "/captchaImage", "/doc.html", "/test/**"
-                        , "/druid/**");
+                .excludePathPatterns(EXCLUDE_PATH)
+                .addPathPatterns("/**");
     }
+
+
+    /**
+     * 排除不需要登录的接口
+     */
+    private final String[] EXCLUDE_PATH = {
+            "/doc.html/**",
+            "/favicon.ico",
+            "/upload/**",
+    };
 
 }

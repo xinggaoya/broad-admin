@@ -1,4 +1,4 @@
-package com.broad.framework.rabbit.consumer;
+package com.broad.framework.web.rabbit.consumer;
 
 import com.broad.common.constant.SimpleMqConstant;
 import com.broad.system.entity.SysUserLog;

@@ -1,4 +1,4 @@
-package com.broad.framework.rabbit;
+package com.broad.framework.config;
 
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;

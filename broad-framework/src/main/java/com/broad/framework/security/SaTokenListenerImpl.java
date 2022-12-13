@@ -2,6 +2,7 @@ package com.broad.framework.security;
 
 import cn.dev33.satoken.listener.SaTokenListener;
 import cn.dev33.satoken.stp.SaLoginModel;
+import com.broad.common.web.socket.service.UserSocketServer;
 import org.springframework.stereotype.Component;
 
 /**
@@ -14,12 +15,20 @@ import org.springframework.stereotype.Component;
 @Component
 public class SaTokenListenerImpl implements SaTokenListener {
 
-
     /**
      * 每次登录时触发
      */
     @Override
     public void doLogin(String loginType, Object loginId, String tokenValue, SaLoginModel loginModel) {
+//        SysNotice sysNotice = new SysNotice();
+//        sysNotice.setTitle("您有一条新的消息");
+//        sysNotice.setDescription("You have a new message");
+//        sysNotice.setContent("登录成功");
+//        sysNotice.setType(NoticeConstants.NOTICE_TYPE);
+//        sysNotice.setConfirm(NoticeConstants.NOTICE_CONFIRM);
+//        sysNotice.setMeta(LocalDateTime.now());
+//        ResultData resultData = ResultData.success(sysNotice);
+//        UserSocketServer.sendMessageById(resultData, loginId.toString());
     }
 
     /**
@@ -34,6 +43,7 @@ public class SaTokenListenerImpl implements SaTokenListener {
      */
     @Override
     public void doKickout(String loginType, Object loginId, String tokenValue) {
+        UserSocketServer.sendSelfCheck(loginId.toString());
     }
 
     /**
@@ -41,6 +51,7 @@ public class SaTokenListenerImpl implements SaTokenListener {
      */
     @Override
     public void doReplaced(String loginType, Object loginId, String tokenValue) {
+        UserSocketServer.sendSelfCheck(loginId.toString());
     }
 
     /**
@@ -48,6 +59,7 @@ public class SaTokenListenerImpl implements SaTokenListener {
      */
     @Override
     public void doDisable(String loginType, Object loginId, String service, int level, long disableTime) {
+        UserSocketServer.sendSelfCheck(loginId.toString());
     }
 
     /**

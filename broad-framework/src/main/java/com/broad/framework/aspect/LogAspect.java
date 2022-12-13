@@ -8,7 +8,7 @@ import com.broad.common.enums.LogType;
 import com.broad.common.utils.ServletUtils;
 import com.broad.common.utils.StringUtils;
 import com.broad.common.utils.ip.IpUtils;
-import com.broad.framework.rabbit.producer.UserLogProducer;
+import com.broad.framework.web.rabbit.producer.UserLogProducer;
 import com.broad.system.entity.SysUserLog;
 import io.swagger.models.HttpMethod;
 import lombok.extern.slf4j.Slf4j;

@@ -4,6 +4,7 @@ import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.exception.NotPermissionException;
 import com.broad.common.constant.HttpStatus;
 import com.broad.common.exception.ServiceException;
+import com.broad.common.exception.user.UserException;
 import com.broad.common.web.entity.ResultData;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -57,6 +58,17 @@ public class GlobalExceptionHandler {
             message = "当前会话未登录";
         }
         return new ResultData(HttpStatus.UNAUTHORIZED, message);
+    }
+
+    /**
+     * 用户异常处理
+     *
+     * @param e the e
+     * @return result data
+     */
+    @ExceptionHandler(value = UserException.class)
+    public ResultData handlerUserException(UserException e) {
+        return new ResultData(HttpStatus.ERROR, e.getCode());
     }
 
     /**

@@ -1,14 +1,17 @@
 package com.broad.web.controller;
 
 import cn.dev33.satoken.annotation.SaIgnore;
+import com.broad.common.constant.NoticeConstants;
 import com.broad.common.utils.file.FileUtils;
-import com.broad.framework.web.TokenUtil;
-import com.broad.system.entity.SysUser;
+import com.broad.common.web.entity.ResultData;
+import com.broad.common.web.socket.SysNotice;
+import com.broad.common.web.socket.service.UserSocketServer;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,9 +34,18 @@ public class TestController {
      */
     @GetMapping("/test")
     @SaIgnore
-    public SysUser testSimple(String message, String sid) {
-//        UserSocketServer.sendInfo(message, sid);
-        return TokenUtil.getLoginUser();
+    public Object testSimple(String message, String sid) {
+        SysNotice sysNotice = new SysNotice();
+        sysNotice.setTitle("您有一条新的消息");
+        sysNotice.setDescription("You have a new message");
+        sysNotice.setContent("登录成功");
+        sysNotice.setType(NoticeConstants.NOTICE_TYPE);
+        sysNotice.setConfirm(NoticeConstants.NOTICE_CONFIRM);
+        sysNotice.setMeta(LocalDateTime.now());
+        ResultData resultData = ResultData.success(sysNotice);
+        UserSocketServer.sendMessageById(resultData, sid);
+//        return TokenUtil.getLoginUser();
+        return new SysNotice();
     }
 
     /**
