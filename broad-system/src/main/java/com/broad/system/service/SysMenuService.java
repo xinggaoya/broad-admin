@@ -14,12 +14,20 @@ import java.util.List;
 public interface SysMenuService extends IService<SysMenu> {
 
     /**
-     * 根据角色获取对应菜单
+     * 根据用户ID获取对应所有菜单
      *
-     * @param menuId the menu id
+     * @param userId the user id
      * @return 菜单列表 list
      */
-    List<SysMenu> findMenuByRole(Integer menuId);
+    List<SysMenu> findMenuByUserId(Integer userId);
+
+    /**
+     * 根据用户ID获取对应所有菜单
+     *
+     * @param userId the user id
+     * @return 菜单列表 list
+     */
+    List<SysMenu> findTreeMenuByUserId(Integer userId);
 
     /**
      * 分页查询父级菜单

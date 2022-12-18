@@ -1,14 +1,11 @@
 package com.broad.system.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.broad.common.constant.CacheConstants;
+import com.broad.common.utils.StringUtils;
 import com.broad.system.entity.SysMenu;
-import com.broad.system.entity.SysRoleMenu;
 import com.broad.system.mapper.SysMenuMapper;
 import com.broad.system.service.SysMenuService;
-import com.broad.system.service.SysRoleMenuService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -28,15 +25,17 @@ import java.util.List;
 @CacheConfig(cacheNames = CacheConstants.ROUTE_KEY, keyGenerator = CacheConstants.CACHE_PREFIX_GENERATION)
 public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> implements SysMenuService {
 
-    @Autowired
-    private SysRoleMenuService roleMenuService;
-
 
     @Override
-    @Cacheable(key = "#menuId", unless = "null == #result")
-    public List<SysMenu> findMenuByRole(Integer menuId) {
-        List<SysMenu> list = this.baseMapper.findMenuByRole(menuId);
-        return buildTree(list);
+    @Cacheable(key = "#userId", unless = "null == #result")
+    public List<SysMenu> findMenuByUserId(Integer userId) {
+        return this.baseMapper.findMenuByUserId(userId);
+    }
+
+    @Override
+    public List<SysMenu> findTreeMenuByUserId(Integer userId) {
+        List<SysMenu> list = findMenuByUserId(userId);
+        return buildTreeList(list);
     }
 
     @Override
@@ -56,17 +55,15 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     }
 
     @Override
-    @CacheEvict(allEntries = true)
     @Transactional(rollbackFor = Exception.class)
     public int saveMenu(SysMenu entity) {
-        if (entity.getParentId() == null) {
+        if (StringUtils.isNull(entity.getParentId())) {
             entity.setParentId(0);
         }
         return this.baseMapper.insert(entity);
     }
 
     @Override
-    @CacheEvict(allEntries = true)
     @Transactional(rollbackFor = Exception.class)
     public int updateMenu(SysMenu entity) {
         return this.baseMapper.updateById(entity);
@@ -123,6 +120,15 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     }
 
     /**
+     * 处理树形结构
+     *
+     * @param menuList
+     */
+    private List<SysMenu> buildTreeList(List<SysMenu> menuList) {
+        return buildTree(menuList);
+    }
+
+    /**
      * 删除菜单和下级菜单
      */
     @Override
@@ -130,7 +136,6 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     @Transactional(rollbackFor = Exception.class)
     public int deleteMenu(List<Long> idList) {
         this.baseMapper.deleteBatchIds(idList);
-        roleMenuService.remove(new LambdaUpdateWrapper<SysRoleMenu>().in(SysRoleMenu::getMenuId, idList));
         return this.baseMapper.deleteChildMenu(idList);
     }
 

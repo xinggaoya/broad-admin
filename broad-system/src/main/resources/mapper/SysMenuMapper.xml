@@ -32,7 +32,7 @@
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
     </resultMap>
 
-    <select id="findMenuByRole" resultType="com.broad.system.entity.SysMenu">
+    <select id="findMenuByUserId" resultType="com.broad.system.entity.SysMenu">
         SELECT
         <include refid="Base_Column_List"/>
         FROM sys_menu sm

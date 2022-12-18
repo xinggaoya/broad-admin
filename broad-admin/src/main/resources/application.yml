@@ -82,7 +82,10 @@ mybatis-plus:
   configuration:
     arg-name-based-constructor-auto-mapping: true
     map-underscore-to-camel-case: true
-  #log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    #log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      id-type: auto
 
 # swagger配置 /doc.html
 springfox:

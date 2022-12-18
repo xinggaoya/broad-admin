@@ -64,7 +64,7 @@ public class SysMenuController extends BaseController {
     @GetMapping("getRouters")
     @SaCheckLogin
     public ResultData findMenuByRole() {
-        return ResultData.success(this.sysMenuService.findMenuByRole(StpUtil.getLoginIdAsInt()));
+        return ResultData.success(this.sysMenuService.findTreeMenuByUserId(StpUtil.getLoginIdAsInt()));
     }
 
     /**

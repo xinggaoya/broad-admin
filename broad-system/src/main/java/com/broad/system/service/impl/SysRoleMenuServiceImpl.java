@@ -3,13 +3,15 @@ package com.broad.system.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.broad.common.constant.CacheConstants;
 import com.broad.common.exception.ServiceException;
+import com.broad.common.utils.StringUtils;
 import com.broad.system.entity.SysMenu;
 import com.broad.system.entity.SysRoleMenu;
 import com.broad.system.mapper.SysRoleMenuMapper;
+import com.broad.system.service.SysMenuService;
 import com.broad.system.service.SysRoleMenuService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,10 +28,8 @@ import java.util.List;
 @CacheConfig(cacheNames = CacheConstants.ROUTE_KEY, keyGenerator = CacheConstants.CACHE_PREFIX_GENERATION)
 public class SysRoleMenuServiceImpl extends ServiceImpl<SysRoleMenuMapper, SysRoleMenu> implements SysRoleMenuService {
 
-    @Override
-    public List<SysMenu> findRoleMenuByUserId(Integer userId) {
-        return this.baseMapper.findRoleMenuByUserId(userId);
-    }
+    @Autowired
+    private SysMenuService menuService;
 
     /**
      * 查询权限码
@@ -38,9 +38,13 @@ public class SysRoleMenuServiceImpl extends ServiceImpl<SysRoleMenuMapper, SysRo
      * @return 所有数据 list
      */
     @Override
-    @Cacheable(key = "#userId+'_roleMenuCodes'", unless = "null == #result")
     public List<String> findRoleMenuCodeByUserId(Integer userId) {
-        return findRoleMenuByUserId(userId).stream().map(SysMenu::getPerme).collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
+        return menuService.findMenuByUserId(userId)
+                .stream()
+                .map(SysMenu::getPerme)
+                // 过滤空权限码
+                .filter(StringUtils::isNotEmpty)
+                .collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
     }
 
     @Override
@@ -60,7 +64,7 @@ public class SysRoleMenuServiceImpl extends ServiceImpl<SysRoleMenuMapper, SysRo
                     .menuId(menuId)
                     .build());
         }
-        return list.size() > 0 ? baseMapper.insertBatch(list) : 1;
+        return baseMapper.insertBatch(list);
     }
 
 }

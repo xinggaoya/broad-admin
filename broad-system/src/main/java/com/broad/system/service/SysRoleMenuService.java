@@ -1,7 +1,6 @@
 package com.broad.system.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.broad.system.entity.SysMenu;
 import com.broad.system.entity.SysRoleMenu;
 
 import java.util.List;
@@ -21,14 +20,6 @@ public interface SysRoleMenuService extends IService<SysRoleMenu> {
      * @return int
      */
     int addRoleMenu(SysRoleMenu roleMenu);
-
-    /**
-     * 查询角色菜单
-     *
-     * @param userId 查询实体
-     * @return 所有数据 list
-     */
-    List<SysMenu> findRoleMenuByUserId(Integer userId);
 
     /**
      * 查询权限码

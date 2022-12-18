@@ -29,7 +29,7 @@ public interface SysMenuMapper extends BaseMapper<SysMenu> {
      * @param userId the user id
      * @return list
      */
-    List<SysMenu> findMenuByRole(@Param("userId") Integer userId);
+    List<SysMenu> findMenuByUserId(@Param("userId") Integer userId);
 
     /**
      * 查询菜单树

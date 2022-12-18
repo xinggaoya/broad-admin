@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -34,7 +35,7 @@ public class TestController {
      */
     @GetMapping("/test")
     @SaIgnore
-    public Object testSimple(String message, String sid) {
+    public SysNotice testSimple(String message, String sid) throws IOException {
         SysNotice sysNotice = new SysNotice();
         sysNotice.setTitle("您有一条新的消息");
         sysNotice.setDescription("You have a new message");
@@ -44,8 +45,7 @@ public class TestController {
         sysNotice.setMeta(new Date());
         ResultData resultData = ResultData.success(sysNotice);
         UserSocketServer.sendMessageById(resultData, sid);
-//        return TokenUtil.getLoginUser();
-        return new SysNotice();
+        return sysNotice;
     }
 
     /**
@@ -65,5 +65,4 @@ public class TestController {
         }
         return list;
     }
-
 }
