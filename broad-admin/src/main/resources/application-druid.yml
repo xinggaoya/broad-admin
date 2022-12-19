@@ -1,25 +1,18 @@
 # 数据源配置
 spring:
-  autoconfigure:
-    # 排除 Druid 自动配置
-    exclude: com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceAutoConfigure
   datasource:
     # 指定使用 Druid 数据源
     type: com.alibaba.druid.pool.DruidDataSource
-    dynamic:
-      primary: master #设置默认的数据源或者数据源组,默认值即为master
-      strict: false #严格匹配数据源,默认false. true未匹配到指定数据源时抛异常,false使用默认数据源
-      datasource:
-        master:
-          username: root
-          password: xinggaocode
-          url: jdbc:mysql://139.159.194.35:3306/db_template_database?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
-        slave:
-          username: root
-          password: xinggaocode
-          url: jdbc:mysql://139.159.194.35:3306/db_template_database?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
     # Druid 数据源配置
     druid:
+      master:
+        username: root
+        password: xinggaocode
+        url: jdbc:mysql://139.159.194.35:3306/db_template_database?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
+      slave:
+        username: root
+        password: xinggaocode
+        url: jdbc:mysql://139.159.194.35:3306/db_template_backups?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
       # 下面为连接池的补充设置，应用到上面所有数据源中
       # 初始化大小，最小，最大
       initial-size: 5
@@ -82,6 +75,7 @@ spring:
         max-idle: 10
         # 连接池中的最小空闲连接
         min-idle: 0
+
   # Rabbitmq配置
   rabbitmq:
     host: 139.159.194.35
