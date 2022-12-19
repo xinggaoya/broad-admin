@@ -26,11 +26,6 @@ import java.util.List;
 @Configuration
 @EnableOpenApi
 public class SwaggerConfig {
-    /**
-     * Create rest api docket.
-     *
-     * @return the docket
-     */
     @Bean
     public Docket createRestApi() {
         //返回文档概要信息
@@ -51,8 +46,8 @@ public class SwaggerConfig {
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
                 .title("Swagger3接口文档")
-                .description("如有疑问,可联系作者")
-                .contact(new Contact("XingGao", "http://www.baidu.com", "baidu@qq.com"))
+                .description("如有疑问,可联系百度")
+                .contact(new Contact("李白", "http://www.baidu.com", "baidu@qq.com"))
                 .version("1.0")
                 .build();
     }

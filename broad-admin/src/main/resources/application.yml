@@ -85,18 +85,19 @@ mybatis-plus:
       id-type: auto
     banner: false
 
-# swagger配置 /doc.html
+# swagger配置 /swagger-ui/index.html
 springfox:
   documentation:
     swagger-ui:
       enabled: true
 
-
-# 安全配置（防XSS）
+# 安全配置（防XSS） @XssCleanIgnore忽略
 mica:
   xss:
     # 是否开启防XSS
     enabled: true
+    # 模式 escape: 转义, clean: 清除
+    mode: escape
     # 拦截路由 例如: /**
     path-patterns:
       - /**
@@ -104,6 +105,6 @@ mica:
     path-exclude-patterns:
       - /static/**
       - /swagger-ui/**
-      - /v2/api-docs/**
+      - /v3/api-docs/**
 
 

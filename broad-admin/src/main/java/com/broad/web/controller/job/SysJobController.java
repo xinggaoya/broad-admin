@@ -14,6 +14,7 @@ import com.broad.job.entity.SysJob;
 import com.broad.job.service.ISysJobService;
 import com.broad.job.util.CronUtils;
 import com.broad.job.util.ScheduleUtils;
+import io.swagger.annotations.ApiOperation;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -41,6 +42,7 @@ public class SysJobController extends BaseController {
      */
     @SaCheckPermission("job:list")
     @GetMapping("/list")
+    @ApiOperation(value = "查询定时任务列表")
     public TableDataInfo list(SysJob sysJob) {
         startPage();
         List<SysJob> list = jobService.selectJobList(sysJob);

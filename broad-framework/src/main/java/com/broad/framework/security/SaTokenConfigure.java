@@ -37,7 +37,9 @@ public class SaTokenConfigure implements WebMvcConfigurer {
      * 排除不需要登录的接口
      */
     private final String[] EXCLUDE_PATH = {
-            "/doc.html/**",
+            "/swagger-ui/**",
+            "/v3/api-docs/**",
+            "/swagger-resources/**",
             "/favicon.ico",
             "/upload/**",
     };

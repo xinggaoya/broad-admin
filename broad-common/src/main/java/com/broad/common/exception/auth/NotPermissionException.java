@@ -1,6 +1,6 @@
 package com.broad.common.exception.auth;
 
-import org.apache.commons.lang3.StringUtils;
+import java.util.Arrays;
 
 /**
  * 未能通过的权限认证异常
@@ -25,6 +25,6 @@ public class NotPermissionException extends RuntimeException {
      * @param permissions the permissions
      */
     public NotPermissionException(String[] permissions) {
-        super(StringUtils.join(permissions, ","));
+        super(Arrays.toString(permissions));
     }
 }

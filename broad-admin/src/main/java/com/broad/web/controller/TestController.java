@@ -44,7 +44,7 @@ public class TestController {
         sysNotice.setMeta(new Date());
         ResultData resultData = ResultData.success(sysNotice);
         UserSocketServer.sendMessageById(resultData, sid);
-        return sysNotice.toString();
+        return sid;
     }
 
     /**
