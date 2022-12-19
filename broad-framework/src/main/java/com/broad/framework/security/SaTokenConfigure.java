@@ -3,7 +3,6 @@ package com.broad.framework.security;
 import cn.dev33.satoken.interceptor.SaInterceptor;
 import cn.dev33.satoken.router.SaRouter;
 import cn.dev33.satoken.stp.StpUtil;
-import com.broad.framework.web.TokenUtil;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -28,8 +27,6 @@ public class SaTokenConfigure implements WebMvcConfigurer {
         registry.addInterceptor(new SaInterceptor(handle -> {
                     // 对所有的路由进行登录鉴权
                     SaRouter.match("/**", r -> StpUtil.checkLogin());
-                    // 检查过期时间 低于30分钟的时候刷新token
-                    TokenUtil.refreshToken();
                 }))
                 .excludePathPatterns(EXCLUDE_PATH)
                 .addPathPatterns("/**");

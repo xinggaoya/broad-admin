@@ -10,6 +10,7 @@ spring:
         password: xinggaocode
         url: jdbc:mysql://139.159.194.35:3306/db_template_database?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
       slave:
+        enabled: false
         username: root
         password: xinggaocode
         url: jdbc:mysql://139.159.194.35:3306/db_template_backups?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai

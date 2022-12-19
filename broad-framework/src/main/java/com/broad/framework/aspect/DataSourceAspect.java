@@ -3,15 +3,16 @@ package com.broad.framework.aspect;
 import com.broad.common.annotation.DataSource;
 import com.broad.framework.db.DbContextHolder;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import java.lang.reflect.Method;
+import java.util.Objects;
 
 /**
  * @author: XingGao
@@ -29,31 +30,30 @@ public class DataSourceAspect {
     public void dataSourcePointCut() {
     }
 
-    @Before("dataSourcePointCut()")
-    public void doBefore(JoinPoint point) {
-        log.info("切换数据源");
+    @Around("dataSourcePointCut()")
+    public Object doBefore(ProceedingJoinPoint point) {
         DataSource dataSource = getDataSource(point);
         // 切换数据源
         DbContextHolder.setDbType(dataSource.value());
+        try {
+            return point.proceed();
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        } finally {
+            DbContextHolder.clearDbType();
+        }
     }
 
-
-//    @After("dataSourcePointCut()")
-//    public void doAfter(JoinPoint point) {
-//        log.info("清除数据源");
-//        DbContextHolder.clearDbType();
-//    }
-
-    private DataSource getDataSource(JoinPoint point) {
-        MethodSignature sign = (MethodSignature) point.getSignature();
-        Method method = sign.getMethod();
-        DataSource dataSource = method.getAnnotation(DataSource.class);
-        if (dataSource == null) {
-            dataSource = point.getTarget().getClass().getSuperclass().getAnnotation(DataSource.class);
+    /**
+     * 获取需要切换的数据源
+     */
+    public DataSource getDataSource(ProceedingJoinPoint point) {
+        MethodSignature signature = (MethodSignature) point.getSignature();
+        DataSource dataSource = AnnotationUtils.findAnnotation(signature.getMethod(), DataSource.class);
+        if (Objects.nonNull(dataSource)) {
+            return dataSource;
         }
-        if (dataSource == null) {
-            dataSource = point.getTarget().getClass().getAnnotation(DataSource.class);
-        }
-        return dataSource;
+
+        return AnnotationUtils.findAnnotation(signature.getDeclaringType(), DataSource.class);
     }
 }

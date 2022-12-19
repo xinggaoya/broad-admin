@@ -6,9 +6,6 @@ import com.broad.common.utils.file.FileUtils;
 import com.broad.common.web.entity.ResultData;
 import com.broad.common.web.socket.SysNotice;
 import com.broad.common.web.socket.service.UserSocketServer;
-import com.broad.system.entity.SysUser;
-import com.broad.system.service.SysUserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,8 +25,6 @@ import java.util.List;
 @RestController
 @ResponseBody
 public class TestController {
-    @Autowired
-    private SysUserService sysUserService;
 
     /**
      * Test simple.
@@ -39,7 +34,7 @@ public class TestController {
      */
     @GetMapping("/test")
     @SaIgnore
-    public List<SysUser> testSimple(String message, String sid) {
+    public String testSimple(String message, String sid) {
         SysNotice sysNotice = new SysNotice();
         sysNotice.setTitle("您有一条新的消息");
         sysNotice.setDescription("You have a new message");
@@ -49,7 +44,7 @@ public class TestController {
         sysNotice.setMeta(new Date());
         ResultData resultData = ResultData.success(sysNotice);
         UserSocketServer.sendMessageById(resultData, sid);
-        return sysUserService.list();
+        return sysNotice.toString();
     }
 
     /**
