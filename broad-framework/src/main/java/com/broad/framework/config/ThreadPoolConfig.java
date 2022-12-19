@@ -1,10 +1,9 @@
 package com.broad.framework.config;
 
+import com.broad.common.constant.ThreadPoolConstant;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.concurrent.Executor;
@@ -18,27 +17,34 @@ import java.util.concurrent.ThreadPoolExecutor;
  * @Version 1.0
  */
 @Configuration
-@EnableAsync
 @Slf4j
-public class ExecutorConfig {
-    @Value("${async.executor.thread.core-pool-size}")
-    private int corePoolSize;
-    @Value("${async.executor.thread.max-pool-size}")
-    private int maxPoolSize;
-    @Value("${async.executor.thread.queue-capacity}")
-    private int queueCapacity;
-    @Value("${async.executor.thread.name.prefix}")
-    private String namePrefix;
+public class ThreadPoolConfig {
+    /**
+     * 核心线程数（默认线程数）
+     */
+    private final int corePoolSize = 10;
+    /**
+     * 最大线程数
+     */
+    private final int maxPoolSize = 200;
+    /**
+     * 队列容量
+     */
+    private final int queueCapacity = 10;
+    /**
+     * 线程名称前缀
+     */
+    private final String namePrefix = "broad-framework-async-";
 
     /**
-     * Async service executor executor.
+     * 线程池维护线程所允许的空闲时间
      *
      * @return the executor
      */
-    @Bean(name = "asyncServiceExecutor")
+    @Bean(name = ThreadPoolConstant.SERVICE_EXECUTOR)
     public Executor asyncServiceExecutor() {
-        log.info("start asyncServiceExecutor");
-        ThreadPoolTaskExecutor executor = new VisibleThreadPoolTaskExecutor();
+        log.info("start asyncServiceExecutor...");
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         //配置核心线程数
         executor.setCorePoolSize(corePoolSize);
         //配置最大线程数

@@ -8,7 +8,7 @@ package com.broad.common.constant;
  * @Version 1.0
  * @Description 线程池常量类
  */
-public class ExecutorConstant {
+public class ThreadPoolConstant {
 
     /**
      * The constant SERVICE_EXECUTOR.

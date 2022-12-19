@@ -66,25 +66,11 @@ sa-token:
   # 是否尝试从cookie中获取token
   is-read-cookie: false
   # 是否登陆后响应头写入token
-  is-write-header: true
+  is-write-header: false
   # 是否自动续签token
   auto-renew: true
   # banner
   is-print: false
-
-# 异步线程配置
-async:
-  executor:
-    thread:
-      # 配置核心线程数
-      core-pool-size: 10
-      # 配置最大线程数
-      max-pool-size: 10
-      # 配置队列大小
-      queue-capacity: 1000
-      # 配置线程池中的线程的名称前缀
-      name:
-        prefix: async-service-
 
 # mybatis配置
 mybatis-plus:

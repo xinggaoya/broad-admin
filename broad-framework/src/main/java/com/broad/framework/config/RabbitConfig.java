@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
  *
  * @Author: XingGao
  * @Date: 2022 /11/20
- * @Description:
+ * @Description: RabbitMQ配置
  */
 @Configuration
 public class RabbitConfig {
