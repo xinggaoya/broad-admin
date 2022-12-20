@@ -87,7 +87,7 @@ public class UserSocketServer {
      *
      * @param result the result
      */
-    public static void sendMass(Object result) {
+    public static void sendMess(Object result) {
         log.info("群发消息，报文:" + result);
         String msg = JSON.toJSONString(result);
         for (UserSocketServer item : webSocketSet) {
