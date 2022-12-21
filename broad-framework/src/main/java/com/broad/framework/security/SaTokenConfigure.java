@@ -12,7 +12,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  *
  * @Author: XingGao
  * @Date: 2022 /07/10 18:03
- * @Description:
+ * @Description: Sa-Token 配置类
  */
 @Configuration
 public class SaTokenConfigure implements WebMvcConfigurer {

@@ -34,11 +34,6 @@
             <artifactId>spring-boot-starter-log4j2</artifactId>
         </dependency>
 
-        <!--   防XSS攻击     -->
-        <dependency>
-            <groupId>net.dreamlu</groupId>
-            <artifactId>mica-xss</artifactId>
-        </dependency>
 
         <dependency>
             <groupId>com.broad</groupId>

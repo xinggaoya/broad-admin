@@ -91,20 +91,13 @@ springfox:
     swagger-ui:
       enabled: true
 
-# 安全配置（防XSS） @XssCleanIgnore忽略
-mica:
-  xss:
-    # 是否开启防XSS
-    enabled: true
-    # 模式 escape: 转义, clean: 清除
-    mode: escape
-    # 拦截路由 例如: /**
-    path-patterns:
-      - /**
-    # 是否开启防XSS
-    path-exclude-patterns:
-      - /static/**
-      - /swagger-ui/**
-      - /v3/api-docs/**
+# 安全配置（防XSS）
+xss:
+  # 是否开启防XSS
+  enabled: true
+  # 是否开启富文本防XSS
+  isIncludeRichText: true
+  # 排除路径
+  excludes: /login,/logout
 
 

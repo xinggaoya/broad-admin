@@ -5,10 +5,7 @@ import com.broad.common.constant.NoticeConstants;
 import com.broad.common.utils.file.FileUtils;
 import com.broad.common.web.entity.ResultData;
 import com.broad.common.web.socket.SysNotice;
-import com.broad.common.web.socket.service.UserSocketServer;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -32,9 +29,9 @@ public class TestController {
      * @param message the message
      * @param sid     the sid
      */
-    @GetMapping("/test")
+    @PostMapping("/test")
     @SaIgnore
-    public String testSimple(String message, String sid) {
+    public String testSimple(@RequestBody SysNotice notice) {
         SysNotice sysNotice = new SysNotice();
         sysNotice.setTitle("您有一条新的消息");
         sysNotice.setDescription("You have a new message");
@@ -43,8 +40,8 @@ public class TestController {
         sysNotice.setConfirm(NoticeConstants.NOTICE_CONFIRM);
         sysNotice.setMeta(new Date());
         ResultData resultData = ResultData.success(sysNotice);
-        UserSocketServer.sendMessageById(resultData, sid);
-        return sid;
+//        UserSocketServer.sendMessageById(resultData, sid);
+        return notice.getContent();
     }
 
     /**
