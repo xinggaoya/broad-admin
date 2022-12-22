@@ -2,7 +2,7 @@ package com.broad.framework.security;
 
 import cn.dev33.satoken.listener.SaTokenListener;
 import cn.dev33.satoken.stp.SaLoginModel;
-import com.broad.common.web.socket.service.UserSocketServer;
+import com.broad.common.web.socket.UserSocket;
 import org.springframework.stereotype.Component;
 
 /**
@@ -43,7 +43,7 @@ public class SaTokenListenerImpl implements SaTokenListener {
      */
     @Override
     public void doKickout(String loginType, Object loginId, String tokenValue) {
-        UserSocketServer.sendSelfCheck(loginId.toString());
+        UserSocket.sendSelfCheck(loginId.toString());
     }
 
     /**
@@ -51,7 +51,7 @@ public class SaTokenListenerImpl implements SaTokenListener {
      */
     @Override
     public void doReplaced(String loginType, Object loginId, String tokenValue) {
-        UserSocketServer.sendSelfCheck(loginId.toString());
+        UserSocket.sendSelfCheck(loginId.toString());
     }
 
     /**
@@ -59,7 +59,7 @@ public class SaTokenListenerImpl implements SaTokenListener {
      */
     @Override
     public void doDisable(String loginType, Object loginId, String service, int level, long disableTime) {
-        UserSocketServer.sendSelfCheck(loginId.toString());
+        UserSocket.sendSelfCheck(loginId.toString());
     }
 
     /**

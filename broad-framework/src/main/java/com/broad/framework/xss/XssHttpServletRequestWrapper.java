@@ -21,6 +21,7 @@ public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {
     private final boolean isIncludeRichText;
     HttpServletRequest orgRequest;
 
+
     public XssHttpServletRequestWrapper(HttpServletRequest request, boolean isIncludeRichText) {
         super(request);
         orgRequest = request;

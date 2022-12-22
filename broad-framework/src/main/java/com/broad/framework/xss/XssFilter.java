@@ -25,10 +25,6 @@ public class XssFilter implements Filter {
      */
     public List<String> excludes = new ArrayList<>();
     /**
-     * 是否开启xss过滤
-     */
-    private boolean enabled;
-    /**
      * 是否过滤富文本内容
      */
     private boolean IS_INCLUDE_RICH_TEXT;
@@ -41,11 +37,8 @@ public class XssFilter implements Filter {
             filterChain.doFilter(request, response);
             return;
         }
-        if (enabled) {
-            filterChain.doFilter(new XssHttpServletRequestWrapper(req, IS_INCLUDE_RICH_TEXT), response);
-        } else {
-            filterChain.doFilter(request, response);
-        }
+        filterChain.doFilter(new XssHttpServletRequestWrapper(req, IS_INCLUDE_RICH_TEXT), response);
+
     }
 
     private boolean handleExcludeURL(HttpServletRequest request, HttpServletResponse response) {
@@ -65,7 +58,6 @@ public class XssFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) {
-        enabled = BooleanUtils.toBoolean(filterConfig.getInitParameter("enabled"));
         String isIncludeRichText = filterConfig.getInitParameter("isIncludeRichText");
         if (StringUtils.isNotBlank(isIncludeRichText)) {
             IS_INCLUDE_RICH_TEXT = BooleanUtils.toBoolean(isIncludeRichText);

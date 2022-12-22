@@ -2,6 +2,8 @@ package com.broad.framework.config;
 
 import com.broad.common.utils.StringUtils;
 import com.broad.framework.xss.XssFilter;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -19,7 +21,7 @@ import java.util.Map;
  * @description: 过滤器配置
  */
 @Configuration
-@Order(-1)
+@Slf4j
 public class FilterConfig {
 
     /**
@@ -44,17 +46,20 @@ public class FilterConfig {
     @Bean
     public FilterRegistrationBean xssFilterRegistrationBean() {
         FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean();
+        filterRegistrationBean.setName("xssFilter");
         filterRegistrationBean.setFilter(new XssFilter());
         filterRegistrationBean.setOrder(Integer.MAX_VALUE - 1);
-        filterRegistrationBean.setEnabled(true);
+        filterRegistrationBean.setEnabled(BooleanUtils.toBoolean(enabled));
         filterRegistrationBean.addUrlPatterns("/*");
-        Map<String, String> initParameters = new HashMap<>();
-        initParameters.put("enabled", String.valueOf(enabled));
+        Map<String, String> initParameters = new HashMap<>(2);
         //excludes用于配置不需要参数过滤的请求url
         initParameters.put("excludes", StringUtils.join(excludes, ","));
         //isIncludeRichText主要用于设置富文本内容是否需要过滤
-        initParameters.put("isIncludeRichText", "true");
+        initParameters.put("isIncludeRichText", String.valueOf(IS_INCLUDE_RICH_TEXT));
         filterRegistrationBean.setInitParameters(initParameters);
+        if (enabled) {
+            log.info("xss filter is inited.");
+        }
         return filterRegistrationBean;
     }
 }

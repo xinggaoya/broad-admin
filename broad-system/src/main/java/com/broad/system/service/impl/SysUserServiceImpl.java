@@ -56,7 +56,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         String uid = java.util.UUID.randomUUID().toString();
         sysAdmin.setPassword(SaSecureUtil.md5BySalt(sysAdmin.getPassword(), uid));
         sysAdmin.setSalt(uid);
-        boolean res = this.save(sysAdmin);
+        boolean res = super.save(sysAdmin);
         // 设置管理员角色
         if (res && sysAdmin.getRoleIds().size() > 0) {
             userRoleService.insertUserRole(sysAdmin);

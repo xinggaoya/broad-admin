@@ -1,9 +1,10 @@
-package com.broad.common.web.socket.service;
+package com.broad.common.web.socket;
 
 import cn.dev33.satoken.stp.StpUtil;
 import com.alibaba.fastjson2.JSON;
 import com.broad.common.constant.CacheConstants;
 import com.broad.common.constant.HttpStatus;
+import com.broad.common.constant.NoticeConstants;
 import com.broad.common.exception.ServiceException;
 import com.broad.common.service.RedisService;
 import com.broad.common.utils.SpringUtils;
@@ -17,6 +18,7 @@ import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -25,17 +27,17 @@ import java.util.concurrent.CopyOnWriteArraySet;
  *
  * @Author: XingGao
  * @Date: 2022 /11/22
- * @Description:
+ * @Description: 用户socket
  */
 @Component
 @Slf4j
 @Service
 @ServerEndpoint("/api/websocket/{sid}")
-public class UserSocketServer {
+public class UserSocket {
     /**
      * concurrent包的线程安全Set，用来存放每个客户端对应的MyWebSocket对象。
      */
-    private static CopyOnWriteArraySet<UserSocketServer> webSocketSet = new CopyOnWriteArraySet<>();
+    private static CopyOnWriteArraySet<UserSocket> webSocketSet = new CopyOnWriteArraySet<>();
 
     private Session session;
     /**
@@ -51,7 +53,7 @@ public class UserSocketServer {
         // 使用redis防止短时间重复推送
         RedisService redisService = SpringUtils.getBean(RedisService.class);
         // 防止重复发送
-        for (UserSocketServer item : webSocketSet) {
+        for (UserSocket item : webSocketSet) {
             try {
                 if (item.sid.equals(sid) && redisService.getCacheObject(CacheConstants.SELF_CHECK + sid) == null) {
                     item.sendMessage(JSON.toJSONString(ResultData.code(HttpStatus.UNAUTHORIZED)));
@@ -71,7 +73,7 @@ public class UserSocketServer {
      */
     public static void sendMessageById(Object result, @PathParam("sid") String sid) {
         log.info("发送消息到:" + sid + "，报文:" + result);
-        for (UserSocketServer item : webSocketSet) {
+        for (UserSocket item : webSocketSet) {
             try {
                 if (item.sid.equals(sid)) {
                     item.sendMessage(JSON.toJSONString(result));
@@ -87,10 +89,10 @@ public class UserSocketServer {
      *
      * @param result the result
      */
-    public static void sendMess(Object result) {
+    public static void sendMessage(Object result) {
         log.info("群发消息，报文:" + result);
         String msg = JSON.toJSONString(result);
-        for (UserSocketServer item : webSocketSet) {
+        for (UserSocket item : webSocketSet) {
             try {
                 item.sendMessage(msg);
             } catch (IOException e) {
@@ -105,7 +107,7 @@ public class UserSocketServer {
      * @param sid 用户id
      */
     private static void removeUser(String sid) {
-        for (UserSocketServer item : webSocketSet) {
+        for (UserSocket item : webSocketSet) {
             if (item.sid.equals(sid)) {
                 webSocketSet.remove(item);
                 log.info("清理用户:" + sid + ",当前在线人数为:" + getOnlineCount());
@@ -138,7 +140,7 @@ public class UserSocketServer {
      *
      * @return the web socket set
      */
-    public static CopyOnWriteArraySet<UserSocketServer> getWebSocketSet() {
+    public static CopyOnWriteArraySet<UserSocket> getWebSocketSet() {
         return webSocketSet;
     }
 
@@ -147,21 +149,20 @@ public class UserSocketServer {
      *
      * @param session the session
      * @param sid     the sid
-     * @throws IOException the io exception
      */
     @OnOpen
-    public void onOpen(Session session, @PathParam("sid") String sid) throws IOException {
+    public void onOpen(Session session, @PathParam("sid") String sid) {
         this.session = session;
         if (StpUtil.getTokenValueByLoginId(sid) == null) {
             log.info("未登录用户，禁止连接");
-            return;
+            throw new ServiceException("未登录用户，禁止连接");
         }
         // 清理已登录重复用户
         removeUser(sid);
 
         this.sid = sid;
         webSocketSet.add(this);
-//        sendInfo(ResultData.success("连接成功"), sid);
+        sendMessageById(loginMsg(), sid);
         log.info("有新用户开始连接:" + sid + ",当前在线人数为:" + getOnlineCount());
 
     }
@@ -188,7 +189,7 @@ public class UserSocketServer {
     public void onMessage(String message, Session session) {
         log.info("收到来自窗口" + sid + "的信息:" + message);
         //群发消息
-        for (UserSocketServer item : webSocketSet) {
+        for (UserSocket item : webSocketSet) {
             try {
                 if (!item.sid.equals(sid)) {
                     item.sendMessage(sid + "：" + message);
@@ -219,5 +220,17 @@ public class UserSocketServer {
      */
     public void sendMessage(String message) throws IOException {
         this.session.getBasicRemote().sendText(message);
+    }
+
+
+    private ResultData loginMsg() {
+        SysNotice sysNotice = new SysNotice();
+        sysNotice.setTitle("您有一条新的消息");
+        sysNotice.setDescription("You have a new message");
+        sysNotice.setContent("登录成功");
+        sysNotice.setType(NoticeConstants.NOTICE_TYPE);
+        sysNotice.setConfirm(NoticeConstants.NOTICE_CONFIRM);
+        sysNotice.setMeta(new Date());
+        return ResultData.success(sysNotice);
     }
 }

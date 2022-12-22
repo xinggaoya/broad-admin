@@ -15,7 +15,7 @@ import java.util.Date;
  */
 @SpringBootApplication
 @ComponentScan(basePackages = "com.broad.**")
-@MapperScan(basePackages = "com.broad.**.mapper")
+@MapperScan(basePackages = "com.broad.*.mapper")
 @EnableAsync
 @Slf4j
 public class TemplateApplication {

@@ -6,7 +6,7 @@ import com.broad.common.constant.HttpStatus;
 import com.broad.common.web.controller.BaseController;
 import com.broad.common.web.entity.ResultData;
 import com.broad.common.web.page.TableDataInfo;
-import com.broad.common.web.socket.service.UserSocketServer;
+import com.broad.common.web.socket.UserSocket;
 import com.broad.system.entity.SysUser;
 import com.broad.system.service.SysOnlineService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +51,7 @@ public class SysOnlineController extends BaseController {
     @SaCheckPermission("online:delete")
     public ResultData forceLogout(SysUser sysAdmin) {
         StpUtil.kickout(sysAdmin.getId());
-        UserSocketServer.sendMessageById(ResultData.error().setCode(HttpStatus.UNAUTHORIZED), sysAdmin.getId().toString());
+        UserSocket.sendMessageById(ResultData.error().setCode(HttpStatus.UNAUTHORIZED), sysAdmin.getId().toString());
         return ResultData.ok();
     }
 }

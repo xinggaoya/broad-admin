@@ -1,7 +1,7 @@
 package com.broad.system.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
-import com.broad.common.web.socket.service.UserSocketServer;
+import com.broad.common.web.socket.UserSocket;
 import com.broad.system.entity.SysUser;
 import com.broad.system.service.SysOnlineService;
 import com.broad.system.service.SysUserService;
@@ -26,7 +26,7 @@ public class SysOnlineServiceImpl implements SysOnlineService {
 
     @Override
     public List<SysUser> getOnlineList() {
-        List<Long> ids = UserSocketServer.getLoginId();
+        List<Long> ids = UserSocket.getLoginId();
         if (ids.size() == 0) {
             return new ArrayList<>();
         }
