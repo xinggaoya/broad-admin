@@ -4,6 +4,11 @@ import com.alibaba.fastjson2.JSONObject;
 import com.broad.common.constant.Constants;
 import com.broad.common.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
 
 import javax.net.ssl.*;
 import java.io.*;
@@ -199,6 +204,37 @@ public class HttpUtils {
             log.error("调用HttpsUtil.sendSSLPost Exception, url=" + url + ",param=" + param, e);
         }
         return result.toString();
+    }
+
+    /**
+     * 下载并保存文件到本地
+     */
+    public static void downloadFile(String url, String filePath) throws IOException {
+        // 创建 RestTemplate 对象
+        RestTemplate restTemplate = new RestTemplate();
+
+        // 设置请求头
+        HttpHeaders headers = new HttpHeaders();
+//        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_OCTET_STREAM));
+
+        // 设置请求参数
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        // 发起请求
+        ResponseEntity<byte[]> response = restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                entity,
+                byte[].class
+        );
+
+        // 获取响应体
+        byte[] body = response.getBody();
+
+        // 将响应体写入文件
+        FileOutputStream fos = new FileOutputStream(filePath);
+        fos.write(body);
+        fos.close();
     }
 
     private static class TrustAnyTrustManager implements X509TrustManager {
