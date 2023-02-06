@@ -2,7 +2,7 @@ broad:
   # 名称
   name: Broad
   # 版本
-  version: 1.0.0
+  version: 2.0.0
   # 开发者
   author: XingGao
   # 开启图片验证码

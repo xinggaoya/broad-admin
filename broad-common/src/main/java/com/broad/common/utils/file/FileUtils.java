@@ -41,7 +41,9 @@ public class FileUtils {
     /**
      * 上传文件目录
      */
-    public static String LOCAL_UPLOAD_PATH = SpringUtils.getBean(BroadConfig.class).getSystemFileDir().concat(Constants.UPLOAD_FILE).concat(File.separator);
+    public static String LOCAL_UPLOAD_PATH = SpringUtils.getBean(BroadConfig.class).getSystemFileDir()
+            .concat(Constants.UPLOAD_FILE)
+            .concat(File.separator);
 
     /**
      * 输出指定文件的byte数组
@@ -124,12 +126,9 @@ public class FileUtils {
         }
 
         // 检查允许下载的文件规则
-        if (ArrayUtils.contains(MimeTypeUtils.DEFAULT_ALLOWED_EXTENSION, FileTypeUtils.getFileType(resource))) {
-            return true;
-        }
+        return ArrayUtils.contains(MimeTypeUtils.DEFAULT_ALLOWED_EXTENSION, FileTypeUtils.getFileType(resource));
 
         // 不在允许下载的文件规则
-        return false;
     }
 
     /**
@@ -143,9 +142,13 @@ public class FileUtils {
             throw new FileException("file.not.exist", null);
         }
         String localPath = LOCAL_UPLOAD_PATH;
-        String originalFilename = file.getOriginalFilename();
+        String originalFileName = file.getOriginalFilename();
+        // 检查文件名
+        if (StringUtils.isBlank(originalFileName)) {
+            throw new FileException("file.name.not.exist", null);
+        }
         // 重复名文件
-        String fileName = UUID.randomUUID().toString().concat(".").concat(FileTypeUtils.getFileType(originalFilename));
+        String fileName = UUID.randomUUID().toString().concat(".").concat(FileTypeUtils.getFileType(originalFileName));
         // 拼接访问路径
         String localFilePath = Constants.UPLOAD_FILE.concat("/").concat(fileName);
         File dest = new File(localPath.concat(fileName));
@@ -197,7 +200,7 @@ public class FileUtils {
         final String agent = request.getHeader("USER-AGENT");
         String filename = fileName;
         if (agent.contains("MSIE")) {
-            // IE浏览器
+            // IE浏览器兼容
             filename = URLEncoder.encode(filename, "utf-8");
             filename = filename.replace("+", " ");
         } else if (agent.contains("Firefox")) {
@@ -268,15 +271,14 @@ public class FileUtils {
     public static void setAttachmentResponseHeader(HttpServletResponse response, String realFileName) throws UnsupportedEncodingException {
         String percentEncodedFileName = percentEncode(realFileName);
 
-        StringBuilder contentDispositionValue = new StringBuilder();
-        contentDispositionValue.append("attachment; filename=")
-                .append(percentEncodedFileName)
-                .append(";")
-                .append("filename*=")
-                .append("utf-8''")
-                .append(percentEncodedFileName);
+        String contentDispositionValue = "attachment; filename=" +
+                percentEncodedFileName +
+                ";" +
+                "filename*=" +
+                "utf-8''" +
+                percentEncodedFileName;
 
-        response.setHeader("Content-disposition", contentDispositionValue.toString());
+        response.setHeader("Content-disposition", contentDispositionValue);
         response.setHeader("download-filename", percentEncodedFileName);
     }
 

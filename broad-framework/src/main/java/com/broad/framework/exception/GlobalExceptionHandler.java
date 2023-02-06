@@ -43,7 +43,6 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(value = NotLoginException.class)
     public ResultData handlerNotLoginException(NotLoginException e) {
-        // 判断场景值，定制化异常信息
         String message;
         if (e.getType().equals(NotLoginException.NOT_TOKEN)) {
             message = "认证失败，请登录后操作";

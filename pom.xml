@@ -65,7 +65,6 @@
             </dependency>
 
 
-
             <!-- SpringBoot集成mybatis-plus框架 -->
             <dependency>
                 <groupId>com.baomidou</groupId>
@@ -175,24 +174,18 @@
                 <artifactId>broad-common</artifactId>
                 <version>${broad-version}</version>
             </dependency>
-            <!-- 管理模块  -->
-            <!--            <dependency>-->
-            <!--                <groupId>com.broad</groupId>-->
-            <!--                <artifactId>broad-admin</artifactId>-->
-            <!--                <version>${broad.version}</version>-->
-            <!--            </dependency>-->
             <!-- 框架模块  -->
             <dependency>
                 <groupId>com.broad</groupId>
                 <artifactId>broad-framework</artifactId>
                 <version>${broad-version}</version>
             </dependency>
-            <!--            &lt;!&ndash; 生成模块  &ndash;&gt;-->
-            <!--            <dependency>-->
-            <!--                <groupId>com.broad</groupId>-->
-            <!--                <artifactId>broad-generator</artifactId>-->
-            <!--                <version>${broad.version}</version>-->
-            <!--            </dependency>-->
+            <!-- 生成模块  -->
+            <dependency>
+                <groupId>com.broad</groupId>
+                <artifactId>broad-generator</artifactId>
+                <version>${broad-version}</version>
+            </dependency>
             <!-- 定时任务模块  -->
             <dependency>
                 <groupId>com.broad</groupId>

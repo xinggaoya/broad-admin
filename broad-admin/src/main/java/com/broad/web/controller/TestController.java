@@ -3,13 +3,12 @@ package com.broad.web.controller;
 import cn.dev33.satoken.annotation.SaIgnore;
 import com.broad.common.utils.file.FileUtils;
 import com.broad.common.utils.http.HttpUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The type Test controller.
@@ -29,7 +28,7 @@ public class TestController {
     @SaIgnore
     public void testSimple() {
         try {
-            HttpUtils.downloadFile("https://gitee.com/lionsoul/ip2region/raw/master/data/ip2region.xdb", "E:\\ip2region.xdb");
+            HttpUtils.downloadFile("https://raw.githubusercontent.com/lionsoul2014/ip2region/master/data/ip2region.xdb", "E:\\ip2region.xdb");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -40,8 +39,10 @@ public class TestController {
      *
      * @return the string
      */
-    @GetMapping("/test/1")
-    public List<String> testSimple2() {
+    @PostMapping("/test/1")
+    @SaIgnore
+    public List<String> testSimple2(@RequestBody Map<String, Object> map) {
+        System.out.println(map);
         String path = FileUtils.LOCAL_UPLOAD_PATH;
         List<String> list = new ArrayList<>();
         List<File> fileList = FileUtils.getAllFiles(path);

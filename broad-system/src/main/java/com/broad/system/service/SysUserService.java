@@ -3,8 +3,6 @@ package com.broad.system.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.broad.system.entity.SysUser;
 
-import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -46,22 +44,5 @@ public interface SysUserService extends IService<SysUser> {
      * @return the int
      */
     int updateAdmin(SysUser sysAdmin);
-
-    /**
-     * Administrator login object.
-     *
-     * @param sysAdmin the sys admin
-     * @param request  the request
-     * @return the object
-     * @throws IOException the io exception
-     */
-    Object administratorLogin(SysUser sysAdmin, HttpServletRequest request) throws IOException;
-
-    /**
-     * Logout.
-     *
-     * @param admin the admin
-     */
-    void logout();
 }
 
