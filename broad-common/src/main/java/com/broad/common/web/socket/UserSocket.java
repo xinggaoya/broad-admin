@@ -162,7 +162,7 @@ public class UserSocket {
 
         this.sid = sid;
         webSocketSet.add(this);
-        sendMessageById(loginMsg(), sid);
+//        sendMessageById(loginMsg(), sid);
         log.info("有新用户开始连接:" + sid + ",当前在线人数为:" + getOnlineCount());
 
     }
