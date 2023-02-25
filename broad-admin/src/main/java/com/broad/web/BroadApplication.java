@@ -18,7 +18,7 @@ import java.util.Date;
 @MapperScan(basePackages = "com.broad.*.mapper")
 @EnableAsync
 @Slf4j
-public class TemplateApplication {
+public class BroadApplication {
 
     /**
      * The entry point of application.
@@ -27,7 +27,7 @@ public class TemplateApplication {
      */
     public static void main(String[] args) {
         long start = System.currentTimeMillis();
-        SpringApplication.run(TemplateApplication.class, args);
+        SpringApplication.run(BroadApplication.class, args);
         log.info("{} 启动完成,编译时间：{},总耗时：{}ms",
                 "Broad-Admin"
                 , JSONUtils.toJSONString(new Date())
