@@ -7,7 +7,6 @@ import com.broad.common.annotation.Log;
 import com.broad.common.enums.BusinessType;
 import com.broad.common.web.controller.BaseController;
 import com.broad.common.web.entity.ResultData;
-import com.broad.common.web.page.TableDataInfo;
 import com.broad.system.entity.SysMenu;
 import com.broad.system.service.SysMenuService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,9 +38,8 @@ public class SysMenuController extends BaseController {
      */
     @GetMapping
     @SaCheckPermission("sys:menu:list")
-    public TableDataInfo selectAllByPage(SysMenu sysMenu) {
-        startPage();
-        return getDataTable(this.sysMenuService.selectAllByPage(sysMenu));
+    public ResultData selectAll(SysMenu sysMenu) {
+        return ResultData.success(this.sysMenuService.selectAllByPage(sysMenu));
     }
 
     /**

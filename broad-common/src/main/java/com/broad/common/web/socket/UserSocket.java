@@ -4,7 +4,6 @@ import cn.dev33.satoken.stp.StpUtil;
 import com.alibaba.fastjson2.JSON;
 import com.broad.common.constant.CacheConstants;
 import com.broad.common.constant.HttpStatus;
-import com.broad.common.constant.NoticeConstants;
 import com.broad.common.exception.ServiceException;
 import com.broad.common.service.RedisService;
 import com.broad.common.utils.SpringUtils;
@@ -18,7 +17,6 @@ import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -162,7 +160,6 @@ public class UserSocket {
 
         this.sid = sid;
         webSocketSet.add(this);
-//        sendMessageById(loginMsg(), sid);
         log.info("有新用户开始连接:" + sid + ",当前在线人数为:" + getOnlineCount());
 
     }
@@ -222,15 +219,4 @@ public class UserSocket {
         this.session.getBasicRemote().sendText(message);
     }
 
-
-    private ResultData loginMsg() {
-        SysNotice sysNotice = new SysNotice();
-        sysNotice.setTitle("您有一条新的消息");
-        sysNotice.setDescription("You have a new message");
-        sysNotice.setContent("登录成功");
-        sysNotice.setType(NoticeConstants.NOTICE_TYPE);
-        sysNotice.setConfirm(NoticeConstants.NOTICE_CONFIRM);
-        sysNotice.setMeta(new Date());
-        return ResultData.success(sysNotice);
-    }
 }
