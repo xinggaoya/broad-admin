@@ -1,6 +1,5 @@
 package com.broad.web.controller.system;
 
-
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.broad.common.annotation.Log;

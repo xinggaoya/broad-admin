@@ -10,6 +10,4 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class UserSocketServiceImpl implements UserSocketService {
-
-
 }

@@ -43,7 +43,6 @@ public class UserSocket {
      */
     private String sid = "";
 
-
     /**
      * 自检查
      */
