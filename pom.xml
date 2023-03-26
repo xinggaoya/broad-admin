@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.broad</groupId>
-    <artifactId>broad-template</artifactId>
+    <artifactId>broad-admin-service</artifactId>
     <packaging>pom</packaging>
     <version>2.0.0</version>
 

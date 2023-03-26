@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.broad.system.mapper.SysPostMapper">
+
+    <resultMap type="com.broad.system.entity.SysPost" id="SysPostMap">
+        <result property="postId" column="post_id" jdbcType="INTEGER"/>
+        <result property="postCode" column="post_code" jdbcType="VARCHAR"/>
+        <result property="postName" column="post_name" jdbcType="VARCHAR"/>
+        <result property="postSort" column="post_sort" jdbcType="INTEGER"/>
+        <result property="status" column="status" jdbcType="VARCHAR"/>
+        <result property="createBy" column="create_by" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateBy" column="update_by" jdbcType="VARCHAR"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="remark" column="remark" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!-- 批量插入 -->
+    <insert id="insertBatch" keyProperty="postId" useGeneratedKeys="true">
+        insert into db_template_database.sys_post(post_code, post_name, post_sort, status, create_by, create_time,
+        update_by, update_time, remark)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.postCode}, #{entity.postName}, #{entity.postSort}, #{entity.status}, #{entity.createBy},
+            #{entity.createTime}, #{entity.updateBy}, #{entity.updateTime}, #{entity.remark})
+        </foreach>
+    </insert>
+    <!-- 批量插入或按主键更新 -->
+    <insert id="insertOrUpdateBatch" keyProperty="postId" useGeneratedKeys="true">
+        insert into db_template_database.sys_post(post_code, post_name, post_sort, status, create_by, create_time,
+        update_by, update_time, remark)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.postCode}, #{entity.postName}, #{entity.postSort}, #{entity.status}, #{entity.createBy},
+            #{entity.createTime}, #{entity.updateBy}, #{entity.updateTime}, #{entity.remark})
+        </foreach>
+        on duplicate key update
+        post_code = values(post_code) , post_name = values(post_name) , post_sort = values(post_sort) , status =
+        values(status) , create_by = values(create_by) , create_time = values(create_time) , update_by =
+        values(update_by) , update_time = values(update_time) , remark = values(remark)
+    </insert>
+
+</mapper>
+
