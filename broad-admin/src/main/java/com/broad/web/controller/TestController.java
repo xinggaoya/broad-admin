@@ -28,7 +28,8 @@ public class TestController {
     @SaIgnore
     public void testSimple() {
         try {
-            HttpUtils.downloadFile("https://raw.githubusercontent.com/lionsoul2014/ip2region/master/data/ip2region.xdb", "E:\\ip2region.xdb");
+            HttpUtils.downloadFile("https://github.com/lionsoul2014/ip2region/blob/master/data/ip2region.xdb"
+                    , "C:\\Users\\10322\\Downloads\\ip2region.xdb");
         } catch (Exception e) {
             e.printStackTrace();
         }

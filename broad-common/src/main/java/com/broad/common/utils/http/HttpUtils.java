@@ -23,7 +23,7 @@ import java.util.Map;
 /**
  * 通用http发送方法
  *
- * @author JinJun
+ * @author XingGao
  */
 @Slf4j
 public class HttpUtils {
@@ -232,9 +232,17 @@ public class HttpUtils {
         byte[] body = response.getBody();
 
         // 将响应体写入文件
-        FileOutputStream fos = new FileOutputStream(filePath);
-        fos.write(body);
-        fos.close();
+        if (body != null && body.length > 0) {
+            File file = new File(filePath);
+            // 创建文件
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+            // 写入文件
+            FileOutputStream fos = new FileOutputStream(file);
+            fos.write(body);
+            fos.close();
+        }
     }
 
     private static class TrustAnyTrustManager implements X509TrustManager {

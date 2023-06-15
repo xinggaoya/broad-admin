@@ -77,7 +77,7 @@ spring:
 
   # Rabbitmq配置
   rabbitmq:
-    host: talle.cn
+    host: 139.159.194.35
     port: 5672
     username: root
     password: xinggaocode
