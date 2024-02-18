@@ -8,8 +8,8 @@ import com.broad.common.enums.LogType;
 import com.broad.common.utils.ServletUtils;
 import com.broad.common.utils.StringUtils;
 import com.broad.common.utils.ip.IpUtils;
-import com.broad.framework.web.rabbit.producer.UserLogProducer;
 import com.broad.system.entity.SysUserLog;
+import com.broad.system.service.SysUserLogService;
 import io.swagger.models.HttpMethod;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
@@ -41,8 +41,7 @@ import java.util.Map;
 public class LogAspect {
 
     @Autowired
-    private UserLogProducer userLogProducer;
-
+    private SysUserLogService userLogService;
     /**
      * 处理完请求后执行
      *
@@ -101,7 +100,7 @@ public class LogAspect {
             // 处理设置注解上的参数
             getControllerMethodDescription(joinPoint, controllerLog, operLog, jsonResult);
             // 保存数据库
-            userLogProducer.sendLogMessage(operLog);
+            userLogService.save(operLog);
         } catch (Exception exp) {
             // 记录本地异常日志
             log.error("==异常日志 前置通知异常==");
