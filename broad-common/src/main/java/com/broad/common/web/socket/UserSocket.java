@@ -30,12 +30,12 @@ import java.util.concurrent.CopyOnWriteArraySet;
 @Component
 @Slf4j
 @Service
-@ServerEndpoint("/api/websocket/{sid}")
+@ServerEndpoint("/ws/session/{sid}")
 public class UserSocket {
     /**
      * concurrent包的线程安全Set，用来存放每个客户端对应的MyWebSocket对象。
      */
-    private static CopyOnWriteArraySet<UserSocket> webSocketSet = new CopyOnWriteArraySet<>();
+    private static final CopyOnWriteArraySet<UserSocket> webSocketSet = new CopyOnWriteArraySet<>();
 
     private Session session;
     /**

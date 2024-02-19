@@ -1,6 +1,6 @@
 # YAML data
 server:
-  port: 8000
+  port: 9010
   servlet:
     context-path: /
   tomcat:
