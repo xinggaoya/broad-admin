@@ -45,6 +45,12 @@ public class SysMenu implements Serializable {
      */
     @TableField(value = "menu_url")
     private String menuUrl;
+
+    /**
+     * 菜单类型
+     */
+    @TableField(value = "menu_type")
+    private Integer menuType;
     /**
      * 菜单路径
      */
@@ -123,7 +129,5 @@ public class SysMenu implements Serializable {
      */
     @TableField(exist = false)
     private BooleanEnum isLeaf;
-
-
 }
 
