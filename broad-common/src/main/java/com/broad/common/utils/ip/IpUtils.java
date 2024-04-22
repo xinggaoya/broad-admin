@@ -1,13 +1,14 @@
 package com.broad.common.utils.ip;
 
-import com.broad.common.config.BroadConfig;
-import com.broad.common.utils.SpringUtils;
 import com.broad.common.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.lionsoul.ip2region.xdb.Searcher;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -59,7 +60,15 @@ public class IpUtils {
      */
     public static String getIpAddress(String ip) {
 
-        String dbPath = SpringUtils.getBean(BroadConfig.class).getSystemFileDir().concat("/ip2region/ip2region.xdb");
+        // 获取静态资源路径
+        Resource resource = new ClassPathResource("static/ip2region/ip2region.xdb");
+        String dbPath;
+        try {
+            dbPath = resource.getFile().getPath();
+        } catch (IOException e) {
+            log.error("无法获取ip2region.xdb文件路径");
+            return null;
+        }
 
         // 1、从 dbPath 加载整个 xdb 到内存。
         byte[] cBuff = new byte[0];

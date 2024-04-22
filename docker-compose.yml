@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+  app:
+    build: .
+    ports:
+      - "9010:9010"
+    volumes:
+      - /dev/broad-admin:/app/logs
+    networks:
+      my_network:
+        ipv6_address: "2001:db8::12"
+
+networks:
+  my_network:
+    driver: bridge
+    enable_ipv6: true
+    ipam:
+      driver: default
+      config:
+        - subnet: "2001:db8::/64"
