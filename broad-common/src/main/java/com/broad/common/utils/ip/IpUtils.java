@@ -3,14 +3,16 @@ package com.broad.common.utils.ip;
 import com.broad.common.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.lionsoul.ip2region.xdb.Searcher;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 
 /**
  * 获取IP方法
@@ -60,18 +62,27 @@ public class IpUtils {
      */
     public static String getIpAddress(String ip) {
 
-        // 获取静态资源路径
-        Resource resource = new ClassPathResource("static/ip2region/ip2region.xdb");
-        String dbPath;
-        try {
-            dbPath = resource.getFile().getPath();
-        } catch (IOException e) {
-            log.error("无法获取ip2region.xdb文件路径");
+        // 获取静态资源下的ip2region/ip2region.xdb文件路径
+        InputStream resource = IpUtils.class.getResourceAsStream("/ip2region/ip2region.xdb");
+        if (resource == null) {
+            log.error("无法获取ip2region.xdb文件");
             return null;
         }
 
+        Path tempDb;
+        try {
+            tempDb = Files.createTempFile("ip2region", ".xdb");
+            Files.copy(resource, tempDb, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            log.error("无法创建临时数据库文件");
+            return null;
+        }
+
+        String dbPath = tempDb.toString();
+
         // 1、从 dbPath 加载整个 xdb 到内存。
         byte[] cBuff = new byte[0];
+        // 加载 xdb 文件到内存
         try {
             cBuff = Searcher.loadContentFromFile(dbPath);
         } catch (Exception e) {
