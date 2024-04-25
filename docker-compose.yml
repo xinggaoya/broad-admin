@@ -10,6 +10,7 @@ services:
     networks:
       my_network:
         ipv6_address: "2001:db8::12"
+    restart: always
 
 networks:
   my_network:
