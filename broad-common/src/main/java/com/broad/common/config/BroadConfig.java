@@ -27,4 +27,14 @@ public class BroadConfig {
     private String captchaType;
 
     private String systemFileDir;
+
+    /**
+     * 私钥
+     */
+    private String privateKey;
+
+    /**
+     * 公钥
+     */
+    private String publicKey;
 }

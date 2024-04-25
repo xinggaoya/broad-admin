@@ -1,6 +1,7 @@
 package com.broad.system.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
+import com.broad.common.annotation.Crypto;
 import lombok.*;
 
 import javax.validation.constraints.NotNull;
@@ -65,6 +66,7 @@ public class SysUser implements Serializable {
      * 手机
      */
     @TableField(value = "mobile")
+    @Crypto
     private String mobile;
 
     /**
@@ -89,7 +91,6 @@ public class SysUser implements Serializable {
      * 密码
      */
     @TableField(value = "password")
-    @NotNull(message = "密码不能为空")
     private String password;
 
     /**
@@ -113,6 +114,7 @@ public class SysUser implements Serializable {
     /**
      * 创建时间
      */
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
     /**

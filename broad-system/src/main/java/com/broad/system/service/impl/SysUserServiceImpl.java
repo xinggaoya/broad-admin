@@ -42,7 +42,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         sysAdmin.setSalt(uid);
         boolean res = super.save(sysAdmin);
         // 设置管理员角色
-        if (res && sysAdmin.getRoleIds().size() > 0) {
+        if (res && !sysAdmin.getRoleIds().isEmpty()) {
             userRoleService.insertUserRole(sysAdmin);
         }
         return res ? 1 : 0;

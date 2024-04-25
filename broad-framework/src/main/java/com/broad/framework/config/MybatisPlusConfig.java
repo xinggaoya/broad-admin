@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.BlockAttackInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.OptimisticLockerInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
+import com.broad.framework.interceptor.CryptoInterceptor;
+import com.broad.framework.interceptor.DecryptInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -29,6 +31,17 @@ public class MybatisPlusConfig {
         interceptor.addInnerInterceptor(blockAttackInnerInterceptor());
         return interceptor;
     }
+
+    @Bean
+    public CryptoInterceptor cryptoInterceptor() {
+        return new CryptoInterceptor();
+    }
+
+    @Bean
+    public DecryptInterceptor decryptInterceptor() {
+        return new DecryptInterceptor();
+    }
+
 
     /**
      * 分页插件，自动识别数据库类型 https://baomidou.com/guide/interceptor-pagination.html
