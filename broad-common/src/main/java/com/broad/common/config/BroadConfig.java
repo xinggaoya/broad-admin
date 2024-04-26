@@ -16,16 +16,34 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "broad")
 public class BroadConfig {
 
+    /**
+     * 项目名称
+     */
     private String name;
 
+    /**
+     * 项目版本
+     */
     private String version;
 
+    /**
+     *  作者
+     */
     private String author;
 
+    /**
+     * 验证码开关
+     */
     private Boolean captchaEnabled;
 
+    /**
+     * 验证码类型
+     */
     private String captchaType;
 
+    /**
+     * 系统文件目录
+     */
     private String systemFileDir;
 
     /**

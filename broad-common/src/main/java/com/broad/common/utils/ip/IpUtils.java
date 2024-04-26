@@ -2,8 +2,10 @@ package com.broad.common.utils.ip;
 
 import com.broad.common.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.lionsoul.ip2region.xdb.Searcher;
 import org.springframework.stereotype.Component;
+import org.springframework.util.FileCopyUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -34,20 +36,20 @@ public class IpUtils {
             return "unknown";
         }
         String ip = request.getHeader("x-forwarded-for");
-        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
             ip = request.getHeader("Proxy-Client-IP");
         }
-        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
             ip = request.getHeader("X-Forwarded-For");
         }
-        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
             ip = request.getHeader("WL-Proxy-Client-IP");
         }
-        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
             ip = request.getHeader("X-Real-IP");
         }
 
-        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
             ip = request.getRemoteAddr();
         }
 
@@ -64,33 +66,27 @@ public class IpUtils {
 
         // 获取静态资源下的ip2region/ip2region.xdb文件路径
         InputStream resource = IpUtils.class.getResourceAsStream("/ip2region/ip2region.xdb");
-        if (resource == null) {
+        if (ObjectUtils.isEmpty(resource)) {
             log.error("无法获取ip2region.xdb文件");
             return null;
         }
-
-        Path tempDb;
-        try {
-            tempDb = Files.createTempFile("ip2region", ".xdb");
-            Files.copy(resource, tempDb, StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException e) {
-            log.error("无法创建临时数据库文件");
-            return null;
-        }
-
-        String dbPath = tempDb.toString();
-
         // 1、从 dbPath 加载整个 xdb 到内存。
         byte[] cBuff = new byte[0];
+        try {
+            cBuff = FileCopyUtils.copyToByteArray(resource);
+        } catch (IOException e) {
+            log.error("无法读取ip2region.xdb文件");
+        }
+        Searcher searcher = null;
+
         // 加载 xdb 文件到内存
         try {
-            cBuff = Searcher.loadContentFromFile(dbPath);
+            searcher = Searcher.newWithBuffer(cBuff);
         } catch (Exception e) {
-            log.error("无法加载ip2region.xdb文件,请检查ip2region.xdb文件是否存在于 {}", dbPath);
+            log.error("无法加载ip2region.xdb文件");
         }
 
         // 2、使用上述的 cBuff 创建一个完全基于内存的查询对象。
-        Searcher searcher = null;
         try {
             searcher = Searcher.newWithBuffer(cBuff);
         } catch (Exception e) {
@@ -101,26 +97,16 @@ public class IpUtils {
         }
 
         // 3、查询
+
         try {
-            assert searcher != null;
-            String region = searcher.search(ip);
-            // 分割出省份 中国 广东省 广州市
-            StringBuilder address = new StringBuilder();
-            String[] split = region.split("\\|");
-            for (String s : split) {
-                if (!"0".equals(s)) {
-                    address.append(" ".concat(s));
-                }
+            if (ObjectUtils.isNotEmpty(searcher)) {
+                return searcher.search(ip);
             }
-            return address.toString();
+            return null;
         } catch (Exception e) {
             log.error("ip地址查询失败");
         }
         return null;
-        // 4、关闭资源 - 该 searcher 对象可以安全用于并发，等整个服务关闭的时候再关闭 searcher
-//         searcher.close();
-
-        // 备注：并发使用，用整个 xdb 数据缓存创建的查询对象可以安全的用于并发，也就是你可以把这个 searcher 对象做成全局对象去跨线程访问。
     }
 
     /**
@@ -163,9 +149,8 @@ public class IpUtils {
                     return true;
                 }
             case SECTION_5:
-                switch (b1) {
-                    case SECTION_6:
-                        return true;
+                if (b1 == SECTION_6) {
+                    return true;
                 }
             default:
                 return false;
@@ -179,7 +164,7 @@ public class IpUtils {
      * @return byte 字节
      */
     public static byte[] textToNumericFormatV4(String text) {
-        if (text.length() == 0) {
+        if (text.isEmpty()) {
             return null;
         }
 
@@ -255,6 +240,7 @@ public class IpUtils {
         try {
             return InetAddress.getLocalHost().getHostAddress();
         } catch (UnknownHostException e) {
+            log.error("获取本地IP地址失败", e);
         }
         return "127.0.0.1";
     }

@@ -4,6 +4,7 @@ import cn.dev33.satoken.stp.StpUtil;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import com.broad.common.annotation.Log;
+import com.broad.common.constant.ThreadPoolConstant;
 import com.broad.common.enums.LogType;
 import com.broad.common.utils.ServletUtils;
 import com.broad.common.utils.StringUtils;
@@ -17,6 +18,7 @@ import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.multipart.MultipartFile;
@@ -74,6 +76,7 @@ public class LogAspect {
      * @param e             the e
      * @param jsonResult    the json result
      */
+    @Async(value = ThreadPoolConstant.SERVICE_EXECUTOR)
     protected void handleLog(final JoinPoint joinPoint, Log controllerLog, final Exception e, Object jsonResult) {
         try {
 
@@ -84,7 +87,9 @@ public class LogAspect {
             String ip = IpUtils.getIp(response);
             operLog.setLogIp(ip);
             operLog.setLogIpAddress(IpUtils.getIpAddress(ip));
-            operLog.setLogUrl(response.getRequestURI());
+            if (response != null) {
+                operLog.setLogUrl(response.getRequestURI());
+            }
             operLog.setAdminId(StpUtil.getLoginIdAsInt());
 
             if (e != null) {
@@ -104,7 +109,6 @@ public class LogAspect {
         } catch (Exception exp) {
             // 记录本地异常日志
             log.error("==异常日志 前置通知异常==");
-            exp.printStackTrace();
         }
     }
 

@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 /**
  * @author: XingGao
  * @date: 2024/4/25
- * @description:
+ * @description: 加密注解
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
