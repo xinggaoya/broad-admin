@@ -10,6 +10,7 @@ import com.broad.common.web.entity.ResultData;
 import com.google.code.kaptcha.Producer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.FastByteArrayOutputStream;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -75,7 +76,9 @@ public class CaptchaController {
         // 转换流信息写出
         FastByteArrayOutputStream os = new FastByteArrayOutputStream();
         try {
-            ImageIO.write(image, "jpg", os);
+            if (!ObjectUtils.isEmpty(image)){
+                ImageIO.write(image, "jpg", os);
+            }
         } catch (IOException e) {
             return ResultData.error(e.getMessage());
         }

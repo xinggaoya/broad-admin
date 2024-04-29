@@ -7,6 +7,8 @@ import com.broad.common.utils.SpringUtils;
 import com.broad.common.utils.StringUtils;
 import com.broad.common.utils.uuid.UUID;
 import org.apache.commons.lang3.ArrayUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
@@ -32,6 +34,7 @@ public class FileUtils {
      * 字符常量：反斜杠 {@code '\\'}
      */
     public static final char BACKSLASH = '\\';
+    private static final Logger log = LoggerFactory.getLogger(FileUtils.class);
 
     /**
      * The constant FILENAME_PATTERN.
@@ -73,14 +76,14 @@ public class FileUtils {
                 try {
                     os.close();
                 } catch (IOException e1) {
-                    e1.printStackTrace();
+                    log.error("close output stream error", e1);
                 }
             }
             if (fis != null) {
                 try {
                     fis.close();
                 } catch (IOException e1) {
-                    e1.printStackTrace();
+                    log.error("close input stream error", e1);
                 }
             }
         }
@@ -159,7 +162,7 @@ public class FileUtils {
         try {
             file.transferTo(dest);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("upload file error", e);
             throw new FileException("file.upload.error", null);
         }
         return localFilePath;

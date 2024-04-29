@@ -57,7 +57,7 @@ public class LogAspect {
     }
 
     /**
-     * 拦截异常操作
+     * 异常发生后执行
      *
      * @param joinPoint     切点
      * @param controllerLog the controller log
@@ -179,7 +179,7 @@ public class LogAspect {
      */
     private String argsArrayToString(Object[] paramsArray) {
         StringBuilder params = new StringBuilder();
-        if (paramsArray != null && paramsArray.length > 0) {
+        if (paramsArray != null) {
             for (Object o : paramsArray) {
                 if (StringUtils.isNotNull(o) && !isFilterObject(o)) {
                     try {
