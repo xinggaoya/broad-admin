@@ -21,23 +21,23 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.7.1</version>
+        <version>2.7.17</version>
         <relativePath/>
     </parent>
 
     <properties>
         <validator-version>5.3.5.Final</validator-version>
-        <boot-version>2.7.1</boot-version>
+        <boot-version>2.7.17</boot-version>
         <broad-version>2.0.0</broad-version>
         <druid-version>1.2.8</druid-version>
-        <mybatis-plus.version>3.5.4.1</mybatis-plus.version>
+        <mybatis-plus.version>3.5.6</mybatis-plus.version>
         <satoken-version>1.37.0</satoken-version>
         <swagger-version>3.0.0</swagger-version>
         <kaptcha-version>2.3.2</kaptcha-version>
         <xss-version>1.15.3</xss-version>
         <fastjson-version>2.0.10</fastjson-version>
         <ip2region-version>2.6.6</ip2region-version>
-        <pagehelper-version>1.4.3</pagehelper-version>
+        <pagehelper-version>2.1.0</pagehelper-version>
         <poi.version>4.1.2</poi.version>
         <commons.io.version>2.11.0</commons.io.version>
         <bitwalker-version>1.21</bitwalker-version>
