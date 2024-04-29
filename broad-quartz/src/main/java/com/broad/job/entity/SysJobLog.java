@@ -1,10 +1,14 @@
 package com.broad.job.entity;
 
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.broad.common.annotation.Excel;
+import lombok.Data;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -12,13 +16,15 @@ import java.util.Date;
  *
  * @author XingGao
  */
-public class SysJobLog {
+@Data
+public class SysJobLog implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
      * ID
      */
     @Excel(name = "日志序号")
+    @TableId(value = "job_log_id", type = IdType.AUTO)
     private Long jobLogId;
 
     /**
@@ -73,198 +79,4 @@ public class SysJobLog {
      * 停止时间
      */
     private Date stopTime;
-
-    /**
-     * Gets job log id.
-     *
-     * @return the job log id
-     */
-    public Long getJobLogId() {
-        return jobLogId;
-    }
-
-    /**
-     * Sets job log id.
-     *
-     * @param jobLogId the job log id
-     */
-    public void setJobLogId(Long jobLogId) {
-        this.jobLogId = jobLogId;
-    }
-
-    /**
-     * Gets create time.
-     *
-     * @return the create time
-     */
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    /**
-     * Sets create time.
-     *
-     * @param createTime the create time
-     */
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    /**
-     * Gets job name.
-     *
-     * @return the job name
-     */
-    public String getJobName() {
-        return jobName;
-    }
-
-    /**
-     * Sets job name.
-     *
-     * @param jobName the job name
-     */
-    public void setJobName(String jobName) {
-        this.jobName = jobName;
-    }
-
-    /**
-     * Gets job group.
-     *
-     * @return the job group
-     */
-    public String getJobGroup() {
-        return jobGroup;
-    }
-
-    /**
-     * Sets job group.
-     *
-     * @param jobGroup the job group
-     */
-    public void setJobGroup(String jobGroup) {
-        this.jobGroup = jobGroup;
-    }
-
-    /**
-     * Gets invoke target.
-     *
-     * @return the invoke target
-     */
-    public String getInvokeTarget() {
-        return invokeTarget;
-    }
-
-    /**
-     * Sets invoke target.
-     *
-     * @param invokeTarget the invoke target
-     */
-    public void setInvokeTarget(String invokeTarget) {
-        this.invokeTarget = invokeTarget;
-    }
-
-    /**
-     * Gets job message.
-     *
-     * @return the job message
-     */
-    public String getJobMessage() {
-        return jobMessage;
-    }
-
-    /**
-     * Sets job message.
-     *
-     * @param jobMessage the job message
-     */
-    public void setJobMessage(String jobMessage) {
-        this.jobMessage = jobMessage;
-    }
-
-    /**
-     * Gets status.
-     *
-     * @return the status
-     */
-    public String getStatus() {
-        return status;
-    }
-
-    /**
-     * Sets status.
-     *
-     * @param status the status
-     */
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    /**
-     * Gets exception info.
-     *
-     * @return the exception info
-     */
-    public String getExceptionInfo() {
-        return exceptionInfo;
-    }
-
-    /**
-     * Sets exception info.
-     *
-     * @param exceptionInfo the exception info
-     */
-    public void setExceptionInfo(String exceptionInfo) {
-        this.exceptionInfo = exceptionInfo;
-    }
-
-    /**
-     * Gets start time.
-     *
-     * @return the start time
-     */
-    public Date getStartTime() {
-        return startTime;
-    }
-
-    /**
-     * Sets start time.
-     *
-     * @param startTime the start time
-     */
-    public void setStartTime(Date startTime) {
-        this.startTime = startTime;
-    }
-
-    /**
-     * Gets stop time.
-     *
-     * @return the stop time
-     */
-    public Date getStopTime() {
-        return stopTime;
-    }
-
-    /**
-     * Sets stop time.
-     *
-     * @param stopTime the stop time
-     */
-    public void setStopTime(Date stopTime) {
-        this.stopTime = stopTime;
-    }
-
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("jobLogId", getJobLogId())
-                .append("jobName", getJobName())
-                .append("jobGroup", getJobGroup())
-                .append("jobMessage", getJobMessage())
-                .append("status", getStatus())
-                .append("exceptionInfo", getExceptionInfo())
-                .append("startTime", getStartTime())
-                .append("stopTime", getStopTime())
-                .toString();
-    }
 }

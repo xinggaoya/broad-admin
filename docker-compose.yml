@@ -8,15 +8,15 @@ services:
     volumes:
       - /dev/broad-admin:/app/logs
     networks:
-      my_network:
-        ipv6_address: "2001:db8::12"
+      broad_network:
+        ipv6_address: "2001:db8::13"
     restart: always
 
 networks:
-  my_network:
+  broad_network:
     driver: bridge
     enable_ipv6: true
     ipam:
       driver: default
       config:
-        - subnet: "2001:db8::/64"
+        - subnet: "2001:db8::/63"

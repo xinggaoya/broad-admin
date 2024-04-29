@@ -1,6 +1,8 @@
 package com.broad.system.entity;
 
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 
 import java.io.Serializable;
@@ -15,6 +17,9 @@ import lombok.Data;
  */
 @Data
 public class SysUserPost {
+
+    @TableId(value = "id", type = IdType.AUTO)
+    private Integer id;
     /**
      * 用户ID
      */

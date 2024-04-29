@@ -97,7 +97,6 @@ public class IpUtils {
         }
 
         // 3、查询
-
         try {
             if (ObjectUtils.isNotEmpty(searcher)) {
                 return searcher.search(ip);
