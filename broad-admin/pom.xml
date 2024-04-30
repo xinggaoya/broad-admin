@@ -28,6 +28,12 @@
             <artifactId>broad-framework</artifactId>
         </dependency>
 
+        <!-- 添加图形验证码依赖 -->
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-captcha</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>

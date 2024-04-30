@@ -1,23 +1,18 @@
 package com.broad.web.controller.system;
 
 import cn.dev33.satoken.annotation.SaIgnore;
+import cn.hutool.captcha.CaptchaUtil;
+import cn.hutool.captcha.LineCaptcha;
 import com.broad.common.annotation.RateLimiter;
 import com.broad.common.config.BroadConfig;
 import com.broad.common.constant.Constants;
 import com.broad.common.service.RedisService;
-import com.broad.common.utils.sign.Base64;
 import com.broad.common.web.entity.ResultData;
-import com.google.code.kaptcha.Producer;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.FastByteArrayOutputStream;
-import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.UUID;
 
@@ -30,11 +25,6 @@ import java.util.UUID;
  */
 @RestController
 public class CaptchaController {
-    @Resource(name = "captchaProducer")
-    private Producer captchaProducer;
-
-    @Resource(name = "captchaProducerMath")
-    private Producer captchaProducerMath;
 
     @Autowired
     private RedisService redisService;
@@ -51,40 +41,21 @@ public class CaptchaController {
     @GetMapping("/captchaImage")
     @RateLimiter(key = "captchaImage", count = 10, time = 5)
     @SaIgnore
-    public ResultData getCode() {
+    public ResultData productionCaptcha() {
         LinkedHashMap<String, Object> linkedHashMap = new LinkedHashMap<>();
         // 保存验证码信息
         String uuid = UUID.randomUUID().toString();
         String verifyKey = Constants.CAPTCHA_CODE_KEY + uuid;
 
-        String capStr, code = null;
-        BufferedImage image = null;
-
-        // 生成验证码
-        String captchaType = broadConfig.getCaptchaType();
-        if ("math".equals(captchaType)) {
-            String capText = captchaProducerMath.createText();
-            capStr = capText.substring(0, capText.lastIndexOf("@"));
-            code = capText.substring(capText.lastIndexOf("@") + 1);
-            image = captchaProducerMath.createImage(capStr);
-        } else if ("char".equals(captchaType)) {
-            capStr = code = captchaProducer.createText();
-            image = captchaProducer.createImage(capStr);
-        }
+        //定义图形验证码的长、宽、验证码字符数、干扰元素个数
+        LineCaptcha lineCaptcha = CaptchaUtil.createLineCaptcha(200, 60, 4, 100);
+        // 验证码值
+        String  code = lineCaptcha.getCode();
 
         redisService.setCacheObject(verifyKey, code, 120L);
-        // 转换流信息写出
-        FastByteArrayOutputStream os = new FastByteArrayOutputStream();
-        try {
-            if (!ObjectUtils.isEmpty(image)){
-                ImageIO.write(image, "jpg", os);
-            }
-        } catch (IOException e) {
-            return ResultData.error(e.getMessage());
-        }
 
         linkedHashMap.put("captcha", uuid);
-        linkedHashMap.put("captchaUrl", Base64.encode(os.toByteArray()));
+        linkedHashMap.put("captchaUrl", lineCaptcha.getImageBase64());
         linkedHashMap.put("showCaptcha", broadConfig.getCaptchaEnabled());
         return ResultData.success(linkedHashMap);
     }

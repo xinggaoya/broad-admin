@@ -33,7 +33,6 @@
         <mybatis-plus.version>3.5.6</mybatis-plus.version>
         <satoken-version>1.37.0</satoken-version>
         <swagger-version>3.0.0</swagger-version>
-        <kaptcha-version>2.3.2</kaptcha-version>
         <xss-version>1.15.3</xss-version>
         <fastjson-version>2.0.10</fastjson-version>
         <ip2region-version>2.6.6</ip2region-version>
@@ -41,6 +40,7 @@
         <poi.version>4.1.2</poi.version>
         <commons.io.version>2.11.0</commons.io.version>
         <bitwalker-version>1.21</bitwalker-version>
+        <hutool.version>5.8.27</hutool.version>
     </properties>
 
     <dependencyManagement>
@@ -122,19 +122,15 @@
                 <version>${ip2region-version}</version>
             </dependency>
 
-            <!--    kaptcha图片验证码        -->
+            <!--  hutool工具类  -->
             <dependency>
-                <groupId>com.github.penggle</groupId>
-                <artifactId>kaptcha</artifactId>
-                <version>${kaptcha-version}</version>
-                <exclusions>
-                    <exclusion>
-                        <artifactId>javax.servlet-api</artifactId>
-                        <groupId>javax.servlet</groupId>
-                    </exclusion>
-                </exclusions>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-bom</artifactId>
+                <version>${hutool.version}</version>
+                <type>pom</type>
+                <!-- 注意这里是import -->
+                <scope>import</scope>
             </dependency>
-
             <dependency>
                 <groupId>eu.bitwalker</groupId>
                 <artifactId>UserAgentUtils</artifactId>
