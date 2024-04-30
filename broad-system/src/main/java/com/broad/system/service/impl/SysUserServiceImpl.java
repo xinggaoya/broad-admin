@@ -4,11 +4,13 @@ import cn.dev33.satoken.secure.SaSecureUtil;
 import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.broad.common.enums.UserStatus;
+import com.broad.common.exception.ServiceException;
 import com.broad.common.utils.StringUtils;
 import com.broad.system.entity.SysUser;
 import com.broad.system.mapper.SysUserMapper;
 import com.broad.system.service.SysUserRoleService;
 import com.broad.system.service.SysUserService;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,12 +60,15 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Override
     @Transactional(rollbackFor = Exception.class)
     public int updateAdmin(SysUser sysAdmin) {
-        // 如果密码与数据库密码不一致，说明用户修改密码,则重新加密
-        if (StringUtils.isNotNull(sysAdmin.getPassword())) {
-            String uid = java.util.UUID.randomUUID().toString();
-            sysAdmin.setPassword(SaSecureUtil.md5BySalt(sysAdmin.getPassword(), uid));
-            sysAdmin.setSalt(uid);
+        // 密码不允许修改
+        sysAdmin.setPassword(null);
+        // 用户名不允许修改
+        sysAdmin.setUserName(null);
+
+        if (ObjectUtils.isEmpty(sysAdmin)){
+            throw new ServiceException("请选择需要修改的用户");
         }
+        // 处理用户状态
         if (sysAdmin.getUserStatus() != null) {
             if (UserStatus.OK.getCode().equals(sysAdmin.getUserStatus())) {
                 unban(Long.valueOf(sysAdmin.getId()));
@@ -74,7 +79,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         }
         int res = baseMapper.updateById(sysAdmin);
         // 查询是否有角色
-        if (sysAdmin.getRoleIds() != null && sysAdmin.getRoleIds().size() > 0) {
+        if (sysAdmin.getRoleIds() != null && !sysAdmin.getRoleIds().isEmpty()) {
             userRoleService.insertUserRole(sysAdmin);
         }
         return res;

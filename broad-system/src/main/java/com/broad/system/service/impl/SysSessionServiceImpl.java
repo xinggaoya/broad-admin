@@ -14,6 +14,8 @@ import com.broad.system.entity.SysUser;
 import com.broad.system.mapper.SysUserMapper;
 import com.broad.system.service.SysLoginLogService;
 import com.broad.system.service.SysSessionService;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,9 +35,6 @@ public class SysSessionServiceImpl implements SysSessionService {
     private SysUserMapper sysUserMapper;
 
     @Autowired
-    private BroadConfig broadConfig;
-
-    @Autowired
     private SysLoginLogService loginLogService;
 
     @Autowired
@@ -45,27 +44,27 @@ public class SysSessionServiceImpl implements SysSessionService {
     @Transactional(rollbackFor = Exception.class)
     public Object administratorLogin(SysUser sysAdmin, HttpServletRequest request) {
         SysLoginLog sysLoginLog = new SysLoginLog();
-        if (sysAdmin.getUserName() == null || sysAdmin.getPassword() == null) {
-            String msg = "用户名或密码不能为空";
-            throw new ServiceException(msg);
+        if (StringUtils.isAnyBlank(sysAdmin.getUserName(), sysAdmin.getPassword())) {
+            throw new ServiceException("用户名或密码不能为空");
+        }
+        if (StringUtils.isBlank(sysAdmin.getCodeValue())) {
+            throw new ServiceException("验证码不能为空");
         }
         SysUser admin = this.sysUserMapper.selectOne(new LambdaQueryWrapper<SysUser>().eq(SysUser::getUserName, sysAdmin.getUserName()));
+        if (ObjectUtils.isEmpty(admin)) {
+            throw new ServiceException("用户名不存在");
+        }
         try {
-            if (broadConfig.getCaptchaEnabled()) {
-                String code = redisService.getCacheObject(Constants.CAPTCHA_CODE_KEY + sysAdmin.getCodeId());
-                if (code == null) {
-                    throw new ServiceException("验证码已失效");
-                }
-                if (sysAdmin.getCodeValue() == null || !sysAdmin.getCodeValue().equals(code)) {
-                    String msg = "验证码错误";
-                    throw new ServiceException(msg);
-                }
+            // 效验验证码
+            String code = redisService.getCacheObject(Constants.CAPTCHA_CODE_KEY + sysAdmin.getCodeId());
+            if (StringUtils.isBlank(code)) {
+                throw new ServiceException("验证码已失效");
             }
-            if (admin == null) {
-                throw new ServiceException("用户名不存在");
+            if (!sysAdmin.getCodeValue().toLowerCase().equals(code)) {
+                throw new ServiceException("验证码错误");
             }
             if (!admin.getPassword().equals(SaSecureUtil.md5BySalt(sysAdmin.getPassword(), admin.getSalt()))) {
-                throw new UserPasswordNotMatchException();
+                throw new ServiceException("密码错误");
             }
             // 效验是否被封禁
             if (StpUtil.isDisable(admin.getId())) {

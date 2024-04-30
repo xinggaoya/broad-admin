@@ -25,7 +25,6 @@ public interface SysSessionService {
     /**
      * Logout.
      *
-     * @param admin the admin
      */
     void logout();
 }

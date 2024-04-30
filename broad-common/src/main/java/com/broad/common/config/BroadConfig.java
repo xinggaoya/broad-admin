@@ -32,16 +32,6 @@ public class BroadConfig {
     private String author;
 
     /**
-     * 验证码开关
-     */
-    private Boolean captchaEnabled;
-
-    /**
-     * 验证码类型
-     */
-    private String captchaType;
-
-    /**
      * 系统文件目录
      */
     private String systemFileDir;

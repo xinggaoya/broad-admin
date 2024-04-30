@@ -5,6 +5,7 @@ import cn.hutool.captcha.CaptchaUtil;
 import cn.hutool.captcha.LineCaptcha;
 import com.broad.common.annotation.RateLimiter;
 import com.broad.common.config.BroadConfig;
+import com.broad.common.constant.CacheConstants;
 import com.broad.common.constant.Constants;
 import com.broad.common.service.RedisService;
 import com.broad.common.web.entity.ResultData;
@@ -29,10 +30,6 @@ public class CaptchaController {
     @Autowired
     private RedisService redisService;
 
-    @Autowired
-    private BroadConfig broadConfig;
-
-
     /**
      * 生成验证码
      *
@@ -42,7 +39,7 @@ public class CaptchaController {
     @RateLimiter(key = "captchaImage", count = 10, time = 5)
     @SaIgnore
     public ResultData productionCaptcha() {
-        LinkedHashMap<String, Object> linkedHashMap = new LinkedHashMap<>();
+        LinkedHashMap<String, Object> linkedHashMap = new LinkedHashMap<>(3);
         // 保存验证码信息
         String uuid = UUID.randomUUID().toString();
         String verifyKey = Constants.CAPTCHA_CODE_KEY + uuid;
@@ -50,13 +47,12 @@ public class CaptchaController {
         //定义图形验证码的长、宽、验证码字符数、干扰元素个数
         LineCaptcha lineCaptcha = CaptchaUtil.createLineCaptcha(200, 60, 4, 100);
         // 验证码值
-        String  code = lineCaptcha.getCode();
+        String code = lineCaptcha.getCode();
 
-        redisService.setCacheObject(verifyKey, code, 120L);
+        redisService.setCacheObject(verifyKey, code.toLowerCase(), CacheConstants.REFRESH_TIME);
 
         linkedHashMap.put("captcha", uuid);
         linkedHashMap.put("captchaUrl", lineCaptcha.getImageBase64());
-        linkedHashMap.put("showCaptcha", broadConfig.getCaptchaEnabled());
         return ResultData.success(linkedHashMap);
     }
 }
