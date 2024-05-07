@@ -7,16 +7,4 @@ services:
       - "9010:9010"
     volumes:
       - /dev/broad-admin:/app/logs
-    networks:
-      broad_network:
-        ipv6_address: "2001:db8::13"
     restart: always
-
-networks:
-  broad_network:
-    driver: bridge
-    enable_ipv6: true
-    ipam:
-      driver: default
-      config:
-        - subnet: "2001:db8::/63"
