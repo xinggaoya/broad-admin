@@ -1,5 +1,6 @@
-//package com.broad.modules.job.config;
+//package com.broad.job.config;
 //
+//import com.broad.common.enums.DbType;
 //import org.springframework.context.annotation.Bean;
 //import org.springframework.context.annotation.Configuration;
 //import org.springframework.scheduling.quartz.SchedulerFactoryBean;
@@ -15,8 +16,10 @@
 //@Configuration
 //public class ScheduleConfig {
 //    @Bean
+//    @com.broad.common.annotation.DataSource
 //    public SchedulerFactoryBean schedulerFactoryBean(DataSource dataSource) {
 //        SchedulerFactoryBean factory = new SchedulerFactoryBean();
+//        // 獲取qrtz数据源
 //        factory.setDataSource(dataSource);
 //
 //        // quartz参数

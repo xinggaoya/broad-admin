@@ -14,7 +14,6 @@
         <module>broad-admin</module>
         <module>broad-system</module>
         <module>broad-framework</module>
-        <module>broad-generator</module>
         <module>broad-quartz</module>
     </modules>
 
@@ -31,7 +30,7 @@
         <broad-version>2.0.0</broad-version>
         <druid-version>1.2.8</druid-version>
         <mybatis-plus.version>3.5.6</mybatis-plus.version>
-        <satoken-version>1.37.0</satoken-version>
+        <satoken-version>1.38.0</satoken-version>
         <swagger-version>3.0.0</swagger-version>
         <xss-version>1.15.3</xss-version>
         <fastjson-version>2.0.10</fastjson-version>
