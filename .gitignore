@@ -3,3 +3,10 @@
 /*/node_modules/
 /.idea/
 /*.iml
+
+/broad-admin-ui/dist
+/broad-admin-ui/.idea
+/broad-admin-ui/pnpm-lock.yaml
+/broad-admin-ui/auto-imports.d.ts
+/broad-admin-ui/components.d.ts
+

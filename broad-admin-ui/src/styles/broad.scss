@@ -1,0 +1,19 @@
+$border-radius: 7px;
+
+.n-card {
+  border-radius: $border-radius;
+}
+
+// 弹出确认
+.n-dialog {
+  border-radius: $border-radius !important;
+
+  .n-dialog__content {
+    padding: 0 30px;
+  }
+}
+// 通知
+.n-notification-container.n-notification-container--top-right .n-notification,
+.n-notification-container.n-notification-container--bottom-right .n-notification {
+  border-radius: $border-radius !important;
+}

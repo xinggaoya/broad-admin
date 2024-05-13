@@ -38,6 +38,20 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         return buildTreeList(list);
     }
 
+    private void updateMenus(List<SysMenu> list, String path) {
+        for (SysMenu sysMenu : list) {
+            // 拼接路径
+            if (StringUtils.isNotBlank(sysMenu.getLocalFilePath())) {
+                sysMenu.setLocalFilePath(path + sysMenu.getLocalFilePath());
+            }
+            // 更新
+            this.updateById(sysMenu);
+            if (!sysMenu.getChildren().isEmpty()) {
+                updateMenus(sysMenu.getChildren(), sysMenu.getLocalFilePath());
+            }
+        }
+    }
+
     @Override
     public List<SysMenu> selectAllByPage(SysMenu menu) {
         menu.setParentId(0);
