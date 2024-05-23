@@ -6,6 +6,7 @@ import com.broad.common.utils.StringUtils;
 import com.broad.system.entity.SysMenu;
 import com.broad.system.mapper.SysMenuMapper;
 import com.broad.system.service.SysMenuService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -22,34 +23,21 @@ import java.util.List;
  * @since 2022 -10-10 18:46:52
  */
 @Service("sysMenuService")
+@Slf4j
 @CacheConfig(cacheNames = CacheConstants.ROUTE_KEY, keyGenerator = CacheConstants.CACHE_PREFIX_GENERATION)
 public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> implements SysMenuService {
 
 
     @Override
-    @Cacheable(key = "#userId", unless = "null == #result")
     public List<SysMenu> findMenuByUserId(Integer userId) {
         return this.baseMapper.findMenuByUserId(userId);
     }
 
     @Override
+    @Cacheable(key = "#userId", unless = "null == #result")
     public List<SysMenu> findTreeMenuByUserId(Integer userId) {
         List<SysMenu> list = findMenuByUserId(userId);
         return buildTreeList(list);
-    }
-
-    private void updateMenus(List<SysMenu> list, String path) {
-        for (SysMenu sysMenu : list) {
-            // 拼接路径
-            if (StringUtils.isNotBlank(sysMenu.getLocalFilePath())) {
-                sysMenu.setLocalFilePath(path + sysMenu.getLocalFilePath());
-            }
-            // 更新
-            this.updateById(sysMenu);
-            if (!sysMenu.getChildren().isEmpty()) {
-                updateMenus(sysMenu.getChildren(), sysMenu.getLocalFilePath());
-            }
-        }
     }
 
     @Override
@@ -70,6 +58,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @CacheEvict(allEntries = true)
     public int saveMenu(SysMenu entity) {
         if (StringUtils.isNull(entity.getParentId())) {
             entity.setParentId(0);
@@ -79,6 +68,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @CacheEvict(allEntries = true)
     public int updateMenu(SysMenu entity) {
         return this.baseMapper.updateById(entity);
     }
