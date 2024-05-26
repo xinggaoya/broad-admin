@@ -1,5 +1,5 @@
 <template>
-  <n-button type="primary" size="small" @click="onAdd">
+  <n-button type="primary" @click="onAdd" secondary>
     <template #icon>
       <n-icon>
         <AddIcon />
@@ -21,7 +21,7 @@
     props: {
       title: {
         type: String,
-        default: '添加',
+        default: '新增',
       },
     },
     emits: ['add'],

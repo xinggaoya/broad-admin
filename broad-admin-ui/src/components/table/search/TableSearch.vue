@@ -7,7 +7,7 @@
         </template>
         <template v-slot:header-extra>
           <n-space justify="end">
-            <n-button :round="true" type="success" @click="handleSearch" size="small">
+            <n-button :round="true" type="primary" @click="handleSearch" size="small">
               <template #icon>
                 <n-icon>
                   <Search />

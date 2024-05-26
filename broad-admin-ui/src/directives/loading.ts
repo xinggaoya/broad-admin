@@ -1,8 +1,5 @@
-import type { App, VNode } from 'vue'
-import { createVNode, render } from 'vue'
-import Loading from '@/components/loading/index.vue'
-
-const vnode: VNode = createVNode(Loading) as VNode
+import { type App, type VNode, createVNode, render } from 'vue'
+import { NSpin } from 'naive-ui'
 
 // 页面加载指令
 export function loading(app: App) {
@@ -23,9 +20,30 @@ export function loading(app: App) {
 
 function renderLoading(value: boolean, el: HTMLElement) {
   el.style.position = 'relative'
+  let overlayContainer = el.querySelector('.v-loading-overlay') as HTMLElement
+
+  if (!overlayContainer) {
+    overlayContainer = document.createElement('div')
+    overlayContainer.className = 'v-loading-overlay'
+    overlayContainer.style.position = 'absolute'
+    overlayContainer.style.top = '0'
+    overlayContainer.style.left = '0'
+    overlayContainer.style.width = '100%'
+    overlayContainer.style.height = '100%'
+    overlayContainer.style.display = 'flex'
+    overlayContainer.style.justifyContent = 'center'
+    overlayContainer.style.alignItems = 'center'
+    overlayContainer.style.backgroundColor = 'rgba(255, 255, 255, 0.8)'
+    overlayContainer.style.zIndex = '9999'
+    el.appendChild(overlayContainer)
+  }
+
   if (value) {
-    render(vnode, el)
+    const vnode: VNode = createVNode(NSpin)
+    render(vnode, overlayContainer)
+    overlayContainer.style.display = 'flex'
   } else {
-    render(null, el)
+    render(null, overlayContainer)
+    overlayContainer.style.display = 'none'
   }
 }

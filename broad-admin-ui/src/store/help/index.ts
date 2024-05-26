@@ -12,18 +12,21 @@ export function loadComponents() {
   return import.meta.glob('/src/views/**/*.vue')
 }
 
-const enumTrue = '0'
+enum Boolean {
+  true = '0',
+  false = '1'
+}
 
 export const asynComponents = loadComponents()
 
 export function getComponent(it: OriginRoute) {
-
   return asynComponents[getFilePath(it)]
 }
 
 export function getFilePath(it: OriginRoute) {
   if (!it.localFilePath) {
-     throw new Error('localFilePath is not null')
+    console.log(it)
+    throw new Error('localFilePath is not null')
   }
   it.localFilePath = resolve('/', it.localFilePath)
   return '/src/views' + it.localFilePath + '.vue'
@@ -53,12 +56,12 @@ export function filterRoutesFromLocalRoutes(
   if (filterRoute) {
     filterRoute.meta = {
       title: route.menuName,
-      affix: route.affix == enumTrue,
-      cacheable: route.cacheable == enumTrue,
+      affix: route.affix == Boolean.true,
+      cacheable: route.cacheable == Boolean.true,
       icon: route.icon || 'menu',
       iconPrefix: route.iconPrefix || 'iconfont',
       badge: route.badge,
-      hidden: route.hidden == enumTrue,
+      hidden: route.hidden == Boolean.true,
       isRootPath: !!route.isRootPath,
       isSingle: !!route.isSingle,
       ...filterRoute.meta
@@ -82,10 +85,11 @@ export function filterRoutesFromLocalRoutes(
 }
 
 export function isMenu(it: OriginRoute) {
-  return it.children && it.children.length > 0 && it.children?.find((it) => it.menuUrl !== null)
+  return it.menuType === 1
 }
 
-export function getNameByUrl(menuUrl: any) {
+// 获取路由名称
+export function getNameByUrl(menuUrl: string) {
   if (!menuUrl) {
     return ''
   }
@@ -97,26 +101,25 @@ export function getNameByUrl(menuUrl: any) {
  * 递归创建路由
  * @param res
  */
-
 export function generatorRoutes(res: Array<OriginRoute>) {
   const tempRoutes: Array<RouteRecordRaw> = []
 
   res.forEach((it) => {
     const isMenuFlag = isMenu(it)
-    const localRoute = isMenuFlag ? filterRoutesFromLocalRoutes(it, asyncRoutes) : null
+    const localRoute = !isMenuFlag ? filterRoutesFromLocalRoutes(it, asyncRoutes) : null
     if (localRoute) {
       tempRoutes.push(localRoute as RouteRecordRaw)
     } else if (it.menuUrl) {
       const route: RouteRecordRaw = {
         path: it.menuUrl,
-        name: getNameByUrl(it.localFilePath),
-        component: isMenuFlag || it.iframeUrl ? LAYOUT : getComponent(it),
+        name: getNameByUrl(it.localFilePath || ''),
+        component: !isMenuFlag || it.iframeUrl ? LAYOUT : getComponent(it),
         children: [],
         meta: {
-          hidden: it.hidden == enumTrue,
+          hidden: it.hidden == Boolean.true,
           title: it.menuName,
-          affix: it.affix == enumTrue,
-          cacheable: it.cacheable == enumTrue,
+          affix: it.affix == Boolean.true,
+          cacheable: it.cacheable == Boolean.true,
           icon: it.icon || 'menu',
           iconPrefix: it.iconPrefix || 'iconfont',
           badge: it.badge,
@@ -229,13 +232,13 @@ export function transfromMenu(originRoutes: Array<RouteRecordRaw>): Array<MenuOp
           tempMenu.icon =
             item.meta && item.meta.icon
               ? renderMenuIcon(
-                  item.meta
-                    ? item.meta.iconPrefix
-                      ? (item.meta.iconPrefix as string)
-                      : 'icon'
-                    : 'icon',
-                  item.meta?.icon
-                )
+                item.meta
+                  ? item.meta.iconPrefix
+                    ? (item.meta.iconPrefix as string)
+                    : 'icon'
+                  : 'icon',
+                item.meta?.icon
+              )
               : tempMenu.icon
         } else {
           tempMenu.children = transfromMenu(it.children as RouteRecordRaw[])
@@ -275,27 +278,6 @@ export function renderMenuIcon(iconPrefix: string, icon?: any) {
           name: icon
         })
     })
-}
-
-export function findRouteByUrl(routes: Array<any>, path: string): RouteRecordRaw | null {
-  if (!path || !routes) {
-    return null
-  }
-  let tempRoute = null
-  for (let index = 0; index < routes.length; index++) {
-    const temp = routes[index]
-    if (temp.path === path) {
-      tempRoute = temp
-      return tempRoute
-    }
-    if (temp.children) {
-      tempRoute = findRouteByUrl(temp.children, path)
-      if (tempRoute) {
-        return tempRoute
-      }
-    }
-  }
-  return null
 }
 
 // 递归获取权限码
