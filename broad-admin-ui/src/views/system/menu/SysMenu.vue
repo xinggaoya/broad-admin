@@ -71,7 +71,7 @@
                 />
               </n-form-item-gi>
               <n-form-item-gi v-if="menuFromData.menuType !== 2" label="菜单图标" path="icon">
-                <IconSelector v-model:value="menuFromData.icon" />
+                <IconSelect v-model:value="menuFromData.icon" />
               </n-form-item-gi>
               <n-form-item-gi label="排序" path="orderNum">
                 <n-input-number v-model:value="menuFromData.orderNum" :min="0" :max="100" />
@@ -142,12 +142,12 @@ import {
 } from '@/api/system/menu'
 import { useRenderAction, useRowKey } from '@/hooks/useTable'
 import { NIcon, useDialog, useMessage } from 'naive-ui'
-import IconSelector from '@/components/common/IconSelector.vue'
 import { useDict } from '@/utils/useDict'
 import DictTag from '@/components/tag/DictTag.vue'
 import TableMain from '@/components/table/main/TableMain.vue'
 import AddButton from '@/components/common/AddButton.vue'
 import SvgIcon from '@/components/svg-icon/SvgIcon.vue'
+import IconSelect from '@/components/common/IconSelect.vue'
 
 const { sys_yes_no } = useDict('sys_yes_no')
 let actionModel = 'add'

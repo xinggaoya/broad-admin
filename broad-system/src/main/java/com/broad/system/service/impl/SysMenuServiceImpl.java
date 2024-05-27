@@ -82,7 +82,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     private List<SysMenu> buildTree(List<SysMenu> list) {
         List<SysMenu> treeMenus = new ArrayList<>();
         for (SysMenu menuNode : getRootNode(list)) {
-            buildChilTree(menuNode, list);
+            buildChildTree(menuNode, list);
             treeMenus.add(menuNode);
         }
         return treeMenus;
@@ -95,15 +95,21 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
      * @param menuList
      * @return
      */
-    private SysMenu buildChilTree(SysMenu pNode, List<SysMenu> menuList) {
-        List<SysMenu> chilMenus = new ArrayList<>();
+    private SysMenu buildChildTree(SysMenu pNode, List<SysMenu> menuList) {
+        List<SysMenu> childMenus = new ArrayList<>();
         for (SysMenu menuNode : menuList) {
             if (menuNode.getParentId().equals(pNode.getMenuId())) {
-                SysMenu sysMenu = buildChilTree(menuNode, menuList);
-                chilMenus.add(sysMenu);
+                // 将父节点的url拼接到子节点的url上
+                String menuUrl;
+                if (StringUtils.isNotBlank(menuNode.getMenuUrl())) {
+                    menuUrl = pNode.getMenuUrl().concat(menuNode.getMenuUrl());
+                    menuNode.setMenuUrl(menuUrl);
+                }
+                SysMenu sysMenu = buildChildTree(menuNode, menuList);
+                childMenus.add(sysMenu);
             }
         }
-        pNode.setChildren(chilMenus);
+        pNode.setChildren(childMenus);
         return pNode;
     }
 

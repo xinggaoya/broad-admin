@@ -19,10 +19,6 @@
 import useAppConfigStore from '@/store/modules/app-config'
 import usePermissionStore from '@/store/modules/permission'
 
-defineOptions({
-  name: 'VAWHeader'
-})
-
 const appConfig = useAppConfigStore()
 const permissionStore = usePermissionStore()
 </script>

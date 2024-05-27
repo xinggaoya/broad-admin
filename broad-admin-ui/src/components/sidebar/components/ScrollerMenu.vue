@@ -2,16 +2,16 @@
   <div class="scrollbar">
     <n-scrollbar>
       <n-menu
-        mode="vertical"
-        :value="defaultPath"
         :accordion="appConfig.isAccordion"
         :collapsed="appConfig.isCollapse"
-        :options="menuOptions"
-        :default-value="defaultPath"
-        :expanded-keys="defaultExpandKeys"
         :collapsed-icon-size="22"
         :collapsed-width="63"
+        :default-value="defaultPath"
+        :expanded-keys="defaultExpandKeys"
         :indent="15"
+        :options="menuOptions"
+        :value="defaultPath"
+        mode="vertical"
         @update:value="onMenuClick"
         @update:expanded-keys="onMenuExpandedKeysClick"
       />
@@ -23,8 +23,8 @@
 import useAppConfigStore from '@/store/modules/app-config'
 import { DeviceType } from '@/store/types'
 import type { MenuOption } from 'naive-ui'
-import { PropType, ref, shallowReactive, watch, watchEffect } from 'vue'
-import { RouteRecordNormalized, useRoute, useRouter } from 'vue-router'
+import { type PropType, ref, shallowReactive, watch, watchEffect } from 'vue'
+import { type RouteRecordNormalized, useRoute, useRouter } from 'vue-router'
 import { isExternal } from '@/utils'
 import { transfromMenu } from '@/store/help'
 

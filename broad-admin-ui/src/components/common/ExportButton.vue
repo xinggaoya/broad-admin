@@ -3,21 +3,21 @@
 </template>
 
 <script lang="ts" setup>
-  import { withDefaults } from 'vue'
+import { withDefaults } from 'vue'
 
-  const props = withDefaults(
-    defineProps<{
-      title: string
-    }>(),
-    {
-      title: '导出',
-    }
-  )
-  const emits = defineEmits(['confirm'])
-
-  const onConfirm = () => {
-    emits('confirm')
+withDefaults(
+  defineProps<{
+    title: string
+  }>(),
+  {
+    title: '导出'
   }
+)
+const emits = defineEmits(['confirm'])
+
+const onConfirm = () => {
+  emits('confirm')
+}
 </script>
 
 <style scoped></style>

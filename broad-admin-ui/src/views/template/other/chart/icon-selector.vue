@@ -1,7 +1,7 @@
 <template>
   <n-card :header-style="{ padding: '10px' }" title="图标选择器" segmented>
     <n-space justify="center">
-      <IconSelector @selected="onSelectedIcon" />
+      <IconSelect @selected="onSelectedIcon" />
     </n-space>
   </n-card>
 </template>

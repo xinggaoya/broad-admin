@@ -8,7 +8,8 @@
           :class="[appConfig.deviceType === 'mobile' && 'is-mobile']"
         >
           <template v-if="layoutMode === 'ttb'">
-            <VAWHeader />
+            <HeaderView />
+            123
             <MainLayout :show-nav-bar="false" />
           </template>
           <template v-else-if="layoutMode === 'lcr'">
