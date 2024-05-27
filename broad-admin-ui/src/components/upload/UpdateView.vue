@@ -11,9 +11,9 @@
 </template>
 
 <script lang="ts" setup>
-  import { defineProps, withDefaults, computed, defineEmits } from 'vue'
+  import { withDefaults, computed } from 'vue'
   import { useUserStore } from '@/store/modules/user'
-  import { UploadFileInfo } from 'naive-ui'
+  import type { UploadFileInfo } from 'naive-ui'
 
   const REQUEST_HEADER = import.meta.env.VITE_BASE_REQUEST_HEADER as string
   const defaultUrl = import.meta.env.VITE_BASE_AXIOS_URL as string

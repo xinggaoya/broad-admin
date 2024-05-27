@@ -34,9 +34,9 @@
 </template>
 
 <script lang="ts" setup>
-import { defineEmits, ref } from 'vue'
+import { ref } from 'vue'
 import { Menu as CashIcon } from '@vicons/ionicons5'
-import { TableOperate } from '@/types/table'
+import type { TableOperate } from '@/types/table'
 
 const emits = defineEmits(['update'])
 

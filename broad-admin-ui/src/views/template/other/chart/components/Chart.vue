@@ -4,7 +4,7 @@
 
 <script lang="ts">
 import useEcharts from '@/hooks/useEcharts'
-import { onMounted, ref, toRef, defineProps } from 'vue'
+import { onMounted, ref, toRef } from 'vue'
 import type { EChartsCoreOption } from 'echarts'
 
 const prop = defineProps({

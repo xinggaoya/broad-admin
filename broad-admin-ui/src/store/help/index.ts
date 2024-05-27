@@ -6,7 +6,7 @@ import type { OriginRoute, SplitTab } from '../types'
 import type { MenuOption, NIcon } from 'naive-ui'
 import { asyncRoutes } from '@/router/routes/async'
 import { LAYOUT } from '../keys'
-import SvgIcon from '@/components/svg-icon/index.vue'
+import SvgIcon from '@/components/svg-icon/SvgIcon.vue'
 
 export function loadComponents() {
   return import.meta.glob('/src/views/**/*.vue')

@@ -29,7 +29,7 @@
         <Main />
       </section>
       <section class="footer-wrapper">
-        <Footer v-if="appConfig.actionBar.isShowFooter" />
+        <FooterView v-if="appConfig.actionBar.isShowFooter" />
       </section>
       <n-back-top :listen-to="listenTo1" />
     </div>

@@ -1,5 +1,5 @@
 <template>
-  <n-button type="error" size="small" @click="onDelete">
+  <n-button type="error" @click="onDelete">
     <template #icon>
       <n-icon>
         <TrashIcon />
@@ -9,23 +9,14 @@
   </n-button>
 </template>
 
-<script lang="ts">
-  import { defineComponent } from 'vue'
-  import { Trash as TrashIcon } from '@vicons/ionicons5'
+<script lang="ts" setup>
+import { Trash as TrashIcon } from '@vicons/ionicons5'
 
-  export default defineComponent({
-    name: 'DeleteButton',
-    components: {
-      TrashIcon,
-    },
-    emits: ['delete'],
-    setup(props, { emit }) {
-      function onDelete() {
-        emit('delete')
-      }
-      return {
-        onDelete,
-      }
-    },
-  })
+const emit = defineEmits(['delete'])
+
+
+function onDelete() {
+  emit('delete')
+}
+
 </script>

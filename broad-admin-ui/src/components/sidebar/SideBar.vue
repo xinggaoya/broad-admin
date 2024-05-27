@@ -11,7 +11,7 @@
       ]"
     >
       <transition name="logo">
-        <Logo v-if="showLogo" />
+        <LogoView v-if="showLogo" />
       </transition>
       <ScrollerMenu :routes="permissionStore.getPermissionSideBar" />
       <div class="mobile-shadow"></div>

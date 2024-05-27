@@ -73,7 +73,7 @@ export type TableFooterType = InstanceType<
   typeof import('../components/common/TableFooter.vue').default
 >
 
-export type SvgIconType = InstanceType<typeof import('../components/svg-icon/index.vue').default>
+export type SvgIconType = InstanceType<typeof import('../components/svg-icon/SvgIcon.vue').default>
 
 export type SearchContentType = InstanceType<
   typeof import('../components/common/SearchContent.vue').default

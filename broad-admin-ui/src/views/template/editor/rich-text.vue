@@ -17,7 +17,7 @@
         <div class="flex">
           <n-space justify="end">
             <n-button type="primary" size="small" @click="setHtmlContent"
-              >设置（回显）数据
+            >设置（回显）数据
             </n-button>
             <n-button type="primary" size="small" @click="getHtmlContent">获取HTML</n-button>
             <n-button type="warning" size="small" @click="getJsonContent">获取JSON</n-button>
@@ -33,43 +33,38 @@
   </div>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import RichTextEditor from '@/components/common/RichTextEditor.vue'
-import { defineComponent } from 'vue'
 
-export default defineComponent({
-  name: 'RichText',
-  components: { RichTextEditor },
-  data() {
-    return {
-      title: '',
-      htmlContent: '',
-      jsonContent: ''
-    }
-  },
-  methods: {
-    getHtmlContent() {
-      this.htmlContent = (
-        this.$refs.richTextEditor as InstanceType<typeof RichTextEditor>
-      ).getHtmlContent()
-    },
-    setHtmlContent() {
-      const delta = {
-        ops: [
-          { insert: 'Hello ' },
-          { insert: 'World', attributes: { bold: true } },
-          { insert: '\n' }
-        ]
-      }
-      ;(this.$refs.richTextEditor as InstanceType<typeof RichTextEditor>).setContents(delta)
-    },
-    getJsonContent() {
-      this.jsonContent = (
-        this.$refs.richTextEditor as InstanceType<typeof RichTextEditor>
-      ).getJsonContent()
-    }
-  }
-})
+import { ref } from 'vue'
+
+const title = ref('')
+const richTextEditor = ref()
+const htmlContent = ref('')
+const jsonContent = ref('')
+
+function getHtmlContent() {
+  htmlContent.value = (
+    richTextEditor.value as InstanceType<typeof RichTextEditor>
+  ).getHtmlContent()
+}
+
+function setHtmlContent() {
+  const delta = {
+    ops: [
+      { insert: 'Hello ' },
+      { insert: 'World', attributes: { bold: true } },
+      { insert: '\n' }
+    ]
+  };
+  (richTextEditor.value as InstanceType<typeof RichTextEditor>).setContents(delta)
+}
+
+function getJsonContent() {
+  jsonContent.value = (
+    richTextEditor.value as InstanceType<typeof RichTextEditor>
+  ).getJsonContent()
+}
 </script>
 
 <style lang="scss" scoped>

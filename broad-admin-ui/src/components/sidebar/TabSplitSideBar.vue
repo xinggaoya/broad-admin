@@ -11,7 +11,7 @@
       ]"
     >
       <div class="tab-split-tab-wrapper" :style="{ backgroundColor: bgColor }">
-        <Logo class="tab-split-logo-wrapper" :show-title="false" />
+        <LogoView class="tab-split-logo-wrapper" :show-title="false" />
         <div style="height: calc(100% - 48px)">
           <n-scrollbar>
             <div
@@ -34,7 +34,7 @@
         </div>
       </div>
       <div class="tab-split-menu-wrapper">
-        <Logo class="tab-split-logo-wrapper" :show-logo="false" />
+        <LogoView class="tab-split-logo-wrapper" :show-logo="false" />
         <ScrollerMenu :routes="routes" />
       </div>
       <div class="mobile-shadow"></div>
@@ -44,10 +44,10 @@
 
 <script lang="ts">
   import { computed, defineComponent, onMounted, ref, shallowReactive, watch } from 'vue'
-  import { RouteLocationNormalizedLoaded, RouteRecordRaw, useRoute, useRouter } from 'vue-router'
+  import { type RouteLocationNormalizedLoaded,type RouteRecordRaw, useRoute, useRouter } from 'vue-router'
   import { isExternal } from '@/utils'
   import useAppConfigStore from '@/store/modules/app-config'
-  import { SideTheme, SplitTab, ThemeMode } from '@/store/types'
+  import { SideTheme,type SplitTab, ThemeMode } from '@/store/types'
   import usePermissionStore from '@/store/modules/permission'
   import { transformSplitTabMenu } from '@/store/help'
 

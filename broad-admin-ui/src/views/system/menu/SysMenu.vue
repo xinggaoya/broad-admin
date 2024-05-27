@@ -147,7 +147,7 @@ import { useDict } from '@/utils/useDict'
 import DictTag from '@/components/tag/DictTag.vue'
 import TableMain from '@/components/table/main/TableMain.vue'
 import AddButton from '@/components/common/AddButton.vue'
-import SvgIcon from '@/components/svg-icon/index.vue'
+import SvgIcon from '@/components/svg-icon/SvgIcon.vue'
 
 const { sys_yes_no } = useDict('sys_yes_no')
 let actionModel = 'add'

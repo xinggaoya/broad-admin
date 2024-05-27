@@ -6,7 +6,7 @@
 
 <script lang="ts" setup>
   import * as AllIcons from '@vicons/ionicons5'
-  import { computed, defineProps } from 'vue'
+  import { computed } from 'vue'
 
   const prop = withDefaults(
     defineProps<{

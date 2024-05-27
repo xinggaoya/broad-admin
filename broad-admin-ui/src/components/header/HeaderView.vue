@@ -1,7 +1,7 @@
 <template>
   <div class="vaw-header-layout">
     <div class="logo-wrapper">
-      <Logo :always-show="true" />
+      <LogoView :always-show="true" />
     </div>
     <div style="flex: 1; overflow: hidden; padding: 0 10px">
       <HorizontalScrollerMenu :routes="permissionStore.getPermissionSideBar" />

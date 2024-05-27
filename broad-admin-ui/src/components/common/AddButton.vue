@@ -1,5 +1,5 @@
 <template>
-  <n-button type="primary" @click="onAdd" secondary>
+  <n-button type="primary" @click="onAdd">
     <template #icon>
       <n-icon>
         <AddIcon />
@@ -9,30 +9,20 @@
   </n-button>
 </template>
 
-<script lang="ts">
-  import { defineComponent } from 'vue'
-  import { Add as AddIcon } from '@vicons/ionicons5'
+<script lang="ts" setup>
+import { Add as AddIcon } from '@vicons/ionicons5'
 
-  export default defineComponent({
-    name: 'AddButton',
-    components: {
-      AddIcon,
-    },
-    props: {
-      title: {
-        type: String,
-        default: '新增',
-      },
-    },
-    emits: ['add'],
-    setup(props, { emit }) {
-      function onAdd() {
-        emit('add')
-      }
+defineProps({
+  title: {
+    type: String,
+    default: '新增'
+  }
+})
 
-      return {
-        onAdd,
-      }
-    },
-  })
+const emit = defineEmits(['add'])
+
+function onAdd() {
+  emit('add')
+}
+
 </script>

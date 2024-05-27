@@ -14,7 +14,7 @@ function getComponentName(key: string) {
     .reverse()
     .find(
       (it) =>
-        it !== 'index.vue' &&
+        it !== 'TabBar.vue' &&
         it !== 'auth.ts' &&
         it !== 'index.tsx' &&
         it !== 'index.js' &&
@@ -36,7 +36,7 @@ export function registerComponents(app: App) {
 
 function useGlobalComponents(app: App) {
   adapterNaiveCss()
-  registerComponents(app)
+  // registerComponents(app)
 }
 
 export default useGlobalComponents

@@ -116,7 +116,7 @@
   import { ref } from 'vue'
   import { CameraOutline } from '@vicons/ionicons5'
   import useUserStore from '@/store/modules/user'
-  import Upload from '@/components/upload/index.vue'
+  import Upload from '@/components/upload/UpdateView.vue'
   import { updateUser } from '@/api/system/user'
   import { useMessage } from 'naive-ui'
 

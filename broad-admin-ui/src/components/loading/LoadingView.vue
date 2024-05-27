@@ -5,7 +5,7 @@
 </template>
 
 <script lang="ts" setup>
-import { withDefaults, defineProps } from 'vue'
+import { withDefaults } from 'vue'
 import setting from '@/setting'
 
 defineOptions({

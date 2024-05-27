@@ -126,7 +126,7 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, reactive, ref, watch, defineExpose } from 'vue'
+import { onMounted, reactive, ref, watch } from 'vue'
 import type { ModalDialogType } from '@/types/components'
 import LeftBg from '@/assets/bg_img.webp'
 import useAppConfigStore from '@/store/modules/app-config'
