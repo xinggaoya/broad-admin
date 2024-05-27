@@ -11,18 +11,11 @@
   </n-card>
 </template>
 
-<script lang="ts">
-  import { defineComponent, ref } from 'vue'
-  import IconFont from './components/IconFont.vue'
-  import XIcons from './components/xicons.vue'
+<script lang="ts" setup>
+import { ref } from 'vue'
+import IconFont from './components/IconFont.vue'
+import XIcons from './components/xicons.vue'
 
-  export default defineComponent({
-    components: { XIcons, IconFont },
-    setup() {
-      const activeName = ref('iconfont')
-      return {
-        activeName,
-      }
-    },
-  })
+const activeName = ref('iconfont')
+
 </script>

@@ -1,7 +1,12 @@
 $border-radius: 7px;
+$button-radius: 5px;
 
 .n-card {
   border-radius: $border-radius;
+}
+
+.n-button {
+  border-radius: $button-radius !important;
 }
 
 // 弹出确认
@@ -12,6 +17,7 @@ $border-radius: 7px;
     padding: 0 30px;
   }
 }
+
 // 通知
 .n-notification-container.n-notification-container--top-right .n-notification,
 .n-notification-container.n-notification-container--bottom-right .n-notification {

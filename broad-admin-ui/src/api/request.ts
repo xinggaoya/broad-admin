@@ -12,11 +12,8 @@ const REQUEST_HEADER = import.meta.env.VITE_BASE_REQUEST_HEADER as string
 
 export const CONTENT_TYPE = 'Content-Type'
 
-export const FORM_URLENCODED = 'application/x-www-form-urlencoded; charset=utf-8'
-
 export const APPLICATION_JSON = 'application/json; charset=utf-8'
 
-export const TEXT_PLAIN = 'text/plain; charset=utf-8'
 
 const service = Axios.create({
   baseURL,
