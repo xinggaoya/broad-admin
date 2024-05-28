@@ -1,9 +1,9 @@
 import { defineStore } from 'pinia'
-
 import defaultSetting from '@/setting'
 import { DeviceType, LayoutMode, PageAnim, SideTheme, ThemeMode } from '../types'
 
 import { useChangeMenuWidth } from '@/hooks/useMenuWidth'
+import { getThemeColor } from '@/utils'
 
 useChangeMenuWidth(defaultSetting.sideWidth)
 
@@ -40,7 +40,13 @@ export const useAppConfigStore = defineStore('app-config', {
       this.pageAnim = pageAnim
     },
     changePrimaryColor(color: string) {
-      this.themeColor = color
+      // 计算出对于Hover  颜色
+      const baseColor = getThemeColor(color)
+
+      this.themeColor.primaryColor = baseColor.primaryColor
+      this.themeColor.primaryColorHover = baseColor.primaryColorHover
+      this.themeColor.primaryColorPressed = baseColor.primaryColorPressed
+      this.themeColor.primaryColorSuppl = baseColor.primaryColorSuppl
     },
     changeSideWith(sideWidth: number) {
       this.sideWidth = sideWidth

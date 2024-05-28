@@ -1,6 +1,8 @@
 import type { DataTableColumn, TreeSelectOption } from 'naive-ui'
 import type { TablePropsType } from '@/types/components'
 import type { Ref } from 'vue'
+// @ts-ignore
+import tinycolor from 'tinycolor2'
 
 export function isExternal(path: string) {
   return /^(https?:|mailto:|tel:)/.test(path)
@@ -36,10 +38,10 @@ export function randomString(length: number) {
 export function toHump(str: string): string {
   if (!str) return str
   return str
-    .replace(/\-(\w)/g, function (all, letter) {
+    .replace(/\-(\w)/g, function(all, letter) {
       return letter.toUpperCase()
     })
-    .replace(/(\s|^)[a-z]/g, function (char) {
+    .replace(/(\s|^)[a-z]/g, function(char) {
       return char.toUpperCase()
     })
 }
@@ -169,4 +171,20 @@ export function getWebSocketUrl() {
     url = `wss://${url}`
   }
   return url
+}
+
+// 计算颜色
+export function getThemeColor(color: string) {
+  // 计算出对于Hover  颜色
+  const baseColor = tinycolor(color)
+  // 计算其他颜色
+  const infoColorHover = baseColor.lighten(10).toString()
+  const infoColorPressed = baseColor.darken(10).toString()
+
+  return {
+    primaryColor: color,
+    primaryColorHover: infoColorHover,
+    primaryColorPressed: infoColorPressed,
+    primaryColorSuppl: color
+  }
 }

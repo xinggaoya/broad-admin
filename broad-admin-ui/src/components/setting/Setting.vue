@@ -132,7 +132,6 @@ import LeftBg from '@/assets/bg_img.webp'
 import useAppConfigStore from '@/store/modules/app-config'
 import { PageAnim } from '@/store/types'
 
-const appInfoDialog = ref<ModalDialogType | null>()
 const opened = ref(false)
 const appConfig = useAppConfigStore()
 const menuWidth = ref(appConfig.sideWidth)
@@ -326,7 +325,7 @@ onMounted(() => {
     it.checked = appConfig.layoutMode === it.layoutId
   })
   primartyColorList.forEach((it) => {
-    it.checked = appConfig.themeColor === it.value
+    it.checked = appConfig.themeColor.primaryColor === it.value
   })
 })
 
@@ -365,10 +364,6 @@ function colorClick(item: any) {
     it.checked = it === item
   })
   appConfig.changePrimaryColor(item.value)
-}
-
-function openAppInfo() {
-  appInfoDialog.value?.toggle()
 }
 
 function onAnimUpdate(val: PageAnim) {

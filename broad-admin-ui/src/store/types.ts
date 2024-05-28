@@ -1,5 +1,6 @@
 import type { Ref, UnwrapRef } from 'vue'
 import type { RouteMeta, RouteRecordNormalized, RouteRecordRaw } from 'vue-router'
+import type { ThemeCommonVars } from 'naive-ui'
 
 export enum LayoutMode {
   LTR = 'ltr',
@@ -46,12 +47,7 @@ export interface AppConfigState {
   projectName: string
   theme: ThemeMode
   sideTheme: SideTheme
-  themeColor: string
-  themeColorHover: string
-  themeColorPressed: string
-  successColor: string
-  successColorHover: string
-  successColorPressed: string
+  themeColor: ThemeCommonVars
   layoutMode: LayoutMode
   deviceType: DeviceType
   sideWidth: number
