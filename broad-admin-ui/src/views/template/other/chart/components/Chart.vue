@@ -2,7 +2,7 @@
   <div ref="eChartContainer" style="height: 180px; width: 100%"></div>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import useEcharts from '@/hooks/useEcharts'
 import { onMounted, ref, toRef } from 'vue'
 import type { EChartsCoreOption } from 'echarts'
