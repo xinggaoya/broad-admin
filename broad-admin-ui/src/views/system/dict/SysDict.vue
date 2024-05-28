@@ -1,19 +1,24 @@
 <template>
   <div class="main-container">
-    <n-card :content-style="{ padding: '10px' }" class="table-body-container">
-      <n-tabs animated default-value="0" type="line">
-        <n-tab-pane name="0" tab="类型列表">
-          <DicType />
-        </n-tab-pane>
-        <n-tab-pane name="1" tab="字典列表">
-          <DicData />
-        </n-tab-pane>
-      </n-tabs>
-    </n-card>
+    <div v-if="tabsValue">
+      <DicType @update-value="updateValue" />
+    </div>
+    <div v-else>
+      <DicData :dict-type="dictType" @update-value="updateValue" />
+    </div>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { ref } from 'vue'
 import DicType from './dictType.vue'
 import DicData from './dictData.vue'
+
+const tabsValue = ref(true)
+const dictType = ref('')
+
+const updateValue = (value: string) => {
+  dictType.value = value
+  tabsValue.value = !tabsValue.value
+}
 </script>

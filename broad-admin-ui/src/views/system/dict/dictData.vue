@@ -1,22 +1,10 @@
 <template>
   <div class="main-container">
-    <TableSearch @search="handleRefresh">
-      <n-form ref="searchFormRef" :model="searchForm" inline label-width="auto">
-        <n-form-item label="字典名称" path="dictLabel">
-          <n-input v-model:value="searchForm.dictLabel" placeholder="输入字典名称" />
-        </n-form-item>
-        <n-form-item label="字典类型" path="dictType">
-          <n-select
-            v-model:value="searchForm.dictType"
-            :loading="selectLoading"
-            :on-update:show="handleSearch"
-            :options="options"
-            filterable
-            placeholder="选择字典类型"
-          />
-        </n-form-item>
-      </n-form>
-    </TableSearch>
+    <n-card content-style="padding: 10px;" style="margin-bottom: 5px">
+      <n-space>
+        <n-button type="info" @click="handleBack">返回</n-button>
+      </n-space>
+    </n-card>
     <TableMain
       :data="tableList"
       :columns="tableColumns"
@@ -47,6 +35,7 @@
           </n-form-item>
           <n-form-item label="字典类型" path="dictType">
             <n-select
+              disabled
               v-model:value="dictForm.dictType"
               :loading="selectLoading"
               :options="options"
@@ -85,27 +74,30 @@
 
 <script lang="ts" setup>
 import {
-  TableActionModel,
   useRenderAction,
   useRowKey,
-  usePagination,
-  useTableColumn
+  usePagination
 } from '@/hooks/useTable'
 import { useDict } from '@/utils/useDict'
 import { getDict, addDict, updateDict, detectDict } from '@/api/system/dict'
 import { getDictType } from '@/api/system/dictType'
 import { h, onMounted, ref } from 'vue'
-import { TablePropsType } from '@/types/components'
-import { sortColumns } from '@/utils'
-import { TableColumn } from 'naive-ui/lib/data-table/src/interface'
 import { NTag, useMessage, useDialog } from 'naive-ui'
 import DictTag from '@/components/tag/DictTag.vue'
 import AddButton from '@/components/common/AddButton.vue'
 import TableMain from '@/components/table/main/TableMain.vue'
-import TableSearch from '@/components/table/search/TableSearch.vue'
+import type { TableActionModel } from '@/types/table'
 
+const props = defineProps({
+  dictType: {
+    type: String,
+    default: ''
+  }
+})
+const emit = defineEmits(['update-value'])
 const refreshTable = () => {
   tableLoading.value = true
+  searchForm.value.dictType = props.dictType
   getDict(pagination.getPageInfo(searchForm.value)).then((res: any) => {
     tableList.value = res.rows
     pagination.setTotalSize(res.total)
@@ -114,7 +106,7 @@ const refreshTable = () => {
   })
 }
 const modelDialogTitle = ref('')
-const rowKey = useRowKey('dictName')
+const rowKey = useRowKey('dictType')
 const tableList = ref([])
 const tableLoading = ref(false)
 const message = useMessage()
@@ -258,7 +250,7 @@ const handleSearch = () => {
     getDictType({}).then((res: any) => {
       res.data.forEach((item: any) => {
         options.value.push({
-          label: item.dictName,
+          label: item.dictName + '(' + item.dictType + ')',
           value: item.dictType
         })
       })
@@ -267,14 +259,21 @@ const handleSearch = () => {
   }
 }
 
+// 返回
+const handleBack = () => {
+  emit('update-value', false)
+}
+
 const onAddItem = () => {
   modelDialogTitle.value = '新增字典'
   dictForm.value = {}
+  dictForm.value.dictType = props.dictType
   modalDialog.value = true
 }
 const handleUpdateDict = (rowData: any) => {
   modelDialogTitle.value = '修改字典'
   dictForm.value = rowData
+  dictForm.value.dictType = props.dictType
   modalDialog.value = true
 }
 

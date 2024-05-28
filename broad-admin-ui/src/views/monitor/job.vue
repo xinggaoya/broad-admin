@@ -52,7 +52,7 @@
           <n-form-item label="是否并发" path="concurrent">
             <n-radio-group v-model:value="jobFrom.concurrent">
               <n-radio-button v-for="(item, index) in sys_yes_no" :value="item.value" :key="index"
-                >{{ item.label }}
+              >{{ item.label }}
               </n-radio-button>
             </n-radio-group>
           </n-form-item>
@@ -62,7 +62,7 @@
                 v-for="(item, index) in sys_job_status"
                 :value="item.value"
                 :key="index"
-                >{{ item.label }}
+              >{{ item.label }}
               </n-radio-button>
             </n-radio-group>
           </n-form-item>
@@ -76,8 +76,7 @@
 </template>
 
 <script lang="ts" setup>
-import { renderDictTag } from '@/hooks/form'
-import { usePagination, useRenderAction } from '@/hooks/useTable'
+import { usePagination, useRenderAction, renderDictTag } from '@/hooks/useTable'
 import { useDialog, useMessage } from 'naive-ui'
 import { onMounted, ref } from 'vue'
 import { addJob, getJobList, getJobRun, jobUpdate, jobDelete } from '@/api/monitor/job'
@@ -238,7 +237,8 @@ function onRunItem(row: any) {
 }
 
 // 重置
-function onResetSearch() {}
+function onResetSearch() {
+}
 
 onMounted(doRefresh)
 </script>

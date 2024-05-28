@@ -39,13 +39,13 @@
             <n-input v-model:value="dictForm.dictName" placeholder="输入字典名称" />
           </n-form-item>
           <n-form-item label="字典类型" path="dictType">
-            <n-input v-model:value="dictForm.dictType" placeholder="输入字典类型" />
+            <n-input v-model:value="dictForm.dictType" :disabled="dictForm.dictId" placeholder="输入字典类型" />
           </n-form-item>
           <n-form-item label="字典备注" path="remark">
             <n-input v-model:value="dictForm.remark" placeholder="输入字典备注" type="textarea" />
           </n-form-item>
           <n-form-item label="字典状态" path="status">
-            <n-switch v-model:value="dictForm.status" checked-value="0" unchecked-value="1" />
+            <n-switch v-model:value="dictForm.status" checked-value="0" unchecked-value="1" default-value="0" />
           </n-form-item>
         </n-form>
       </template>
@@ -55,11 +55,9 @@
 
 <script lang="ts" setup>
 import {
-  TableActionModel,
   useRenderAction,
   useRowKey,
   usePagination
-
 } from '@/hooks/useTable'
 import { useDict } from '@/utils/useDict'
 import {
@@ -69,12 +67,13 @@ import {
   detectDictType
 } from '@/api/system/dictType'
 import { h, onMounted, ref } from 'vue'
-import { useMessage, useDialog } from 'naive-ui'
+import { useMessage, useDialog, NButton } from 'naive-ui'
 import DictTag from '@/components/tag/DictTag.vue'
-import AddButton from '@/components/common/AddButton.vue'
-import DeleteButton from '@/components/common/DeleteButton.vue'
 import TableMain from '@/components/table/main/TableMain.vue'
 import TableSearch from '@/components/table/search/TableSearch.vue'
+import type { TableActionModel } from '@/types/table'
+
+const emit = defineEmits(['update-value'])
 
 const refreshTable = () => {
   tableLoading.value = true
@@ -97,6 +96,7 @@ const dictForm: any = ref({})
 const searchForm: any = ref({})
 const formRef = ref<any>(null)
 
+
 const tableColumns = ref(
   [
     {
@@ -105,7 +105,16 @@ const tableColumns = ref(
     },
     {
       title: '字典类型',
-      key: 'dictType'
+      key: 'dictType',
+      render: (rowData: { dictType: any; }) => {
+        return h(NButton, {
+          text: true,
+          type: 'error',
+          onClick: () => {
+            emit('update-value', rowData.dictType)
+          }
+        }, rowData.dictType)
+      }
     },
     {
       title: '状态',
@@ -133,6 +142,7 @@ const tableColumns = ref(
         return useRenderAction([
           {
             label: '编辑',
+            type: 'warning',
             onClick: () => {
               handleUpdateDict(rowData)
             }

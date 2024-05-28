@@ -1,8 +1,8 @@
 <template>
   <div>
     <TableSearch @search="handleSearch" @reset="handleReset">
-      <n-form label-placement="left">
-        <n-grid :cols="5" :x-gap="30">
+      <n-form label-placement="left" inline>
+        <n-grid :cols="6" :x-gap="10">
           <n-form-item-gi label="昵称">
             <n-input v-model:value="searchForm.nickName" />
           </n-form-item-gi>
@@ -14,13 +14,6 @@
           </n-form-item-gi>
           <n-form-item-gi label="邮箱">
             <n-input v-model:value="searchForm.email" />
-          </n-form-item-gi>
-          <n-form-item-gi label="部门">
-            <n-tree-select
-              v-model:value="searchForm.deptId"
-              :options="departmentData"
-              placeholder="请选择部门"
-            />
           </n-form-item-gi>
           <n-form-item-gi label="状态">
             <n-select

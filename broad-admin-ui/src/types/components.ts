@@ -63,7 +63,6 @@ export type ModalDialogType = InstanceType<
   typeof import('../components/common/ModalDialog.vue').default
 >
 
-export type DataFormType = InstanceType<typeof import('../components/common/DataForm').default>
 
 export type TableHeaderType = InstanceType<
   typeof import('../components/common/TableHeader.vue').default

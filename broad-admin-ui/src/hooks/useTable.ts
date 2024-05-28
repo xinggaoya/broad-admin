@@ -19,8 +19,7 @@ export const useRenderAction = function (actions: TableActionModel[]) {
         NButton,
         {
           type: it.type || 'primary',
-          size: 'tiny',
-          secondary: true,
+          text: true,
           disabled: it.disabled || false,
           onClick: it.onClick
         },
@@ -82,4 +81,11 @@ export const usePagination = function (callback: () => void) {
     }
   })
   return paginationInfo
+}
+
+export function renderDictTag(options: Array<any>, value: any) {
+  return h(DictTag, {
+    options: options,
+    value: value
+  })
 }
