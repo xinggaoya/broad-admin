@@ -33,10 +33,11 @@
       </n-form>
     </TableSearch>
     <n-flex :wrap="false">
-      <n-spin :show="deptLoading">
+      <div>
         <n-card
           :content-style="{ padding: '5px' }"
           :header-style="{ padding: '5px' }"
+          v-loading="deptLoading"
           :segmented="true"
         >
           <template #header>
@@ -56,7 +57,7 @@
             />
           </template>
         </n-card>
-      </n-spin>
+      </div>
       <div style="width: 100%">
         <TableMain
           :data="dataList"

@@ -1,14 +1,15 @@
 import { type App, type VNode, createVNode, render } from 'vue'
 import { NSpin } from 'naive-ui'
+import { useAppConfigStore } from '@/store/modules/app-config'
 
 // 页面加载指令
 export function loading(app: App) {
   app.directive('loading', {
-    mounted: (el: HTMLElement, binding: { value: any }) => {
+    mounted: (el: HTMLElement, binding: { value: boolean }) => {
       const { value } = binding
       renderLoading(value, el)
     },
-    updated: (el: HTMLElement, binding: { value: any }) => {
+    updated: (el: HTMLElement, binding: { value: boolean }) => {
       const { value } = binding
       renderLoading(value, el)
     },
@@ -19,6 +20,9 @@ export function loading(app: App) {
 }
 
 function renderLoading(value: boolean, el: HTMLElement) {
+  const appConfigStore = useAppConfigStore()
+
+  const primaryColor = appConfigStore.themeColor.primaryColor
   el.style.position = 'relative'
   let overlayContainer = el.querySelector('.v-loading-overlay') as HTMLElement
 
@@ -39,7 +43,9 @@ function renderLoading(value: boolean, el: HTMLElement) {
   }
 
   if (value) {
-    const vnode: VNode = createVNode(NSpin)
+    const vnode: VNode = createVNode(NSpin, {
+      stroke: primaryColor
+    })
     render(vnode, overlayContainer)
     overlayContainer.style.display = 'flex'
   } else {
