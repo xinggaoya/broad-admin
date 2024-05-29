@@ -4,12 +4,6 @@ import { NButton } from 'naive-ui'
 import type { TableActionModel } from '@/types/table'
 import DictTag from '@/components/tag/DictTag.vue'
 
-export const useRowKey = function (propName: string) {
-  return function (rowData: any) {
-    return rowData[propName]
-  }
-}
-
 export const useRenderAction = function (actions: TableActionModel[]) {
   const permissionStore = usePermissionStoreHook()
   return actions.map((it) => {

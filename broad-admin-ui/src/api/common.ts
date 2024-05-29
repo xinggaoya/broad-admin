@@ -1,13 +1,12 @@
-import { createAxios } from '@/api/request'
+import { request } from '@/api/request'
 
 /**
  * 登录
  * @param data
  */
 export function login(data: any) {
-  return createAxios({
+  return request.post({
     url: 'sysAdmin/login',
-    method: 'POST',
     data: data,
   })
 }
@@ -16,9 +15,8 @@ export function login(data: any) {
  * 主动验证用户
  */
 export function checkUser() {
-  return createAxios({
+  return request.post({
     url: 'sysAdmin/checkLogin',
-    method: 'GET',
   })
 }
 
@@ -26,9 +24,8 @@ export function checkUser() {
  * 退出登录
  */
 export function logoutAdmin() {
-  return createAxios({
+  return request.get({
     url: 'sysAdmin/logout',
-    method: 'GET',
   })
 }
 
@@ -37,9 +34,8 @@ export function logoutAdmin() {
  * @param data
  */
 export function getRoutes() {
-  return createAxios({
-    url: '/sysMenu/getRouters',
-    method: 'GET',
+  return request.get({
+    url: '/sysMenu/getRouters'
   })
 }
 
@@ -48,8 +44,7 @@ export function getRoutes() {
  * @param data
  */
 export function getCaptchaImage() {
-  return createAxios({
+  return request.get({
     url: '/captchaImage',
-    method: 'GET',
   })
 }

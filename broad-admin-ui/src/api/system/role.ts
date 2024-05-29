@@ -1,29 +1,25 @@
-import { createAxios } from '@/api/request'
+import { request } from '@/api/request'
 
 export const getRolePage = (data?: any) => {
-  return createAxios({
+  return request.get({
     url: '/sysRole',
-    method: 'GET',
     data,
   })
 }
 export const addRole = (data?: any) => {
-  return createAxios({
+  return request.post({
     url: '/sysRole',
-    method: 'POST',
     data,
   })
 }
 export const updateRole = (data?: any) => {
-  return createAxios({
+  return request.put({
     url: '/sysRole',
-    method: 'PUT',
     data,
   })
 }
 export const delRole = (data?: any) => {
-  return createAxios({
+  return request.delete({
     url: '/sysRole/' + data,
-    method: 'DELETE',
   })
 }

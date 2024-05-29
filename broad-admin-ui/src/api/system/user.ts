@@ -1,36 +1,31 @@
-import { createAxios } from '@/api/request'
+import { request } from '@/api/request'
 
 export const getUserPage = (data: any) => {
-  return createAxios({
+  return request.get({
     url: '/sysAdmin',
-    method: 'GET',
     data,
   })
 }
 export const getUserRole = (id: number) => {
-  return createAxios({
+  return request.get({
     url: '/sysUserRole/' + id,
-    method: 'GET',
   })
 }
 export const addUser = (data: any) => {
-  return createAxios({
+  return request.post({
     url: '/sysAdmin',
-    method: 'POST',
     data,
   })
 }
 export const updateUser = (data: any) => {
-  return createAxios({
+  return request.put({
     url: '/sysAdmin',
-    method: 'PUT',
     data,
   })
 }
 export const delUser = (data: any) => {
-  return createAxios({
+  return request.delete({
     url: '/sysAdmin',
-    method: 'DELETE',
     data,
   })
 }

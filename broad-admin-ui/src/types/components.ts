@@ -64,16 +64,5 @@ export type ModalDialogType = InstanceType<
 >
 
 
-export type TableHeaderType = InstanceType<
-  typeof import('../components/common/TableHeader.vue').default
->
-
-export type TableFooterType = InstanceType<
-  typeof import('../components/common/TableFooter.vue').default
->
-
 export type SvgIconType = InstanceType<typeof import('../components/svg-icon/SvgIcon.vue').default>
 
-export type SearchContentType = InstanceType<
-  typeof import('../components/common/SearchContent.vue').default
->

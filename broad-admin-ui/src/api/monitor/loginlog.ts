@@ -1,9 +1,8 @@
-import { createAxios } from '@/api/request'
+import { request } from '@/api/request'
 
 export const getLoginLogPage = (data: any) => {
-  return createAxios({
+  return request.get({
     url: '/sysLoginLog',
-    method: 'GET',
     data,
   })
 }

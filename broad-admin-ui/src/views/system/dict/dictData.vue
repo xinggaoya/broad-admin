@@ -84,7 +84,7 @@ import { getDictType } from '@/api/system/dictType'
 import { h, onMounted, ref } from 'vue'
 import { NTag, useMessage, useDialog } from 'naive-ui'
 import DictTag from '@/components/tag/DictTag.vue'
-import AddButton from '@/components/common/AddButton.vue'
+import AddButton from '@/components/table/button/AddButton.vue'
 import TableMain from '@/components/table/main/TableMain.vue'
 import type { TableActionModel } from '@/types/table'
 

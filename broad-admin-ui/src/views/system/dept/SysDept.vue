@@ -1,7 +1,7 @@
 <template>
   <div class="main-container">
     <TableSearch @search="doRefresh"></TableSearch>
-    <TableMain :data="tableList" :columns="tableColumns" :loading="tableLoading">
+    <TableMain :data="tableList" row-key="deptId" :columns="tableColumns" :loading="tableLoading">
       <template v-slot:header>
         <AddButton @add="onAddItem" />
       </template>
@@ -48,14 +48,15 @@
 
 <script lang="ts" setup>
 import { addDept, deleteDept, getDeptPage, updateDept } from '@/api/system/dept'
-import { TableActionModel, useRenderAction } from '@/hooks/useTable'
+import { useRenderAction } from '@/hooks/useTable'
 import { h, nextTick, onMounted, ref } from 'vue'
-import { FormInst, useDialog, useMessage } from 'naive-ui'
+import { type FormInst, useDialog, useMessage } from 'naive-ui'
 import { useDict } from '@/utils/useDict'
 import DictTag from '@/components/tag/DictTag.vue'
 import TableMain from '@/components/table/main/TableMain.vue'
-import AddButton from '@/components/common/AddButton.vue'
+import AddButton from '@/components/table/button/AddButton.vue'
 import TableSearch from '@/components/table/search/TableSearch.vue'
+import type { TableActionModel } from '@/types/table'
 
 const deptFormRef: any = ref<FormInst | null>(null)
 const modalDialog = ref<boolean>(false)

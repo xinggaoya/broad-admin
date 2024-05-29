@@ -1,75 +1,81 @@
-import type { AxiosRequestConfig, AxiosResponse } from 'axios'
-import Axios from 'axios'
-import { useUserStoreHook } from '@/store/modules/user'
+import instance from './kyInstance'
 import { createDiscreteApi } from 'naive-ui'
-import { blobValidate } from '@/utils'
-// @ts-ignore
-import { saveAs } from 'file-saver'
+import { useUserStoreHook } from '@/store/modules/user'
 
-export const baseURL = import.meta.env.VITE_BASE_AXIOS_URL as string
+// 类型定义
+interface KyConfig {
+  url: string;
+  data?: Record<string, any>;
+  filename?: string; // 新增的可选字段，用于指定下载文件名
+}
 
-const REQUEST_HEADER = import.meta.env.VITE_BASE_REQUEST_HEADER as string
+export interface ResModel {
+  code: number;
+  data?: any;
+  rows?: any[];
+  total?: number;
+  message: string;
+}
 
-export const CONTENT_TYPE = 'Content-Type'
-
-export const APPLICATION_JSON = 'application/json; charset=utf-8'
-
-
-const service = Axios.create({
-  baseURL,
-  timeout: 10 * 60 * 1000
-})
-service.defaults.headers[CONTENT_TYPE] = APPLICATION_JSON
 const { message } = createDiscreteApi(['message'])
 
-service.interceptors.request.use(
-  (config) => {
-    // 添加token请求头
-    // @ts-ignore
-    if (!config.headers[REQUEST_HEADER]) {
-      // @ts-ignore
-      config.headers[REQUEST_HEADER] = useUserStoreHook().token
-    }
-    // 如果get请求，参数为对象，转换为字符串
-    if (
-      config.method === 'get' ||
-      config.method === 'GET' ||
-      config.method === 'delete' ||
-      (config.method === 'DELETE' && config.data)
-    ) {
-      config.params = config.data
-      config.data = undefined
-    }
-    return config
+export const request = {
+  async get(config: KyConfig) {
+    config.url = trimSlash(config.url)
+    const res = await instance.get(config.url, {
+      searchParams: config.data
+    }).json() as ResModel
+    verificationError(res)
+    return res
   },
-  (error) => {
-    return Promise.reject(error.response)
-  }
-)
+  async post(config: KyConfig) {
+    config.url = trimSlash(config.url)
+    const res = await instance.post(config.url, {
+      json: config.data
+    }).json() as ResModel
+    verificationError(res)
+    return res
+  },
+  async put(config: KyConfig) {
+    config.url = trimSlash(config.url)
+    const res = await instance.put(config.url, {
+      json: config.data
+    }).json() as ResModel
+    verificationError(res)
+    return res
+  },
+  async delete(config: KyConfig) {
+    config.url = trimSlash(config.url)
+    const res = await instance.delete(config.url, {
+      searchParams: config.data
+    }).json() as ResModel
+    verificationError(res)
+    return res
+  },
+  async download(config: KyConfig) {
+    try {
+      config.url = trimSlash(config.url)
+      const blob = await instance.get(config.url, {
+        searchParams: config.data
+      }).blob()
 
-service.interceptors.response.use(
-  (res: AxiosResponse): AxiosResponse => {
-    const data = res.data
-    // 二进制数据则直接返回
-    if (res.request.responseType === 'blob' || res.request.responseType === 'arraybuffer') {
-      return data
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = config.filename || 'file.xlsx' // 动态文件名
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a) // 确保从 DOM 中移除
+      window.URL.revokeObjectURL(url)
+    } catch (error) {
+      message.error('文件下载失败，请稍后重试')
+      console.error('Download error:', error)
+      throw error
     }
-    abnormalInspection(data)
-    return data
-  },
-  (error) => {
-    if (import.meta.env.MODE === 'development') {
-      console.log(error)
-    }
-    message.error('服务器异常，请稍后重试…')
-    return Promise.reject({ code: 500, msg: '服务器异常，请稍后重试…' })
   }
-)
-/**
- * 异常检测
- * @param res
- */
-const abnormalInspection = (res: Response) => {
+}
+
+const verificationError = (res: ResModel) => {
   if (res.code === 500 || res.code === 403) {
     message.error(res.message)
     throw new Error(res.message)
@@ -77,51 +83,14 @@ const abnormalInspection = (res: Response) => {
   if (res.code === 401) {
     useUserStoreHook().clearUserInfo()
     message.error(res.message)
+    throw new Error(res.message)
   }
 }
 
-export const createAxios = (axiosConfig: AxiosRequestConfig) => {
-  return service(axiosConfig)
+// 判断如果首字符是/，则去掉
+const trimSlash = (url: string) => {
+  if (url.startsWith('/')) {
+    return url.substring(1)
+  }
+  return url
 }
-
-export const download = (
-  url: string,
-  params: any,
-  filename: string,
-  config?: AxiosRequestConfig
-) => {
-  return Axios(url, {
-    baseURL,
-    method: 'POST',
-    data: params,
-    headers: {
-      [CONTENT_TYPE]: APPLICATION_JSON,
-      [REQUEST_HEADER]: useUserStoreHook().token
-    },
-    responseType: 'blob',
-    ...config
-  })
-    .then(async (data) => {
-      const res = data.data
-      const isLogin = await blobValidate(res)
-      if (isLogin) {
-        const blob = new Blob([res])
-        saveAs(blob, filename)
-      } else {
-        const resText = await res.text()
-      }
-    })
-    .catch((r) => {
-      console.error(r)
-    })
-}
-
-export interface Response<T = any> {
-  total?: number | 0
-  code: number
-  message: string
-  data?: T
-  rows?: Array<T>
-}
-
-export default service

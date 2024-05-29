@@ -40,8 +40,8 @@
 </template>
 
 <script lang="ts" setup>
-import { TablePropsType } from '@/types/components'
-import { PropType, reactive, ref, toRef } from 'vue'
+import type { TablePropsType } from '@/types/components'
+import { type PropType, reactive, ref, toRef } from 'vue'
 import draggable from 'vuedraggable'
 import { SettingsOutline as SettingsIcon } from '@vicons/ionicons5'
 import { Menu as MenuIcon } from '@vicons/ionicons5'

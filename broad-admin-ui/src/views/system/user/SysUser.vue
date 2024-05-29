@@ -56,6 +56,7 @@
           :data="dataList"
           :columns="tableColumns"
           :loading="tableLoading"
+          row-key="id"
           :pagination="pagination"
         >
           <template v-slot:header>
@@ -160,11 +161,11 @@ import { getUserPage, getUserRole, addUser, updateUser, delUser } from '@/api/sy
 import { getRolePage } from '@/api/system/role'
 import { getDeptPage } from '@/api/system/dept'
 import { useDict } from '@/utils/useDict'
-import { usePagination, useRenderTag } from '@/hooks/useTable'
+import { usePagination, useRenderTag, useRowKey } from '@/hooks/useTable'
 import { useRenderAction } from '@/hooks/useTable'
 import { NAvatar, useDialog, useMessage } from 'naive-ui'
 import { computed, h, onMounted, ref } from 'vue'
-import AddButton from '@/components/common/AddButton.vue'
+import AddButton from '@/components/table/button/AddButton.vue'
 import ModalDialog from '@/components/common/ModalDialog.vue'
 import { clearFormObject } from '@/utils'
 import { mapTree } from '@/utils'
@@ -203,14 +204,7 @@ const { sys_normal_disable } = useDict('sys_normal_disable')
 const title = ref<string>('新增用户')
 const userFormRef: any = ref(null)
 const roleData = ref([])
-const searchForm = ref<any>({
-  nickName: null,
-  userName: null,
-  mobile: null,
-  email: null,
-  deptId: null,
-  userStatus: null
-})
+const searchForm = ref<any>({})
 const userForm: any = ref({})
 const naiveDialog = useDialog()
 const message = useMessage()

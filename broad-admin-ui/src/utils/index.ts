@@ -172,19 +172,3 @@ export function getWebSocketUrl() {
   }
   return url
 }
-
-// 计算颜色
-export function getThemeColor(color: string) {
-  // 计算出对于Hover  颜色
-  const baseColor = tinycolor(color)
-  // 计算其他颜色
-  const infoColorHover = baseColor.lighten(10).toString()
-  const infoColorPressed = baseColor.darken(10).toString()
-
-  return {
-    primaryColor: color,
-    primaryColorHover: infoColorHover,
-    primaryColorPressed: infoColorPressed,
-    primaryColorSuppl: color
-  }
-}

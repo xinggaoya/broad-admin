@@ -145,7 +145,7 @@ import { NIcon, useDialog, useMessage } from 'naive-ui'
 import { useDict } from '@/utils/useDict'
 import DictTag from '@/components/tag/DictTag.vue'
 import TableMain from '@/components/table/main/TableMain.vue'
-import AddButton from '@/components/common/AddButton.vue'
+import AddButton from '@/components/table/button/AddButton.vue'
 import SvgIcon from '@/components/svg-icon/SvgIcon.vue'
 import IconSelect from '@/components/common/IconSelect.vue'
 

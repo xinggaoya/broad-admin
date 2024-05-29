@@ -1,23 +1,20 @@
-import { createAxios } from '@/api/request'
+import { request } from '@/api/request'
 
 export const getRoleMenu = (data?: any) => {
-  return createAxios({
+  return request.get({
     url: '/sysRoleMenu',
-    method: 'GET',
     data,
   })
 }
 export const addRoleMenu = (data?: any) => {
-  return createAxios({
+  return request.post({
     url: '/sysRoleMenu',
-    method: 'POST',
     data,
   })
 }
 export const delRoleMenu = (data?: any) => {
-  return createAxios({
+  return request.delete({
     url: '/sysRoleMenu',
-    method: 'DELETE',
     data,
   })
 }

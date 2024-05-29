@@ -1,7 +1,7 @@
 import { DeviceType, LayoutMode, PageAnim, SideTheme, ThemeMode } from '@/store/types'
 import type { AppConfigState } from '@/store/types'
 import type { ThemeCommonVars } from 'naive-ui'
-import { getThemeColor } from '@/utils'
+import { calculateHoverActiveColors } from '@/utils/ColorUtils'
 
 export const projectName = import.meta.env.VITE_BASE_TITLE as string
 
@@ -30,12 +30,12 @@ const themeColor= {
 
 // 获取主题颜色
 function getColor() {
-  const baseColor = getThemeColor('#18a058')
+  const baseColor = calculateHoverActiveColors('#18a058')
 
-  themeColor.primaryColor = baseColor.primaryColor
-  themeColor.primaryColorHover = baseColor.primaryColorHover
-  themeColor.primaryColorPressed = baseColor.primaryColorPressed
-  themeColor.primaryColorSuppl = baseColor.primaryColorSuppl
+  themeColor.primaryColor = baseColor.baseColor
+  themeColor.primaryColorHover = baseColor.hoverColor
+  themeColor.primaryColorPressed = baseColor.activeColor
+  themeColor.primaryColorSuppl = baseColor.baseColor
   return themeColor
 }
 

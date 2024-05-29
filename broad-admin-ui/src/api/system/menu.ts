@@ -1,48 +1,42 @@
-import { createAxios } from '@/api/request'
+import { request } from '@/api/request'
 
 export function getMenus(data: any) {
-  return createAxios({
+  return request.get({
     url: '/sysMenu',
-    method: 'GET',
     data,
   })
 }
 export function getMenusTree(data?: any) {
-  return createAxios({
+  return request.get({
     url: '/sysMenu/tree',
-    method: 'GET',
     data,
   })
 }
 
 export function getMenuChild(data: any) {
-  return createAxios({
+  return request.get({
     url: '/sysMenu/getMenuChild',
-    method: 'GET',
     data,
   })
 }
 
 export function addMenus(data: any) {
-  return createAxios({
+  return request.post({
     url: '/sysMenu',
-    method: 'POST',
     data,
   })
 }
 
 export function updateMenus(data: any) {
-  return createAxios({
+  return request.put({
     url: '/sysMenu',
-    method: 'PUT',
     data,
   })
 }
 
 export function deleteMenus(data: any) {
-  return createAxios({
+  return request.delete({
     url: '/sysMenu',
-    method: 'DELETE',
     data,
   })
 }

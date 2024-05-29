@@ -1,39 +1,34 @@
-import { createAxios } from '@/api/request'
+import { request } from '@/api/request'
 
 export const getDict = (data: any) => {
-  return createAxios({
+  return request.get({
     url: '/sysDictData',
-    method: 'GET',
     data,
   })
 }
 export const getDictList = (data: any) => {
-  return createAxios({
+  return request.get({
     url: '/sysDictData/getDictDataByType',
-    method: 'GET',
     data,
   })
 }
 
 export const addDict = (data: any) => {
-  return createAxios({
+  return request.post({
     url: '/sysDictData',
-    method: 'POST',
     data,
   })
 }
 export const updateDict = (data: any) => {
-  return createAxios({
+  return request.put({
     url: '/sysDictData',
-    method: 'PUT',
     data,
   })
 }
 
 export const detectDict = (data: any) => {
-  return createAxios({
+  return request.delete({
     url: '/sysDictData',
-    method: 'DELETE',
     data,
   })
 }

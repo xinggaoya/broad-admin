@@ -19,7 +19,7 @@
         :striped="tableConfig.striped"
         :remote="remote"
         :columns="columns"
-        :row-key="rowKey"
+        :row-key="useRowKey(rowKey)"
         :pagination="pagination"
         :allow-checking-not-loaded="allowCheckingNotLoaded"
         :cascade="cascade"
@@ -31,8 +31,8 @@
 </template>
 
 <script setup lang="ts">
-import SortableTable from '@/components/common/SortableTable.vue'
-import TableConfig from '@/components/common/TableConfig.vue'
+import SortableTable from '@/components/table/main/SortableTable.vue'
+import TableConfig from '@/components/table/main/TableConfig.vue'
 import type { TableOperate } from '@/types/table'
 import { ref } from 'vue'
 
@@ -84,6 +84,12 @@ const tableConfig = ref<TableOperate>({
   striped: false
 })
 
+// 获取rowKey
+const useRowKey = function (propName: string) {
+  return function (rowData: any) {
+    return rowData[propName]
+  }
+}
 function updateConfig(config: TableOperate) {
   tableConfig.value = config
 }

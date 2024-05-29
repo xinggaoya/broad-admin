@@ -57,7 +57,7 @@ import { useRenderAction, usePagination, useRenderTag } from '@/hooks/useTable'
 import { NInput, TreeOption, useDialog, useMessage } from 'naive-ui'
 import { onMounted, ref, shallowReactive } from 'vue'
 import TableMain from '@/components/table/main/TableMain.vue'
-import AddButton from '@/components/common/AddButton.vue'
+import AddButton from '@/components/table/button/AddButton.vue'
 import { useDict } from '@/utils/useDict'
 
 function handleMenuData(

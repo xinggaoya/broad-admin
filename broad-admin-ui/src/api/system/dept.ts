@@ -1,30 +1,26 @@
-import { createAxios } from '@/api/request'
+import { request } from '@/api/request'
 
 export const getDeptPage = (data: any) => {
-  return createAxios({
+  return request.get({
     url: '/sysDept',
-    method: 'GET',
     data,
   })
 }
 export const addDept = (data: any) => {
-  return createAxios({
+  return request.post({
     url: '/sysDept',
-    method: 'POST',
     data,
   })
 }
 export const updateDept = (data: any) => {
-  return createAxios({
+  return request.put({
     url: '/sysDept',
-    method: 'PUT',
     data,
   })
 }
 export const deleteDept = (data: any) => {
-  return createAxios({
+  return request.delete({
     url: '/sysDept',
-    method: 'DELETE',
     data,
   })
 }

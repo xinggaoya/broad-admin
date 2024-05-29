@@ -3,7 +3,7 @@ import defaultSetting from '@/setting'
 import { DeviceType, LayoutMode, PageAnim, SideTheme, ThemeMode } from '../types'
 
 import { useChangeMenuWidth } from '@/hooks/useMenuWidth'
-import { getThemeColor } from '@/utils'
+import { calculateHoverActiveColors } from '@/utils/ColorUtils'
 
 useChangeMenuWidth(defaultSetting.sideWidth)
 
@@ -41,12 +41,12 @@ export const useAppConfigStore = defineStore('app-config', {
     },
     changePrimaryColor(color: string) {
       // 计算出对于Hover  颜色
-      const baseColor = getThemeColor(color)
+      const baseColor = calculateHoverActiveColors(color)
 
-      this.themeColor.primaryColor = baseColor.primaryColor
-      this.themeColor.primaryColorHover = baseColor.primaryColorHover
-      this.themeColor.primaryColorPressed = baseColor.primaryColorPressed
-      this.themeColor.primaryColorSuppl = baseColor.primaryColorSuppl
+      this.themeColor.primaryColor = baseColor.baseColor
+      this.themeColor.primaryColorHover = baseColor.hoverColor
+      this.themeColor.primaryColorPressed = baseColor.activeColor
+      this.themeColor.primaryColorSuppl = baseColor.baseColor
     },
     changeSideWith(sideWidth: number) {
       this.sideWidth = sideWidth
