@@ -7,4 +7,5 @@ services:
       - "9010:9010"
     volumes:
       - /dev/broad-admin:/app/logs
+      - /dev/broad-admin/files:/home/root/.broad-admin
     restart: always

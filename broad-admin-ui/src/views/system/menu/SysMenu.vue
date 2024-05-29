@@ -6,7 +6,7 @@
       :loading="tableLoading"
       allow-checking-not-loaded
       :cascade="false"
-      :row-key="rowKey"
+      row-key="menuId"
       :scroll-x="1800"
       :on-load="onLoadData"
     >
@@ -140,7 +140,7 @@ import {
   getMenuChild,
   deleteMenus
 } from '@/api/system/menu'
-import { useRenderAction, useRowKey } from '@/hooks/useTable'
+import { useRenderAction } from '@/hooks/useTable'
 import { NIcon, useDialog, useMessage } from 'naive-ui'
 import { useDict } from '@/utils/useDict'
 import DictTag from '@/components/tag/DictTag.vue'
@@ -161,7 +161,6 @@ const menuTree = ref()
 const menuFromData = ref<any>({})
 const modalDialog = ref<boolean>(false)
 const menuFromRef = ref<any>(null)
-const rowKey = useRowKey('menuUrl')
 const searchForm: any = ref({})
 const tableColumns = ref([
   {

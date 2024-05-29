@@ -1,8 +1,6 @@
 import type { DataTableColumn, TreeSelectOption } from 'naive-ui'
 import type { TablePropsType } from '@/types/components'
 import type { Ref } from 'vue'
-// @ts-ignore
-import tinycolor from 'tinycolor2'
 
 export function isExternal(path: string) {
   return /^(https?:|mailto:|tel:)/.test(path)
