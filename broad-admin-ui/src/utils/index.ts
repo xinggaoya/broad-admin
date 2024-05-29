@@ -127,14 +127,8 @@ export async function blobValidate(data: any) {
  */
 export function clearFormObject(data: Ref) {
   const obj = data.value
-  Object.keys(obj).forEach((key) => {
-    if (obj[key] instanceof Array) {
-      obj[key] = []
-    } else if (obj[key] instanceof Object) {
-      obj[key] = {}
-    } else {
-      obj[key] = null
-    }
+  Object.keys(data.value).forEach((key) => {
+    obj[key] = null
   })
 }
 

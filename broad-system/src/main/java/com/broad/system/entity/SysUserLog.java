@@ -6,6 +6,7 @@ import com.broad.common.annotation.Excel;
 import lombok.*;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * 管理员日志表(SysUserLog)实体类
@@ -118,6 +119,12 @@ public class SysUserLog extends Model<SysUserLog> {
     @TableField(exist = false)
     @Excel(name = "操作管理员")
     private String adminName;
+
+    @TableField(exist = false)
+    private String operatingTime;
+
+    @TableField(exist = false)
+    private List<Date> operatingTimeList;
 
 }
 

@@ -7,10 +7,10 @@ export const getUserLogPage = (data: any) => {
   })
 }
 
-export const exportForm = (data: any) => {
+export const exportForm = (data: any, filename: string) => {
   return request.download({
     url: '/sysAdminLog/export',
     data,
-    filename: '操作日志.xlsx',
+    filename
   })
 }

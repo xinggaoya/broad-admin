@@ -1,6 +1,7 @@
 <template>
   <n-config-provider
     :locale="zhCN"
+    :date-locale="dateZhCN"
     :theme="theme"
     :theme-overrides="themeOverrides"
     style="height: 100%"
@@ -15,7 +16,7 @@
 
 <script lang="ts" setup>
 import { computed } from 'vue'
-import { darkTheme, zhCN } from 'naive-ui'
+import { darkTheme, zhCN, dateZhCN } from 'naive-ui'
 import useAppConfigStore from '@/store/modules/app-config'
 import { ThemeMode } from '@/store/types'
 

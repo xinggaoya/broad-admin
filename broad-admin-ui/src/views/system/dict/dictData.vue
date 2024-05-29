@@ -8,6 +8,7 @@
     <TableMain
       :data="tableList"
       :columns="tableColumns"
+      row-key="dictCode"
       :loading="tableLoading"
       :pagination="pagination"
     >
@@ -75,7 +76,6 @@
 <script lang="ts" setup>
 import {
   useRenderAction,
-  useRowKey,
   usePagination
 } from '@/hooks/useTable'
 import { useDict } from '@/utils/useDict'
@@ -106,7 +106,6 @@ const refreshTable = () => {
   })
 }
 const modelDialogTitle = ref('')
-const rowKey = useRowKey('dictType')
 const tableList = ref([])
 const tableLoading = ref(false)
 const message = useMessage()

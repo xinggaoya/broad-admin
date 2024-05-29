@@ -80,23 +80,25 @@
                     </n-input>
                   </n-form-item>
                   <n-form-item label="验证码" path="codeValue">
-                    <n-input
-                      size="large"
-                      v-model:value="compData.form.codeValue"
-                      @keydown.enter="handleLogin"
-                      placeholder="输入验证码"
-                    >
-                      <template v-slot:suffix>
-                        <PowerSharp />
-                      </template>
-                    </n-input>
-                    <n-image
-                      preview-disabled
-                      :src="captchaImage.captchaUrl"
-                      style="margin-left: 12px"
-                      alt=""
-                      @click="getCaptcha"
-                    />
+                    <n-input-group>
+                      <n-input
+                        size="large"
+                        v-model:value="compData.form.codeValue"
+                        @keydown.enter="handleLogin"
+                        placeholder="输入验证码"
+                      >
+                        <template v-slot:suffix>
+                          <PowerSharp />
+                        </template>
+                      </n-input>
+                      <n-image
+                        preview-disabled
+                        :src="captchaImage.captchaUrl"
+                        style="margin-left: 12px"
+                        alt=""
+                        @click="getCaptcha"
+                      />
+                    </n-input-group>
                   </n-form-item>
                 </n-form>
                 <n-space style="margin-bottom: 10px" justify="space-between">

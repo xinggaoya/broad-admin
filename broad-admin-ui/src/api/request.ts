@@ -55,8 +55,8 @@ export const request = {
   async download(config: KyConfig) {
     try {
       config.url = trimSlash(config.url)
-      const blob = await instance.get(config.url, {
-        searchParams: config.data
+      const blob = await instance.post(config.url, {
+        json: config.data
       }).blob()
 
       const url = window.URL.createObjectURL(blob)

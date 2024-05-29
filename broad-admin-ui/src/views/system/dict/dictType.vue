@@ -13,6 +13,7 @@
     <TableMain
       :data="tableList"
       :columns="tableColumns"
+      row-key="dictId"
       :loading="tableLoading"
       :pagination="pagination"
     >
@@ -56,7 +57,6 @@
 <script lang="ts" setup>
 import {
   useRenderAction,
-  useRowKey,
   usePagination
 } from '@/hooks/useTable'
 import { useDict } from '@/utils/useDict'
@@ -66,7 +66,7 @@ import {
   updateDictType,
   detectDictType
 } from '@/api/system/dictType'
-import { h, onMounted, ref } from 'vue'
+import { h, onMounted, reactive, ref } from 'vue'
 import { useMessage, useDialog, NButton } from 'naive-ui'
 import DictTag from '@/components/tag/DictTag.vue'
 import TableMain from '@/components/table/main/TableMain.vue'
@@ -84,7 +84,6 @@ const refreshTable = () => {
   })
 }
 const modelDialogTitle = ref('')
-const rowKey = useRowKey('dictName')
 const tableList = ref([])
 const tableLoading = ref(false)
 const message = useMessage()
@@ -96,8 +95,7 @@ const dictForm: any = ref({})
 const searchForm: any = ref({})
 const formRef = ref<any>(null)
 
-
-const tableColumns = ref(
+const tableColumns = reactive(
   [
     {
       title: '字典名称',

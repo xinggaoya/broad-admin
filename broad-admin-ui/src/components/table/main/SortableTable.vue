@@ -41,15 +41,16 @@
 
 <script lang="ts" setup>
 import type { TablePropsType } from '@/types/components'
-import { type PropType, reactive, ref, toRef } from 'vue'
+import { reactive, ref, toRef } from 'vue'
 import draggable from 'vuedraggable'
 import { SettingsOutline as SettingsIcon } from '@vicons/ionicons5'
 import { Menu as MenuIcon } from '@vicons/ionicons5'
 import { sortColumns } from '@/utils'
+import type { DataTableColumn } from 'naive-ui'
 
 const props = defineProps({
   columns: {
-    type: Array as PropType<TablePropsType[]>,
+    type: Array<DataTableColumn>,
     required: true,
     default: () => []
   }

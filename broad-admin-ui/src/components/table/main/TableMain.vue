@@ -19,7 +19,7 @@
         :striped="tableConfig.striped"
         :remote="remote"
         :columns="columns"
-        :row-key="useRowKey(rowKey)"
+        :row-key="useRowKey"
         :pagination="pagination"
         :allow-checking-not-loaded="allowCheckingNotLoaded"
         :cascade="cascade"
@@ -34,62 +34,47 @@
 import SortableTable from '@/components/table/main/SortableTable.vue'
 import TableConfig from '@/components/table/main/TableConfig.vue'
 import type { TableOperate } from '@/types/table'
-import { ref } from 'vue'
+import { ref, withDefaults } from 'vue'
+import type { DataTableColumns } from 'naive-ui'
 
-defineProps({
-  loading: {
-    type: Boolean,
-    default: false
+const props = withDefaults(defineProps<{
+  loading: boolean
+  remote: boolean
+  columns: DataTableColumns | any
+  data: Array<any>
+  pagination: object | boolean
+  onLoad: Function
+  cascade: boolean
+  allowCheckingNotLoaded: boolean
+  rowKey: string
+  scrollX: number | string
+}>(), {
+  loading: false,
+  remote: true,
+  columns: undefined,
+  data: undefined,
+  pagination: false,
+  onLoad: () => {
   },
-  remote: {
-    type: Boolean,
-    default: true
-  },
-  columns: {
-    type: Array,
-    default: () => []
-  },
-  data: {
-    type: Array,
-    default: () => []
-  },
-  pagination: {
-    type: Object,
-    default: () => ({})
-  },
-  onLoad: {
-    type: Function,
-    default: undefined
-  },
-  cascade: {
-    type: Boolean,
-    default: true
-  },
-  allowCheckingNotLoaded: {
-    type: Boolean,
-    default: false
-  },
-  rowKey: {
-    type: String,
-    default: undefined
-  },
-  scrollX: {
-    type: Number || String,
-    default: undefined
-  }
+  cascade: true,
+  allowCheckingNotLoaded: false,
+  rowKey: '',
+  scrollX: undefined
 })
-
 const tableConfig = ref<TableOperate>({
   border: false,
   striped: false
 })
 
 // 获取rowKey
-const useRowKey = function (propName: string) {
-  return function (rowData: any) {
-    return rowData[propName]
+function useRowKey(rowData: any) {
+  if (!props.rowKey) {
+    const firstKey = props.columns[0].key
+    return rowData[firstKey]
   }
+  return rowData[props.rowKey]
 }
+
 function updateConfig(config: TableOperate) {
   tableConfig.value = config
 }

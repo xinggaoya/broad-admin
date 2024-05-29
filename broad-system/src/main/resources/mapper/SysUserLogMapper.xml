@@ -50,6 +50,10 @@
             <if test="createTime != null and createTime != ''">
                 and sul.create_time = #{createTime}
             </if>
+
+            <if test="operatingTimeList != null and operatingTimeList.size() > 0">
+                sul.create_time between #{operatingTimeList[0]} and #{operatingTimeList[1]}
+            </if>
         </where>
         ORDER BY sul.create_time DESC
     </select>

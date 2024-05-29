@@ -4,7 +4,7 @@ import { NButton } from 'naive-ui'
 import type { TableActionModel } from '@/types/table'
 import DictTag from '@/components/tag/DictTag.vue'
 
-export const useRenderAction = function (actions: TableActionModel[]) {
+export const useRenderAction = function(actions: TableActionModel[]) {
   const permissionStore = usePermissionStoreHook()
   return actions.map((it) => {
     // 权限控制 是否显示
@@ -29,7 +29,7 @@ export const useRenderAction = function (actions: TableActionModel[]) {
  * @param options
  * @param value
  */
-export const useRenderTag = function (options: object, value: any) {
+export const useRenderTag = function(options: object, value: any) {
   return h(DictTag, {
     options: options,
     value: value
@@ -40,7 +40,7 @@ export const useRenderTag = function (options: object, value: any) {
  * @description: 表格分页 入参为数据刷新方法
  * @param callback
  */
-export const usePagination = function (callback: () => void) {
+export const usePagination = function(callback: () => void) {
   function onChange(page: number) {
     paginationInfo.page = page
     callback()
@@ -52,12 +52,20 @@ export const usePagination = function (callback: () => void) {
     callback()
   }
 
-  function getPageInfo(searchParams?: {}) {
-    return {
+  function getPageInfo(searchParams?: any) {
+    const parameters: any = {
       pageNum: paginationInfo.page,
-      pageSize: paginationInfo.pageSize,
-      ...(searchParams || {})
+      pageSize: paginationInfo.pageSize
     }
+    if (searchParams) {
+      // 筛选值不为空的属性
+      Object.keys(searchParams).forEach((key) => {
+        if (searchParams[key]) {
+          parameters[key] = searchParams[key]
+        }
+      })
+    }
+    return parameters
   }
 
   const paginationInfo = reactive({
