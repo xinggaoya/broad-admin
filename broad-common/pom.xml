@@ -5,7 +5,7 @@
     <parent>
         <artifactId>broad-admin-service</artifactId>
         <groupId>com.broad</groupId>
-        <version>2.0.0</version>
+        <version>2.2.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 

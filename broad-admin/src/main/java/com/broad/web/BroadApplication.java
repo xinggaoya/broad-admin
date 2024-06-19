@@ -1,14 +1,12 @@
 package com.broad.web;
 
-import com.alibaba.druid.support.json.JSONUtils;
+import com.broad.common.utils.DateUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableAsync;
-
-import java.util.Date;
 
 /**
  * The type Template application.
@@ -28,9 +26,9 @@ public class BroadApplication {
     public static void main(String[] args) {
         long start = System.currentTimeMillis();
         SpringApplication.run(BroadApplication.class, args);
-        log.info("{} 启动完成,编译时间：{},总耗时：{}ms",
+        log.info("{} Startup completed, compilation time: {}, total time: {}ms",
                 "Broad-Admin"
-                , JSONUtils.toJSONString(new Date())
+                , DateUtils.getTime()
                 , System.currentTimeMillis() - start);
     }
 
