@@ -6,6 +6,7 @@ import { calculateHoverActiveColors } from '@/utils/ColorUtils'
 export const projectName = import.meta.env.VITE_BASE_TITLE as string
 
 const themeColor= {
+  borderRadius: '5px',
   // primaryColor: '#409EFF',
   // primaryColorHover: '#66b1ff',
   // primaryColorPressed: '#3a8ee6',

@@ -57,7 +57,6 @@ const header = ref<HTMLElement | null>()
 const bodyStyle = computed(() => ({
   width: appConfig.deviceType === DeviceType.MOBILE ? '80%' : '640px',
   maxWidth: 'calc(100vw - 32px)',
-  borderRadius: '6px'
 }))
 
 const segmented = {
