@@ -271,7 +271,7 @@ const tableColumns = ref([
     title: '操作',
     key: 'actions',
     fixed: 'right',
-    width: 200,
+    width: 220,
     render: (rowData: { id: number }) => {
       return useRenderAction([
         {

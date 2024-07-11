@@ -1,5 +1,5 @@
 <template>
-  <n-card style="margin-bottom: 5px" size="small">
+  <n-card style="margin-bottom: 5px" size="small" title="搜索">
     <template v-slot:header>
       <slot name="header" />
     </template>
@@ -8,7 +8,7 @@
     </template>
     <template v-slot:footer>
       <n-space justify="end">
-        <n-button :round="true" type="primary" @click="handleSearch" size="small">
+        <n-button ghost type="primary" @click="handleSearch" size="small">
           <template #icon>
             <n-icon>
               <Search />
@@ -16,7 +16,7 @@
           </template>
           查询
         </n-button>
-        <n-button type="tertiary" :round="true" @click="handleReset" size="small">
+        <n-button type="tertiary" ghost @click="handleReset" size="small">
           <template #icon>
             <n-icon>
               <ExitOutline />
@@ -24,7 +24,7 @@
           </template>
           重置
         </n-button>
-        <n-button type="tertiary" :round="true" @click="handleCollapse" size="small">
+        <n-button type="tertiary" ghost @click="handleCollapse" size="small">
           <template #icon>
             <n-icon>
               <ArrowUpOutline v-if="collapse"/>

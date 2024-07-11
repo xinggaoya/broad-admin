@@ -1,5 +1,5 @@
 <template>
-  <n-button @click="onConfirm" :loading="loading">
+  <n-button @click="onConfirm" :loading="loading" ghost>
     <template #icon>
       <n-icon>
         <LogInOutline />

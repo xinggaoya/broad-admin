@@ -1,5 +1,5 @@
 <template>
-  <n-button @click="onDelete">
+  <n-button @click="onDelete" ghost type="error">
     <template #icon>
       <n-icon>
         <TrashIcon />

@@ -1,5 +1,5 @@
 <template>
-  <n-button @click="onAdd">
+  <n-button @click="onAdd" ghost type="primary">
     <template #icon>
       <n-icon>
         <AddIcon />
