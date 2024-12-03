@@ -1,50 +1,41 @@
 import { DeviceType, LayoutMode, PageAnim, SideTheme, ThemeMode } from '@/store/types'
 import type { AppConfigState } from '@/store/types'
-import type { ThemeCommonVars } from 'naive-ui'
-import { calculateHoverActiveColors } from '@/utils/ColorUtils'
 
 export const projectName = import.meta.env.VITE_BASE_TITLE as string
 
-const themeColor= {
-  borderRadius: '6px',
-  // primaryColor: '#409EFF',
-  // primaryColorHover: '#66b1ff',
-  // primaryColorPressed: '#3a8ee6',
-  // primaryColorSuppl: '#409eff',
-  infoColor: '#909399',
-  infoColorHover: '#a6a9ad',
-  infoColorPressed: '#82848a',
-  infoColorSuppl: '#909399',
-  successColor: '#67c23a',
-  successColorHover: '#85ce61',
-  successColorPressed: '#5daf34',
-  successColorSuppl: '#67c23a',
-  // warningColor: '#e6a23c',
-  // warningColorHover: '#ebb563',
-  // warningColorPressed: '#cf9236',
-  // warningColorSuppl: '#e6a23c',
-  // errorColor: '#f56c6c',
-  // errorColorHover: '#f78989',
-  // errorColorPressed: '#dd6161',
-  // errorColorSuppl: '#f56c6c'
-} as ThemeCommonVars
-
-// 获取主题颜色
-function getColor() {
-  const baseColor = calculateHoverActiveColors('#18a058')
-
-  themeColor.primaryColor = baseColor.baseColor
-  themeColor.primaryColorHover = baseColor.hoverColor
-  themeColor.primaryColorPressed = baseColor.activeColor
-  themeColor.primaryColorSuppl = baseColor.baseColor
-  return themeColor
-}
-
+const themeColor = {
+  common: {
+    primaryColor: '#1677ff',
+    primaryColorHover: '#4A90E2',
+    primaryColorPressed: '#1161AE',
+    primaryColorSuppl: '#1677ff',
+    infoColor: '#7B7B7B',
+    infoColorHover: '#A8A8A8',
+    infoColorPressed: '#5C5C5C',
+    infoColorSuppl: '#7B7B7B',
+    successColor: '#67C23A',
+    successColorHover: '#9FCF5B',
+    successColorPressed: '#4B9B2F',
+    warningColor: '#FFA726',
+    warningColorHover: '#FFB74D',
+    warningColorPressed: '#F57C00',
+    warningColorSuppl: '#FF9800',
+    errorColor: '#DC3545',
+    errorColorHover: '#E57373',
+    errorColorPressed: '#C62828',
+    errorColorSuppl: '#F44336',
+    borderRadius: '4px',
+    borderRadiusSmall: '3px'
+  },
+  Tag: {
+    borderRadius: '5px'
+  }
+} as any
 
 export default {
   theme: ThemeMode.LIGHT,
   sideTheme: SideTheme.WHITE,
-  themeColor: getColor(),
+  themeColor: themeColor,
   layoutMode: LayoutMode.LTR,
   sideWidth: 210,
   deviceType: DeviceType.PC,
