@@ -34,23 +34,23 @@ public class MimeTypeUtils {
     /**
      * The constant IMAGE_EXTENSION.
      */
-    public static final String[] IMAGE_EXTENSION = {"bmp", "gif", "jpg", "jpeg", "png"};
+    public static final String[] IMAGE_EXTENSION = { "bmp", "gif", "jpg", "jpeg", "png" };
 
     /**
      * The constant FLASH_EXTENSION.
      */
-    public static final String[] FLASH_EXTENSION = {"swf", "flv"};
+    public static final String[] FLASH_EXTENSION = { "swf", "flv" };
 
     /**
      * The constant MEDIA_EXTENSION.
      */
-    public static final String[] MEDIA_EXTENSION = {"swf", "flv", "mp3", "wav", "wma", "wmv", "mid", "avi", "mpg",
-            "asf", "rm", "rmvb"};
+    public static final String[] MEDIA_EXTENSION = { "swf", "flv", "mp3", "wav", "wma", "wmv", "mid", "avi", "mpg",
+            "asf", "rm", "rmvb" };
 
     /**
      * The constant VIDEO_EXTENSION.
      */
-    public static final String[] VIDEO_EXTENSION = {"mp4", "avi", "rmvb"};
+    public static final String[] VIDEO_EXTENSION = { "mp4", "avi", "rmvb" };
 
     /**
      * The constant DEFAULT_ALLOWED_EXTENSION.
@@ -65,7 +65,7 @@ public class MimeTypeUtils {
             // 视频格式
             "mp4", "avi", "rmvb",
             // pdf
-            "pdf"};
+            "pdf" };
 
     /**
      * Gets extension.

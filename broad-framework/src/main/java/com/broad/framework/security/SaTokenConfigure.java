@@ -8,11 +8,9 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
- * Created with IntelliJ IDEA.
+ * Sa-Token配置类
  *
- * @Author: XingGao
- * @Date: 2022 /07/10 18:03
- * @Description: Sa-Token 配置类
+ * @author XingGao
  */
 @Configuration
 public class SaTokenConfigure implements WebMvcConfigurer {
@@ -32,16 +30,15 @@ public class SaTokenConfigure implements WebMvcConfigurer {
                 .addPathPatterns("/**");
     }
 
-
     /**
      * 排除不需要登录的接口
      */
     private final String[] EXCLUDE_PATH = {
+            "/swagger-ui.html",
             "/swagger-ui/**",
             "/v3/api-docs/**",
-            "/swagger-resources/**",
             "/favicon.ico",
             "/upload/**",
+            "/"
     };
-
 }

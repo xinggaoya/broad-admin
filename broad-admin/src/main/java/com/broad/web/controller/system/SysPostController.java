@@ -2,6 +2,7 @@ package com.broad.web.controller.system;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.broad.common.annotation.Log;
 import com.broad.common.enums.BusinessType;
 import com.broad.common.web.controller.BaseController;
@@ -11,7 +12,7 @@ import com.broad.system.entity.SysPost;
 import com.broad.system.service.SysPostService;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import java.io.Serializable;
 import java.util.List;
 
@@ -39,7 +40,8 @@ public class SysPostController extends BaseController {
     @GetMapping
     @SaCheckPermission("sysPost:list")
     public TableDataInfo selectAll(SysPost sysPost) {
-        return getDataTable(this.sysPostService.list(new QueryWrapper<>(sysPost)));
+        Page<SysPost> page = startPage();
+        return getDataTable(sysPostService.page(page, new QueryWrapper<>(sysPost)));
     }
 
     /**
@@ -51,7 +53,7 @@ public class SysPostController extends BaseController {
     @GetMapping("{id}")
     @SaCheckPermission("sysPost:list")
     public ResultData selectOne(@PathVariable Serializable id) {
-        return ResultData.success(this.sysPostService.getById(id));
+        return success(this.sysPostService.getById(id));
     }
 
     /**
@@ -64,7 +66,7 @@ public class SysPostController extends BaseController {
     @SaCheckPermission("sysPost:add")
     @Log(description = "岗位管理", businessType = BusinessType.INSERT)
     public ResultData insert(@RequestBody SysPost sysPost) {
-        return ResultData.success(this.sysPostService.save(sysPost));
+        return toResult(this.sysPostService.save(sysPost));
     }
 
     /**
@@ -77,7 +79,7 @@ public class SysPostController extends BaseController {
     @SaCheckPermission("sysPost:edit")
     @Log(description = "岗位管理", businessType = BusinessType.UPDATE)
     public ResultData update(@RequestBody SysPost sysPost) {
-        return ResultData.success(this.sysPostService.updateById(sysPost));
+        return toResult(this.sysPostService.updateById(sysPost));
     }
 
     /**
@@ -90,7 +92,6 @@ public class SysPostController extends BaseController {
     @SaCheckPermission("sysPost:delete")
     @Log(description = "岗位管理", businessType = BusinessType.DELETE)
     public ResultData delete(@RequestParam("idList") List<Long> idList) {
-        return ResultData.success(this.sysPostService.removeByIds(idList));
+        return toResult(this.sysPostService.removeByIds(idList));
     }
 }
-

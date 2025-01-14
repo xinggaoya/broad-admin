@@ -1,38 +1,34 @@
 package com.broad.framework.db;
 
 import com.broad.common.enums.DbType;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
 /**
- * @author: XingGao
- * @date: 2022/12/19 10:46
- * @description:
+ * 数据源上下文持有者
  */
 public class DbContextHolder {
-
-    private static final ThreadLocal<Object> contextHolder = new ThreadLocal<>();
+    private static final ThreadLocal<String> CONTEXT_HOLDER = new ThreadLocal<>();
 
     /**
-     * 取得当前数据源
-     *
-     * @return
+     * 获取当前数据源类型
      */
+    @Nullable
     public static String getDbType() {
-        return (String) contextHolder.get();
+        return CONTEXT_HOLDER.get();
     }
 
     /**
-     * 设置数据源
-     *
-     * @param dbTypeEnum
+     * 设置数据源类型
      */
-    public static void setDbType(DbType dbTypeEnum) {
-        contextHolder.set(dbTypeEnum.getValue());
+    public static void setDbType(@NonNull DbType dbType) {
+        CONTEXT_HOLDER.set(dbType.getValue());
     }
 
     /**
-     * 清除上下文数据
+     * 清除当前数据源类型
      */
     public static void clearDbType() {
-        contextHolder.remove();
+        CONTEXT_HOLDER.remove();
     }
 }

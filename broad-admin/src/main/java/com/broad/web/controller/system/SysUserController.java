@@ -1,6 +1,7 @@
 package com.broad.web.controller.system;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.broad.common.annotation.Log;
 import com.broad.common.enums.BusinessType;
 import com.broad.common.web.controller.BaseController;
@@ -11,15 +12,15 @@ import com.broad.system.service.SysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import java.io.Serializable;
 import java.util.List;
 
 /**
  * 管理员表(SysUser)表控制层
  *
- * @author XingGao
- * @since 2022 -07-09 17:19:39
+ * @author broad
+ * @since 2022-07-09 17:19:39
  */
 @RestController
 @RequestMapping("sysAdmin")
@@ -31,7 +32,6 @@ public class SysUserController extends BaseController {
     @Autowired
     private SysUserService sysAdminService;
 
-
     /**
      * 分页查询所有数据
      *
@@ -41,8 +41,8 @@ public class SysUserController extends BaseController {
     @GetMapping
     @SaCheckPermission("sys:user:list")
     public TableDataInfo selectAll(SysUser sysAdmin) {
-        startPage();
-        return getDataTable(this.sysAdminService.selectAll(sysAdmin));
+        Page<SysUser> page = startPage();
+        return getDataTable(this.sysAdminService.selectAll(sysAdmin, page));
     }
 
     /**
@@ -56,7 +56,7 @@ public class SysUserController extends BaseController {
     public ResultData selectOne(@PathVariable Serializable id) {
         SysUser sysAdmin = this.sysAdminService.getById(id);
         sysAdmin.setPassword(null);
-        return ResultData.success(sysAdmin);
+        return success(sysAdmin);
     }
 
     /**
@@ -69,7 +69,7 @@ public class SysUserController extends BaseController {
     @SaCheckPermission("sys:user:add")
     @Log(description = "新增管理员表", businessType = BusinessType.INSERT)
     public ResultData insert(@RequestBody @Valid SysUser sysAdmin) {
-        return ResultData.success(this.sysAdminService.saveAdmin(sysAdmin));
+        return toResult(this.sysAdminService.saveAdmin(sysAdmin));
     }
 
     /**
@@ -82,7 +82,7 @@ public class SysUserController extends BaseController {
     @SaCheckPermission("sys:user:update")
     @Log(description = "修改管理员表", businessType = BusinessType.UPDATE)
     public ResultData update(@RequestBody SysUser sysAdmin) {
-        return ResultData.success(this.sysAdminService.updateAdmin(sysAdmin));
+        return toResult(this.sysAdminService.updateAdmin(sysAdmin));
     }
 
     /**
@@ -99,4 +99,3 @@ public class SysUserController extends BaseController {
     }
 
 }
-

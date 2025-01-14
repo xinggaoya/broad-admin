@@ -1,6 +1,5 @@
 package com.broad.system.entity;
 
-
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
@@ -16,7 +15,7 @@ import lombok.Data;
  * @since 2023-03-26 16:37:28
  */
 @Data
-public class SysUserPost {
+public class SysUserPost implements Serializable {
 
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
@@ -29,4 +28,3 @@ public class SysUserPost {
      */
     private Long postId;
 }
-

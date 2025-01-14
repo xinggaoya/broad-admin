@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>broad-admin-service</artifactId>
         <groupId>com.broad</groupId>
@@ -20,18 +20,27 @@
 
         <dependency>
             <groupId>com.broad</groupId>
+            <artifactId>broad-common</artifactId>
+            <version>${broad.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.broad</groupId>
             <artifactId>broad-quartz</artifactId>
+            <version>${broad.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.broad</groupId>
             <artifactId>broad-framework</artifactId>
+            <version>${broad.version}</version>
         </dependency>
 
         <!-- 添加图形验证码依赖 -->
         <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-captcha</artifactId>
+            <version>${hutool.version}</version>
         </dependency>
 
     </dependencies>
@@ -42,7 +51,6 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <fork>true</fork>
                     <excludes>
                         <exclude>
                             <groupId>org.projectlombok</groupId>

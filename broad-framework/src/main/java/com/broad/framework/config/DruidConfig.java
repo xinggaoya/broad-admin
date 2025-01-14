@@ -5,6 +5,7 @@ import com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceBuilder;
 import com.broad.common.enums.DbType;
 import com.broad.framework.db.DynamicDataSource;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,38 +16,57 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author: XingGao
- * @date: 2022/12/19 10:41
- * @description: 多数据源配置
+ * 多数据源配置
+ * 使用Druid数据源
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 public class DruidConfig {
 
-    @Bean
-    @ConfigurationProperties(prefix = "spring.datasource.druid.master")
-    public DruidDataSource masterDataSource() {
-        return DruidDataSourceBuilder.create().build();
-    }
-
-    @Bean
-    @ConfigurationProperties(prefix = "spring.datasource.druid.slave")
-    public DruidDataSource slaveDataSource() {
-        return DruidDataSourceBuilder.create().build();
-    }
-
-    /**
-     * 动态数据源配置
-     */
-    @Bean
     @Primary
-    public DataSource dataSource(@Qualifier("masterDataSource") DataSource masterDataSource,
-                                 @Qualifier("slaveDataSource") DataSource slaveDataSource) {
+    @Bean
+    @ConfigurationProperties("spring.datasource.druid.master")
+    public DataSourceProperties masterDataSourceProperties() {
+        return new DataSourceProperties();
+    }
+
+    @Bean
+    @ConfigurationProperties("spring.datasource.druid.slave")
+    public DataSourceProperties slaveDataSourceProperties() {
+        return new DataSourceProperties();
+    }
+
+    @Primary
+    @Bean(name = "masterDataSource")
+    public DataSource masterDataSource(DataSourceProperties masterDataSourceProperties) {
+        DruidDataSource dataSource = DruidDataSourceBuilder.create().build();
+        dataSource.setUrl(masterDataSourceProperties.getUrl());
+        dataSource.setUsername(masterDataSourceProperties.getUsername());
+        dataSource.setPassword(masterDataSourceProperties.getPassword());
+        dataSource.setDriverClassName(masterDataSourceProperties.getDriverClassName());
+        return dataSource;
+    }
+
+    @Bean(name = "slaveDataSource")
+    public DataSource slaveDataSource(DataSourceProperties slaveDataSourceProperties) {
+        DruidDataSource dataSource = DruidDataSourceBuilder.create().build();
+        dataSource.setUrl(slaveDataSourceProperties.getUrl());
+        dataSource.setUsername(slaveDataSourceProperties.getUsername());
+        dataSource.setPassword(slaveDataSourceProperties.getPassword());
+        dataSource.setDriverClassName(slaveDataSourceProperties.getDriverClassName());
+        return dataSource;
+    }
+
+    @Bean(name = "dynamicDataSource")
+    @Primary
+    public DynamicDataSource dynamicDataSource(@Qualifier("masterDataSource") DataSource masterDataSource,
+            @Qualifier("slaveDataSource") DataSource slaveDataSource) {
         DynamicDataSource dynamicDataSource = new DynamicDataSource();
         Map<Object, Object> targetDataSources = new HashMap<>(2);
         targetDataSources.put(DbType.MASTER.getValue(), masterDataSource);
         targetDataSources.put(DbType.SLAVE.getValue(), slaveDataSource);
-        dynamicDataSource.setTargetDataSources(targetDataSources);
         dynamicDataSource.setDefaultTargetDataSource(masterDataSource);
+        dynamicDataSource.setTargetDataSources(targetDataSources);
+        dynamicDataSource.afterPropertiesSet();
         return dynamicDataSource;
     }
 }

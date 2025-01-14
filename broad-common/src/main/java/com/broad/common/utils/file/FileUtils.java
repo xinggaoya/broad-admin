@@ -1,18 +1,15 @@
 package com.broad.common.utils.file;
 
-import com.broad.common.config.BroadConfig;
-import com.broad.common.constant.Constants;
-import com.broad.common.exception.file.FileException;
-import com.broad.common.utils.SpringUtils;
+import com.broad.common.utils.DateUtils;
 import com.broad.common.utils.StringUtils;
-import com.broad.common.utils.uuid.UUID;
+import com.broad.common.utils.uuid.IdUtils;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -24,7 +21,7 @@ import java.util.List;
  *
  * @author XingGao
  */
-public class FileUtils {
+public class FileUtils extends org.apache.commons.io.FileUtils {
     /**
      * 字符常量：斜杠 {@code '/'}
      */
@@ -34,27 +31,20 @@ public class FileUtils {
      * 字符常量：反斜杠 {@code '\\'}
      */
     public static final char BACKSLASH = '\\';
-    private static final Logger log = LoggerFactory.getLogger(FileUtils.class);
 
-    /**
-     * The constant FILENAME_PATTERN.
-     */
     public static String FILENAME_PATTERN = "[a-zA-Z0-9_\\-\\|\\.\\u4e00-\\u9fa5]+";
 
     /**
-     * 上传文件目录
+     * 本地文件上传路径
      */
-    public static String LOCAL_UPLOAD_PATH = SpringUtils.getBean(BroadConfig.class).getSystemFileDir()
-            .concat(Constants.UPLOAD_FILE)
-            .concat(File.separator);
+    public static final String LOCAL_UPLOAD_PATH = System.getProperty("user.dir") + "/upload";
 
     /**
      * 输出指定文件的byte数组
      *
      * @param filePath 文件路径
      * @param os       输出流
-     * @return
-     * @throws IOException the io exception
+     * @throws IOException IO异常
      */
     public static void writeBytes(String filePath, OutputStream os) throws IOException {
         FileInputStream fis = null;
@@ -69,23 +59,9 @@ public class FileUtils {
             while ((length = fis.read(b)) > 0) {
                 os.write(b, 0, length);
             }
-        } catch (IOException e) {
-            throw e;
         } finally {
-            if (os != null) {
-                try {
-                    os.close();
-                } catch (IOException e1) {
-                    log.error("close output stream error", e1);
-                }
-            }
-            if (fis != null) {
-                try {
-                    fis.close();
-                } catch (IOException e1) {
-                    log.error("close input stream error", e1);
-                }
-            }
+            IOUtils.close(os);
+            IOUtils.close(fis);
         }
     }
 
@@ -93,15 +69,14 @@ public class FileUtils {
      * 删除文件
      *
      * @param filePath 文件
-     * @return boolean
+     * @return 是否删除成功
      */
     public static boolean deleteFile(String filePath) {
         boolean flag = false;
         File file = new File(filePath);
         // 路径为文件且不为空则进行删除
         if (file.isFile() && file.exists()) {
-            file.delete();
-            flag = true;
+            flag = file.delete();
         }
         return flag;
     }
@@ -129,92 +104,34 @@ public class FileUtils {
         }
 
         // 检查允许下载的文件规则
-        return ArrayUtils.contains(MimeTypeUtils.DEFAULT_ALLOWED_EXTENSION, FileTypeUtils.getFileType(resource));
-
-        // 不在允许下载的文件规则
+        return ArrayUtils.contains(MimeTypeUtils.DEFAULT_ALLOWED_EXTENSION, FilenameUtils.getExtension(resource));
     }
-
-    /**
-     * 保存文件到本地
-     *
-     * @param file 文件
-     * @return the string
-     */
-    public static String saveFileToLocal(MultipartFile file) {
-        if (file.isEmpty()) {
-            throw new FileException("file.not.exist", null);
-        }
-        String localPath = LOCAL_UPLOAD_PATH;
-        String originalFileName = file.getOriginalFilename();
-        // 检查文件名
-        if (StringUtils.isBlank(originalFileName)) {
-            throw new FileException("file.name.not.exist", null);
-        }
-        // 重复名文件
-        String fileName = UUID.randomUUID().toString().concat(".").concat(FileTypeUtils.getFileType(originalFileName));
-        // 拼接访问路径
-        String localFilePath = Constants.UPLOAD_FILE.concat("/").concat(fileName);
-        File dest = new File(localPath.concat(fileName));
-        // 检测是否存在目录
-        if (!dest.getParentFile().exists()) {
-            dest.getParentFile().mkdirs();
-        }
-        try {
-            file.transferTo(dest);
-        } catch (IOException e) {
-            log.error("upload file error", e);
-            throw new FileException("file.upload.error", null);
-        }
-        return localFilePath;
-    }
-
-    /**
-     * 获取所有文件
-     *
-     * @param path 文件路径
-     * @return 文件列表
-     */
-    public static List<File> getAllFiles(String path) {
-        List<File> fileList = new ArrayList<>();
-        File file = new File(path);
-        File[] files = file.listFiles();
-        if (files != null) {
-            for (File f : files) {
-                if (f.isDirectory()) {
-                    fileList.addAll(getAllFiles(f.getAbsolutePath()));
-                } else {
-                    fileList.add(f);
-                }
-            }
-        }
-        return fileList;
-    }
-
 
     /**
      * 下载文件名重新编码
      *
      * @param request  请求对象
      * @param fileName 文件名
-     * @return 编码后的文件名 file download header
-     * @throws UnsupportedEncodingException the unsupported encoding exception
+     * @return 编码后的文件名
+     * @throws UnsupportedEncodingException 编码异常
      */
-    public static String setFileDownloadHeader(HttpServletRequest request, String fileName) throws UnsupportedEncodingException {
+    public static String setFileDownloadHeader(HttpServletRequest request, String fileName)
+            throws UnsupportedEncodingException {
         final String agent = request.getHeader("USER-AGENT");
         String filename = fileName;
         if (agent.contains("MSIE")) {
-            // IE浏览器兼容
-            filename = URLEncoder.encode(filename, "utf-8");
+            // IE浏览器
+            filename = URLEncoder.encode(filename, StandardCharsets.UTF_8);
             filename = filename.replace("+", " ");
         } else if (agent.contains("Firefox")) {
             // 火狐浏览器
-            filename = new String(fileName.getBytes(), "ISO8859-1");
+            filename = new String(fileName.getBytes(StandardCharsets.UTF_8), "ISO8859-1");
         } else if (agent.contains("Chrome")) {
             // google浏览器
-            filename = URLEncoder.encode(filename, "utf-8");
+            filename = URLEncoder.encode(filename, StandardCharsets.UTF_8);
         } else {
             // 其它浏览器
-            filename = URLEncoder.encode(filename, "utf-8");
+            filename = URLEncoder.encode(filename, StandardCharsets.UTF_8);
         }
         return filename;
     }
@@ -223,7 +140,7 @@ public class FileUtils {
      * 返回文件名
      *
      * @param filePath 文件
-     * @return 文件名 name
+     * @return 文件名
      */
     public static String getName(String filePath) {
         if (null == filePath) {
@@ -257,7 +174,7 @@ public class FileUtils {
      * Windows平台下分隔符为\，Linux（Unix）为/
      *
      * @param c 字符
-     * @return 是否为Windows或者Linux （Unix）文件分隔符
+     * @return 是否为Windows或者Linux（Unix）文件分隔符
      */
     public static boolean isFileSeparator(char c) {
         return SLASH == c || BACKSLASH == c;
@@ -268,32 +185,80 @@ public class FileUtils {
      *
      * @param response     响应对象
      * @param realFileName 真实文件名
-     * @return
-     * @throws UnsupportedEncodingException the unsupported encoding exception
+     * @throws UnsupportedEncodingException 编码异常
      */
-    public static void setAttachmentResponseHeader(HttpServletResponse response, String realFileName) throws UnsupportedEncodingException {
-        String percentEncodedFileName = percentEncode(realFileName);
+    public static void setAttachmentResponseHeader(HttpServletResponse response, String realFileName)
+            throws UnsupportedEncodingException {
+        String percentEncodedFileName = URLEncoder.encode(realFileName, StandardCharsets.UTF_8);
 
-        String contentDispositionValue = "attachment; filename=" +
-                percentEncodedFileName +
-                ";" +
-                "filename*=" +
-                "utf-8''" +
-                percentEncodedFileName;
+        StringBuilder contentDispositionValue = new StringBuilder();
+        contentDispositionValue.append("attachment; filename=")
+                .append(percentEncodedFileName)
+                .append(";")
+                .append("filename*=")
+                .append("utf-8''")
+                .append(percentEncodedFileName);
 
-        response.setHeader("Content-disposition", contentDispositionValue);
+        response.addHeader("Access-Control-Expose-Headers", "Content-Disposition,download-filename");
+        response.setHeader("Content-disposition", contentDispositionValue.toString());
         response.setHeader("download-filename", percentEncodedFileName);
     }
 
     /**
-     * 百分号编码工具方法
+     * 保存文件到本地
      *
-     * @param s 需要百分号编码的字符串
-     * @return 百分号编码后的字符串 string
-     * @throws UnsupportedEncodingException the unsupported encoding exception
+     * @param file 上传的文件
+     * @return 文件访问路径
      */
-    public static String percentEncode(String s) throws UnsupportedEncodingException {
-        String encode = URLEncoder.encode(s, StandardCharsets.UTF_8.toString());
-        return encode.replaceAll("\\+", "%20");
+    public static String saveFileToLocal(MultipartFile file) {
+        if (file == null) {
+            throw new RuntimeException("上传文件不能为空");
+        }
+        // 获取原始文件名
+        String originalFilename = file.getOriginalFilename();
+        // 获取文件后缀
+        String extension = FileTypeUtils.getExtension(file);
+        // 生成新的文件名
+        String fileName = DateUtils.dateTime() + "_" + IdUtils.fastSimpleUUID() + "." + extension;
+        // 创建年月日目录
+        String datePath = DateUtils.datePath();
+        // 生成文件存储的目录
+        File directory = new File(LOCAL_UPLOAD_PATH + "/" + datePath);
+        if (!directory.exists()) {
+            directory.mkdirs();
+        }
+        // 生成文件存储的路径
+        String filePath = directory.getPath() + "/" + fileName;
+        try {
+            // 保存文件
+            file.transferTo(new File(filePath));
+            return datePath + "/" + fileName;
+        } catch (IOException e) {
+            throw new RuntimeException("保存文件失败", e);
+        }
+    }
+
+    /**
+     * 获取指定目录下的所有文件
+     *
+     * @param path 目录路径
+     * @return 文件列表
+     */
+    public static List<String> getAllFiles(String path) {
+        List<String> files = new ArrayList<>();
+        File file = new File(path);
+        if (!file.exists()) {
+            return files;
+        }
+        File[] tempList = file.listFiles();
+        if (tempList == null) {
+            return files;
+        }
+        for (File value : tempList) {
+            if (value.isFile()) {
+                files.add(value.getName());
+            }
+        }
+        return files;
     }
 }

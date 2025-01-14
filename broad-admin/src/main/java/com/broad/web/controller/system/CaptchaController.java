@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import java.util.LinkedHashMap;
 import java.util.UUID;
 
@@ -44,7 +44,7 @@ public class CaptchaController {
         String uuid = UUID.randomUUID().toString();
         String verifyKey = Constants.CAPTCHA_CODE_KEY + uuid;
 
-        //定义图形验证码的长、宽、验证码字符数、干扰元素个数
+        // 定义图形验证码的长、宽、验证码字符数、干扰元素个数
         LineCaptcha lineCaptcha = CaptchaUtil.createLineCaptcha(200, 60, 4, 100);
         // 验证码值
         String code = lineCaptcha.getCode();

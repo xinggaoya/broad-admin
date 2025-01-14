@@ -5,7 +5,7 @@ import com.broad.common.constant.ThreadPoolConstant;
 import com.broad.system.entity.SysLoginLog;
 import org.springframework.scheduling.annotation.Async;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**

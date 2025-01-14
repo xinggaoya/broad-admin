@@ -3,6 +3,7 @@
 /*/node_modules/
 /.idea/
 /*.iml
+/.vscode/
 
 /broad-admin-ui/dist
 /broad-admin-ui/.idea

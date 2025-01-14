@@ -1,6 +1,5 @@
 package com.broad.system.entity;
 
-
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -98,4 +97,3 @@ public class SysDept implements Serializable {
     private List<SysDept> children;
 
 }
-

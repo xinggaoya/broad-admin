@@ -14,4 +14,10 @@ public class ThreadPoolConstant {
      * The constant SERVICE_EXECUTOR.
      */
     public final static String SERVICE_EXECUTOR = "asyncServiceExecutor";
+
+    /**
+     * The constant ASYNC_POOL.
+     * 异步日志处理线程池
+     */
+    public final static String ASYNC_POOL = "asyncLogExecutor";
 }

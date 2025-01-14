@@ -9,15 +9,14 @@ package com.broad.common.enums;
  */
 public enum LogType {
     /**
-     * 登录日志
+     * 成功
      */
-    NORMAL("0"),
+    SUCCESS("0"),
 
     /**
-     * 操作日志
+     * 失败
      */
-    FAILURE("1");
-
+    FAIL("1");
 
     private final String info;
 

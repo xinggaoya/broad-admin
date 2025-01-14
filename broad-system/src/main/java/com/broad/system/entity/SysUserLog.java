@@ -68,12 +68,13 @@ public class SysUserLog extends Model<SysUserLog> {
     @TableField(value = "log_ip_address")
     @Excel(name = "IP地址")
     private String logIpAddress;
+
     /**
      * 状态
      */
     @TableField(value = "log_status")
     @Excel(name = "状态")
-    private String logStatus;
+    private Integer logStatus;
 
     /**
      * 异常消息
@@ -126,5 +127,48 @@ public class SysUserLog extends Model<SysUserLog> {
     @TableField(exist = false)
     private List<Date> operatingTimeList;
 
-}
+    // 兼容旧的方法名
+    public void setOperIp(String ip) {
+        this.logIp = ip;
+    }
 
+    public void setOperUrl(String url) {
+        this.logUrl = url;
+    }
+
+    public void setOperName(String name) {
+        this.adminName = name;
+    }
+
+    public void setErrorMsg(String msg) {
+        this.exceptionInfo = msg;
+    }
+
+    public void setMethod(String method) {
+        this.logMethod = method;
+    }
+
+    public void setRequestMethod(String method) {
+        this.logHttpMethod = method;
+    }
+
+    public void setOperParam(String param) {
+        this.logParams = param;
+    }
+
+    public void setJsonResult(String result) {
+        this.logResult = result;
+    }
+
+    public void setBusinessType(int type) {
+        this.logMethodType = String.valueOf(type);
+    }
+
+    public void setStatus(int status) {
+        this.logStatus = status;
+    }
+
+    public String getRequestMethod() {
+        return this.logHttpMethod;
+    }
+}

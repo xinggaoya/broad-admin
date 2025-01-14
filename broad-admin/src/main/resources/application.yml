@@ -12,9 +12,6 @@ server:
 
 # Spring配置
 spring:
-  mvc:
-    pathmatch:
-      matching-strategy: ant_path_matcher
   # 资源信息
   messages:
     # 国际化资源文件路径
@@ -74,7 +71,6 @@ mybatis-plus:
   type-aliases-package: com.broad.**.entity
   mapper-locations: classpath*:mapper/**/*Mapper.xml
   configuration:
-    arg-name-based-constructor-auto-mapping: true
     map-underscore-to-camel-case: true
     #log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   global-config:
@@ -82,11 +78,15 @@ mybatis-plus:
       id-type: auto
     banner: false
 
-# swagger配置 /swagger-ui/index.html
-springfox:
-  documentation:
-    swagger-ui:
-      enabled: true
+# SpringDoc配置
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+  packages-to-scan: com.broad
+  paths-to-match: /**
 
 # 安全配置（防XSS）
 xss:
@@ -96,5 +96,3 @@ xss:
   isIncludeRichText: true
   # 排除路径
   excludes: /login,/logout
-
-

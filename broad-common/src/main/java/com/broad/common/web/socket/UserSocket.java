@@ -12,9 +12,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-import javax.websocket.*;
-import javax.websocket.server.PathParam;
-import javax.websocket.server.ServerEndpoint;
+import jakarta.websocket.OnClose;
+import jakarta.websocket.OnError;
+import jakarta.websocket.OnMessage;
+import jakarta.websocket.OnOpen;
+import jakarta.websocket.Session;
+import jakarta.websocket.server.PathParam;
+import jakarta.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -169,7 +173,7 @@ public class UserSocket {
     @OnClose
     public void onClose() {
         webSocketSet.remove(this);
-        //这里写你 释放的时候，要处理的业务
+        // 这里写你 释放的时候，要处理的业务
         log.info("有一连接关闭！当前在线人数为" + getOnlineCount());
 
     }
@@ -184,7 +188,7 @@ public class UserSocket {
     @OnMessage
     public void onMessage(String message, Session session) {
         log.info("收到来自窗口" + sid + "的信息:" + message);
-        //群发消息
+        // 群发消息
         for (UserSocket item : webSocketSet) {
             try {
                 if (!item.sid.equals(sid)) {

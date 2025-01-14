@@ -2,7 +2,7 @@ package com.broad.system.service;
 
 import com.broad.system.entity.SysUser;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 /**

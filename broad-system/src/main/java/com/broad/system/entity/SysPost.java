@@ -1,12 +1,13 @@
 package com.broad.system.entity;
 
-
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.broad.common.web.entity.BaseEntity;
 import lombok.Data;
+import java.io.Serializable;
+import java.util.Date;
 
 /**
  * 岗位信息表(SysPost)表实体类
@@ -16,11 +17,11 @@ import lombok.Data;
  */
 @Data
 @TableName("sys_post")
-public class SysPost extends BaseEntity {
+public class SysPost extends BaseEntity implements Serializable {
     /**
      * 岗位ID
      */
-    @TableId(value = "post_id",type = IdType.AUTO)
+    @TableId(value = "post_id", type = IdType.AUTO)
     private Long postId;
     /**
      * 岗位编码
@@ -43,4 +44,3 @@ public class SysPost extends BaseEntity {
     @TableField("status")
     private String status;
 }
-

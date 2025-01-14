@@ -5,17 +5,22 @@ import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.BlockAttackInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.OptimisticLockerInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
+import com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean;
 import com.broad.framework.interceptor.CryptoInterceptor;
 import com.broad.framework.interceptor.DecryptInterceptor;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import javax.sql.DataSource;
 
 /**
- * Created with IntelliJ IDEA.
+ * MyBatis Plus 配置类
  *
  * @Author: XingGao
- * @Date: 2022 /07/15 13:51
- * @Description:
+ * @Date: 2022/07/15 13:51
+ * @Description: 配置 MyBatis Plus 的各种拦截器，包括分页、乐观锁、防全表更新删除等
  */
 @Configuration
 public class MybatisPlusConfig {
@@ -24,12 +29,22 @@ public class MybatisPlusConfig {
     public MybatisPlusInterceptor mybatisPlusInterceptor() {
         MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
         // 分页插件
-        interceptor.addInnerInterceptor(paginationInnerInterceptor());
+        interceptor.addInnerInterceptor(new PaginationInnerInterceptor(DbType.MYSQL));
         // 乐观锁插件
-        interceptor.addInnerInterceptor(optimisticLockerInnerInterceptor());
-        // 阻断插件
-        interceptor.addInnerInterceptor(blockAttackInnerInterceptor());
+        interceptor.addInnerInterceptor(new OptimisticLockerInnerInterceptor());
+        // 防止全表更新与删除插件
+        interceptor.addInnerInterceptor(new BlockAttackInnerInterceptor());
         return interceptor;
+    }
+
+    @Bean
+    public SqlSessionFactory sqlSessionFactory(@Qualifier("dynamicDataSource") DataSource dataSource) throws Exception {
+        MybatisSqlSessionFactoryBean sqlSessionFactory = new MybatisSqlSessionFactoryBean();
+        sqlSessionFactory.setDataSource(dataSource);
+        sqlSessionFactory.setMapperLocations(
+                new PathMatchingResourcePatternResolver().getResources("classpath*:mapper/**/*Mapper.xml"));
+        sqlSessionFactory.setPlugins(mybatisPlusInterceptor());
+        return sqlSessionFactory.getObject();
     }
 
     @Bean
@@ -40,33 +55,6 @@ public class MybatisPlusConfig {
     @Bean
     public DecryptInterceptor decryptInterceptor() {
         return new DecryptInterceptor();
-    }
-
-
-    /**
-     * 分页插件，自动识别数据库类型 https://baomidou.com/guide/interceptor-pagination.html
-     */
-    public PaginationInnerInterceptor paginationInnerInterceptor() {
-        PaginationInnerInterceptor paginationInnerInterceptor = new PaginationInnerInterceptor();
-        // 设置数据库类型为mysql
-        paginationInnerInterceptor.setDbType(DbType.MYSQL);
-        // 设置最大单页限制数量，默认 500 条，-1 不受限制
-        paginationInnerInterceptor.setMaxLimit(-1L);
-        return paginationInnerInterceptor;
-    }
-
-    /**
-     * 乐观锁插件 https://baomidou.com/guide/interceptor-optimistic-locker.html
-     */
-    public OptimisticLockerInnerInterceptor optimisticLockerInnerInterceptor() {
-        return new OptimisticLockerInnerInterceptor();
-    }
-
-    /**
-     * 如果是对全表的删除或更新操作，就会终止该操作 https://baomidou.com/guide/interceptor-block-attack.html
-     */
-    public BlockAttackInnerInterceptor blockAttackInnerInterceptor() {
-        return new BlockAttackInnerInterceptor();
     }
 
 }

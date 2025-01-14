@@ -3,8 +3,10 @@ package com.broad.system.entity;
 import com.baomidou.mybatisplus.annotation.*;
 import com.broad.common.annotation.Crypto;
 import lombok.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
-import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -139,4 +141,3 @@ public class SysUser implements Serializable {
     private String deptName;
 
 }
-

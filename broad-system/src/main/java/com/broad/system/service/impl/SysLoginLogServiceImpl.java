@@ -9,7 +9,7 @@ import eu.bitwalker.useragentutils.UserAgent;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -35,7 +35,7 @@ public class SysLoginLogServiceImpl extends ServiceImpl<SysLoginLogMapper, SysLo
     @Transactional(rollbackFor = Exception.class)
     public void saveLoginLog(HttpServletRequest request, SysLoginLog sysLoginLog) {
         // 获取用户代理对象
-        String ip = IpUtils.getIp(request);
+        String ip = IpUtils.getIpAddr(request);
         UserAgent userAgent = UserAgent.parseUserAgentString(request.getHeader("User-Agent"));
         sysLoginLog.setBrowser(userAgent.getBrowser().getName());
         sysLoginLog.setClientType(userAgent.getOperatingSystem().getDeviceType().getName());
@@ -46,4 +46,3 @@ public class SysLoginLogServiceImpl extends ServiceImpl<SysLoginLogMapper, SysLo
     }
 
 }
-

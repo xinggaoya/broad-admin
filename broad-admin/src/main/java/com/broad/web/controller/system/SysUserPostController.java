@@ -1,6 +1,5 @@
 package com.broad.web.controller.system;
 
-
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -12,7 +11,7 @@ import com.broad.system.entity.SysUserPost;
 import com.broad.system.service.SysUserPostService;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import java.io.Serializable;
 import java.util.List;
 
@@ -95,4 +94,3 @@ public class SysUserPostController extends BaseController {
         return ResultData.success(this.sysUserPostService.removeByIds(idList));
     }
 }
-

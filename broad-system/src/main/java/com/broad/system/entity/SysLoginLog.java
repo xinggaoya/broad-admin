@@ -76,4 +76,3 @@ public class SysLoginLog implements Serializable {
     private String userName;
 
 }
-

@@ -1,10 +1,10 @@
 package com.broad.system.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
+import lombok.Builder;
 import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -89,4 +89,3 @@ public class SysDictData implements Serializable {
     private String remark;
 
 }
-

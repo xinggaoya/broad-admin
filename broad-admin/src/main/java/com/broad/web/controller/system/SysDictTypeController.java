@@ -2,6 +2,7 @@ package com.broad.web.controller.system;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.broad.common.annotation.Log;
 import com.broad.common.enums.BusinessType;
 import com.broad.common.web.controller.BaseController;
@@ -18,7 +19,7 @@ import java.io.Serializable;
  * 字典类型表(SysDictType)表控制层
  *
  * @author XingGao
- * @since 2022 -10-13 15:00:02
+ * @since 2022-10-13 15:00:02
  */
 @RestController
 @RequestMapping("sysDictType")
@@ -38,8 +39,8 @@ public class SysDictTypeController extends BaseController {
     @GetMapping
     @SaCheckPermission("sys:dict:list")
     public TableDataInfo selectAll(SysDictType sysDictType) {
-        startPage();
-        return getDataTable(this.sysDictTypeService.list(new QueryWrapper<>(sysDictType)));
+        Page<SysDictType> page = startPage();
+        return getDataTable(sysDictTypeService.page(page, new QueryWrapper<>(sysDictType)));
     }
 
     /**
@@ -51,7 +52,7 @@ public class SysDictTypeController extends BaseController {
     @GetMapping("/list")
     @SaCheckPermission("sys:dict:list")
     public ResultData getDictTypeList(SysDictType sysDictType) {
-        return ResultData.success(this.sysDictTypeService.list(new QueryWrapper<>(sysDictType)));
+        return success(this.sysDictTypeService.list(new QueryWrapper<>(sysDictType)));
     }
 
     /**
@@ -63,7 +64,7 @@ public class SysDictTypeController extends BaseController {
     @GetMapping("{id}")
     @SaCheckPermission("sys:dict:list")
     public ResultData selectOne(@PathVariable Serializable id) {
-        return ResultData.success(this.sysDictTypeService.getById(id));
+        return success(this.sysDictTypeService.getById(id));
     }
 
     /**
@@ -76,7 +77,7 @@ public class SysDictTypeController extends BaseController {
     @SaCheckPermission("sys:dict:add")
     @Log(description = "新增字典类型", businessType = BusinessType.INSERT)
     public ResultData insert(@RequestBody SysDictType sysDictType) {
-        return ResultData.success(this.sysDictTypeService.save(sysDictType));
+        return toResult(this.sysDictTypeService.save(sysDictType));
     }
 
     /**
@@ -89,7 +90,7 @@ public class SysDictTypeController extends BaseController {
     @SaCheckPermission("sys:dict:update")
     @Log(description = "修改字典类型", businessType = BusinessType.UPDATE)
     public ResultData update(@RequestBody SysDictType sysDictType) {
-        return ResultData.success(this.sysDictTypeService.updateById(sysDictType));
+        return toResult(this.sysDictTypeService.updateById(sysDictType));
     }
 
     /**
@@ -102,7 +103,6 @@ public class SysDictTypeController extends BaseController {
     @SaCheckPermission("sys:dict:delete")
     @Log(description = "删除字典类型", businessType = BusinessType.DELETE)
     public ResultData delete(@PathVariable Long id) {
-        return ResultData.success(this.sysDictTypeService.deleteDictTypeById(id));
+        return toResult(this.sysDictTypeService.deleteDictTypeById(id));
     }
 }
-

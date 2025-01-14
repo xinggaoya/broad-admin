@@ -1,5 +1,6 @@
 package com.broad.common.utils;
 
+import com.alibaba.fastjson2.JSON;
 import com.broad.common.constant.Constants;
 import com.broad.common.text.Convert;
 import org.springframework.util.LinkedCaseInsensitiveMap;
@@ -7,14 +8,16 @@ import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.Enumeration;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -92,11 +95,7 @@ public class ServletUtils {
      * @return the request
      */
     public static HttpServletRequest getRequest() {
-        try {
-            return getRequestAttributes().getRequest();
-        } catch (Exception e) {
-            return null;
-        }
+        return getRequestAttributes().getRequest();
     }
 
     /**
@@ -105,11 +104,7 @@ public class ServletUtils {
      * @return the response
      */
     public static HttpServletResponse getResponse() {
-        try {
-            return getRequestAttributes().getResponse();
-        } catch (Exception e) {
-            return null;
-        }
+        return getRequestAttributes().getResponse();
     }
 
     /**
@@ -127,12 +122,8 @@ public class ServletUtils {
      * @return the request attributes
      */
     public static ServletRequestAttributes getRequestAttributes() {
-        try {
-            RequestAttributes attributes = RequestContextHolder.getRequestAttributes();
-            return (ServletRequestAttributes) attributes;
-        } catch (Exception e) {
-            return null;
-        }
+        RequestAttributes attributes = RequestContextHolder.getRequestAttributes();
+        return (ServletRequestAttributes) attributes;
     }
 
     /**
@@ -240,4 +231,36 @@ public class ServletUtils {
         }
     }
 
+    /**
+     * 获取请求参数
+     */
+    public static Map<String, String> getRequestParameters() {
+        Map<String, String> map = new LinkedHashMap<>();
+        Enumeration<String> names = getRequest().getParameterNames();
+        while (names.hasMoreElements()) {
+            String name = names.nextElement();
+            map.put(name, getRequest().getParameter(name));
+        }
+        return map;
+    }
+
+    /**
+     * 输出JSON
+     */
+    public static void writeJSON(HttpServletResponse response, Object object) {
+        writeJSON(response, JSON.toJSONString(object));
+    }
+
+    /**
+     * 输出JSON
+     */
+    public static void writeJSON(HttpServletResponse response, String jsonString) {
+        response.setContentType("application/json;charset=UTF-8");
+        try (PrintWriter writer = response.getWriter()) {
+            writer.write(jsonString);
+            writer.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

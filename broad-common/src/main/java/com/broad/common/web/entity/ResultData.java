@@ -55,6 +55,15 @@ public class ResultData extends LinkedHashMap<String, Object> implements Seriali
     /**
      * Success result data.
      *
+     * @return the result data
+     */
+    public static ResultData success() {
+        return new ResultData(HttpStatus.SUCCESS, "操作成功");
+    }
+
+    /**
+     * Success result data.
+     *
      * @param data the data
      * @return the result data
      */
@@ -108,6 +117,16 @@ public class ResultData extends LinkedHashMap<String, Object> implements Seriali
      */
     public static ResultData error(String message) {
         return new ResultData(HttpStatus.ERROR, message, null);
+    }
+
+    /**
+     * Warn result data.
+     *
+     * @param message the message
+     * @return the result data
+     */
+    public static ResultData warn(String message) {
+        return new ResultData(HttpStatus.WARN, message, null);
     }
 
     /**
@@ -210,7 +229,8 @@ public class ResultData extends LinkedHashMap<String, Object> implements Seriali
     }
 
     public String toString() {
-        return "{\"code\": " + this.getCode() + ", \"message\": " + this.transValue(this.getMsg()) + ", \"data\": " + this.transValue(this.getData()) + "}";
+        return "{\"code\": " + this.getCode() + ", \"message\": " + this.transValue(this.getMsg()) + ", \"data\": "
+                + this.transValue(this.getData()) + "}";
     }
 
     private String transValue(Object value) {

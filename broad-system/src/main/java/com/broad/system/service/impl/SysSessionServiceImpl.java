@@ -20,7 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Date;
 
 /**
@@ -50,7 +50,8 @@ public class SysSessionServiceImpl implements SysSessionService {
         if (StringUtils.isBlank(sysAdmin.getCodeValue())) {
             throw new ServiceException("验证码不能为空");
         }
-        SysUser admin = this.sysUserMapper.selectOne(new LambdaQueryWrapper<SysUser>().eq(SysUser::getUserName, sysAdmin.getUserName()));
+        SysUser admin = this.sysUserMapper
+                .selectOne(new LambdaQueryWrapper<SysUser>().eq(SysUser::getUserName, sysAdmin.getUserName()));
         if (ObjectUtils.isEmpty(admin)) {
             throw new ServiceException("用户名不存在");
         }
@@ -70,7 +71,7 @@ public class SysSessionServiceImpl implements SysSessionService {
             if (StpUtil.isDisable(admin.getId())) {
                 throw new ServiceException("账号已被封禁,请联系管理员");
             }
-            String ip = IpUtils.getIp(request);
+            String ip = IpUtils.getIpAddr(request);
             admin.setLastLogintime(new Date());
             admin.setLastLoginip(IpUtils.getIpAddress(ip));
             admin.setLastIp(ip);

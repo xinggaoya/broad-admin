@@ -1,12 +1,10 @@
 package com.broad.common.web.controller;
 
-import com.broad.common.constant.HttpStatus;
-import com.broad.common.utils.DateUtils;
-import com.broad.common.utils.PageUtils;
-import com.broad.common.web.entity.ResultData;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.broad.common.web.page.TableDataInfo;
-import com.github.pagehelper.PageInfo;
-import lombok.extern.slf4j.Slf4j;
+import com.broad.common.web.entity.ResultData;
+import com.broad.common.utils.ServletUtils;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 
@@ -17,15 +15,12 @@ import java.util.List;
 /**
  * web层通用数据处理
  *
- * @author XingGao
+ * @author broad
  */
-@Slf4j
 public class BaseController {
 
     /**
      * 将前台传递过来的日期格式的字符串，自动转化为Date类型
-     *
-     * @param binder the binder
      */
     @InitBinder
     public void initBinder(WebDataBinder binder) {
@@ -33,7 +28,7 @@ public class BaseController {
         binder.registerCustomEditor(Date.class, new PropertyEditorSupport() {
             @Override
             public void setAsText(String text) {
-                setValue(DateUtils.parseDate(text));
+                setValue(com.broad.common.utils.DateUtils.parseDate(text));
             }
         });
     }
@@ -41,88 +36,111 @@ public class BaseController {
     /**
      * 设置请求分页数据
      */
-    protected void startPage() {
-        PageUtils.startPage();
+    protected <T> Page<T> startPage() {
+        Integer pageNum = ServletUtils.getParameterToInt("pageNum");
+        Integer pageSize = ServletUtils.getParameterToInt("pageSize");
+        if (pageNum == null) {
+            pageNum = 1;
+        }
+        if (pageSize == null) {
+            pageSize = 10;
+        }
+        return new Page<>(pageNum, pageSize);
     }
 
     /**
-     * 清理分页的线程变量
+     * 设置请求分页数据
      */
-    protected void clearPage() {
-        PageUtils.clearPage();
+    protected <T> Page<T> startPage(Integer pageNum, Integer pageSize) {
+        if (pageNum == null) {
+            pageNum = 1;
+        }
+        if (pageSize == null) {
+            pageSize = 10;
+        }
+        return new Page<>(pageNum, pageSize);
     }
 
     /**
      * 响应请求分页数据
-     *
-     * @param list the list
-     * @return the data table
      */
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    protected TableDataInfo getDataTable(List<?> list) {
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    protected TableDataInfo getDataTable(IPage<?> page) {
         TableDataInfo rspData = new TableDataInfo();
-        rspData.setCode(HttpStatus.SUCCESS);
-        rspData.setRows(list);
-        rspData.setMessage("查询成功");
-        rspData.setTotal(new PageInfo(list).getTotal());
+        rspData.setCode(0);
+        rspData.setRows(page.getRecords());
+        rspData.setTotal(page.getTotal());
         return rspData;
     }
 
     /**
-     * 响应返回结果
-     *
-     * @param rows 影响行数
-     * @return 操作结果 result data
+     * 响应请求分页数据
      */
-    protected ResultData toResult(int rows) {
-        return rows > 0 ? ResultData.ok() : ResultData.error();
+    protected TableDataInfo getDataTable(List<?> list) {
+        TableDataInfo rspData = new TableDataInfo();
+        rspData.setCode(0);
+        rspData.setRows(list);
+        rspData.setTotal(list.size());
+        return rspData;
     }
 
     /**
-     * 响应返回结果
-     *
-     * @param result 结果
-     * @return 操作结果 result data
+     * 响应请求分页数据
+     */
+    protected TableDataInfo getDataTable(List<?> list, long total) {
+        TableDataInfo rspData = new TableDataInfo();
+        rspData.setCode(0);
+        rspData.setRows(list);
+        rspData.setTotal(total);
+        return rspData;
+    }
+
+    /**
+     * 返回成功消息
+     */
+    protected ResultData success() {
+        return ResultData.success();
+    }
+
+    /**
+     * 返回成功消息
+     */
+    protected ResultData success(Object data) {
+        return ResultData.success(data);
+    }
+
+    /**
+     * 返回失败消息
+     */
+    protected ResultData error() {
+        return ResultData.error();
+    }
+
+    /**
+     * 返回失败消息
+     */
+    protected ResultData error(String message) {
+        return ResultData.error(message);
+    }
+
+    /**
+     * 返回警告消息
+     */
+    protected ResultData warn(String message) {
+        return ResultData.warn(message);
+    }
+
+    /**
+     * 返回结果
      */
     protected ResultData toResult(boolean result) {
         return result ? success() : error();
     }
 
     /**
-     * 返回成功
-     *
-     * @return the result data
+     * 返回结果
      */
-    public ResultData success() {
-        return ResultData.ok();
-    }
-
-    /**
-     * 返回失败消息
-     *
-     * @return the result data
-     */
-    public ResultData error() {
-        return ResultData.error();
-    }
-
-    /**
-     * 返回成功消息
-     *
-     * @param message the message
-     * @return the result data
-     */
-    public ResultData success(String message) {
-        return ResultData.ok(message);
-    }
-
-    /**
-     * 返回失败消息
-     *
-     * @param message the message
-     * @return the result data
-     */
-    public ResultData error(String message) {
-        return ResultData.error(message);
+    protected ResultData toResult(int rows) {
+        return rows > 0 ? success() : error();
     }
 }

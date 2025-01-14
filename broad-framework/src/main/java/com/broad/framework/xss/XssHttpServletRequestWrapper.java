@@ -1,112 +1,73 @@
 package com.broad.framework.xss;
 
 import com.broad.common.utils.StringUtils;
-import com.broad.common.utils.xss.JsoupUtil;
+import com.broad.common.utils.html.EscapeUtil;
+import jakarta.servlet.ReadListener;
+import jakarta.servlet.ServletInputStream;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequestWrapper;
 import org.apache.commons.io.IOUtils;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 
-import javax.servlet.ReadListener;
-import javax.servlet.ServletInputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 /**
- * @author: XingGao
- * @date: 2022/12/21 15:24
- * @description:
+ * XSS过滤处理
+ *
+ * @author XingGao
  */
 public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {
-    private final boolean isIncludeRichText;
-    HttpServletRequest orgRequest;
-
-
-    public XssHttpServletRequestWrapper(HttpServletRequest request, boolean isIncludeRichText) {
+    /**
+     * @param request
+     */
+    public XssHttpServletRequestWrapper(HttpServletRequest request) {
         super(request);
-        orgRequest = request;
-        this.isIncludeRichText = isIncludeRichText;
-    }
-
-    /**
-     * 获取最原始的request的静态方法
-     *
-     * @return
-     */
-    public static HttpServletRequest getOrgRequest(HttpServletRequest req) {
-        if (req instanceof XssHttpServletRequestWrapper) {
-            return ((XssHttpServletRequestWrapper) req).getOrgRequest();
-        }
-        return req;
-    }
-
-    /**
-     * 覆盖getParameter方法，将参数名和参数值都做xss过滤.
-     * 如果需要获得原始的值，则通过super.getParameterValues(name)来获取
-     * getParameterNames,getParameterValues和getParameterMap也可能需要覆盖
-     */
-    @Override
-    public String getParameter(String name) {
-        if (("content".equals(name) || name.endsWith("WithHtml")) && !isIncludeRichText) {
-            return super.getParameter(name);
-        }
-        name = JsoupUtil.clean(name);
-        String value = super.getParameter(name);
-        if (StringUtils.isNotBlank(value)) {
-            value = JsoupUtil.clean(value);
-        }
-        return value;
     }
 
     @Override
     public String[] getParameterValues(String name) {
-        String[] arr = super.getParameterValues(name);
-        if (arr != null) {
-            for (int i = 0; i < arr.length; i++) {
-                arr[i] = JsoupUtil.clean(arr[i]);
+        String[] values = super.getParameterValues(name);
+        if (values != null) {
+            int length = values.length;
+            String[] escapseValues = new String[length];
+            for (int i = 0; i < length; i++) {
+                // 防xss攻击和过滤前后空格
+                escapseValues[i] = EscapeUtil.clean(values[i]).trim();
             }
+            return escapseValues;
         }
-        return arr;
-    }
-
-    /**
-     * 覆盖getHeader方法，将参数名和参数值都做xss过滤。<br/>
-     * 如果需要获得原始的值，则通过super.getHeaders(name)来获取<br/>
-     * getHeaderNames 也可能需要覆盖
-     */
-    @Override
-    public String getHeader(String name) {
-        name = JsoupUtil.clean(name);
-        String value = super.getHeader(name);
-        if (StringUtils.isNotBlank(value)) {
-            value = JsoupUtil.clean(value);
-        }
-        return value;
+        return super.getParameterValues(name);
     }
 
     @Override
     public ServletInputStream getInputStream() throws IOException {
         // 非json类型，直接返回
-        if (!super.getHeader("Content-Type").contains("application/json")) {
+        if (!isJsonRequest()) {
             return super.getInputStream();
         }
+
         // 为空，直接返回
         String json = IOUtils.toString(super.getInputStream(), StandardCharsets.UTF_8);
-        if (StringUtils.isBlank(json)) {
+        if (StringUtils.isEmpty(json)) {
             return super.getInputStream();
         }
+
         // xss过滤
-        json = JsoupUtil.clean(json);
-        final ByteArrayInputStream bis = new ByteArrayInputStream(json.getBytes(StandardCharsets.UTF_8));
+        json = EscapeUtil.clean(json).trim();
+        byte[] jsonBytes = json.getBytes(StandardCharsets.UTF_8);
+        final ByteArrayInputStream bis = new ByteArrayInputStream(jsonBytes);
         return new ServletInputStream() {
             @Override
             public boolean isFinished() {
-                return false;
+                return true;
             }
 
             @Override
             public boolean isReady() {
-                return false;
+                return true;
             }
 
             @Override
@@ -114,19 +75,17 @@ public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {
             }
 
             @Override
-            public int read() throws IOException {
+            public int read() {
                 return bis.read();
             }
         };
     }
 
     /**
-     * 获取最原始的request
-     *
-     * @return
+     * 是否是Json请求
      */
-    public HttpServletRequest getOrgRequest() {
-        return orgRequest;
+    public boolean isJsonRequest() {
+        String header = super.getHeader(HttpHeaders.CONTENT_TYPE);
+        return StringUtils.startsWithIgnoreCase(header, MediaType.APPLICATION_JSON_VALUE);
     }
-
 }

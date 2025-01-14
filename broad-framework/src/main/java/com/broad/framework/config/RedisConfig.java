@@ -17,14 +17,15 @@ import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.RedisSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.time.Duration;
 
 /**
- * The type Redis config.
+ * Redis配置类
  *
  * @Author: XingGao
- * @Date: 2022 /10/23 18:58
+ * @Date: 2022/10/23 18:58
  * @Description:
  */
 @Configuration
@@ -32,36 +33,29 @@ import java.time.Duration;
 @EnableCaching
 public class RedisConfig {
 
-    /**
-     * Redis template redis template.
-     *
-     * @param connectionFactory the connection factory
-     * @return the redis template
-     */
     @Bean
-    @SuppressWarnings(value = {"unchecked", "rawtypes"})
-    public RedisTemplate<Object, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
-        RedisTemplate<Object, Object> template = new RedisTemplate<>();
+    @SuppressWarnings(value = { "unchecked", "rawtypes" })
+    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
+        RedisTemplate<String, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(connectionFactory);
 
-        FastJsonJsonRedisSerializer serializer = new FastJsonJsonRedisSerializer(Object.class);
+        // 使用 GenericJackson2JsonRedisSerializer 作为默认序列化器
+        GenericJackson2JsonRedisSerializer jsonRedisSerializer = new GenericJackson2JsonRedisSerializer();
+        StringRedisSerializer stringRedisSerializer = new StringRedisSerializer();
 
-        // 使用StringRedisSerializer来序列化和反序列化redis的key值
-        template.setKeySerializer(RedisSerializer.string());
-        template.setValueSerializer(serializer);
+        // 设置key和value的序列化规则
+        template.setKeySerializer(stringRedisSerializer);
+        template.setValueSerializer(jsonRedisSerializer);
 
-        // Hash的key也采用StringRedisSerializer的序列化方式
-        template.setHashKeySerializer(RedisSerializer.string());
-        template.setHashValueSerializer(serializer);
+        // 设置hash key和value的序列化规则
+        template.setHashKeySerializer(stringRedisSerializer);
+        template.setHashValueSerializer(jsonRedisSerializer);
+
+        // 初始化RedisTemplate
         template.afterPropertiesSet();
         return template;
     }
 
-    /**
-     * Limit script default redis script.
-     *
-     * @return the default redis script
-     */
     @Bean
     public DefaultRedisScript<Long> limitScript() {
         DefaultRedisScript<Long> redisScript = new DefaultRedisScript<>();
@@ -70,11 +64,6 @@ public class RedisConfig {
         return redisScript;
     }
 
-    /**
-     * Sass key generator key generator.
-     *
-     * @return the key generator
-     */
     @Bean(name = "selfKeyGenerator")
     public KeyGenerator sassKeyGenerator() {
         final String prefix = "self";
@@ -93,30 +82,22 @@ public class RedisConfig {
         };
     }
 
-    /**
-     * Cache manager cache manager.
-     *
-     * @param connectionFactory the connection factory
-     * @return the cache manager
-     */
     @Bean
-    public CacheManager cacheManager(LettuceConnectionFactory connectionFactory) {
-        RedisSerializationContext.SerializationPair<Object> pair = RedisSerializationContext.SerializationPair
-                .fromSerializer(new GenericJackson2JsonRedisSerializer());
-        RedisCacheConfiguration defaultCacheConfig = RedisCacheConfiguration
-                .defaultCacheConfig()
-                .serializeValuesWith(pair)
-                // 设置缓存有效期一周
-                .entryTtl(Duration.ofDays(7));
-        return RedisCacheManager
-                .builder(RedisCacheWriter.nonLockingRedisCacheWriter(connectionFactory))
-                .cacheDefaults(defaultCacheConfig).build();
+    public CacheManager cacheManager(RedisConnectionFactory connectionFactory) {
+        // 创建缓存配置
+        RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig()
+                .entryTtl(Duration.ofHours(1)) // 设置缓存有效期为1小时
+                .serializeKeysWith(
+                        RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
+                .serializeValuesWith(RedisSerializationContext.SerializationPair
+                        .fromSerializer(new GenericJackson2JsonRedisSerializer()))
+                .disableCachingNullValues();
 
+        return RedisCacheManager.builder(connectionFactory)
+                .cacheDefaults(config)
+                .build();
     }
 
-    /**
-     * 限流脚本
-     */
     private String limitScriptText() {
         return "local key = KEYS[1]\n" +
                 "local count = tonumber(ARGV[1])\n" +

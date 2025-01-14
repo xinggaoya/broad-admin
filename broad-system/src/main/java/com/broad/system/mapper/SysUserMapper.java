@@ -1,6 +1,8 @@
 package com.broad.system.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.broad.system.entity.SysUser;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -10,8 +12,8 @@ import java.util.List;
 /**
  * 管理员表(SysUser)表数据库访问层
  *
- * @author XingGao
- * @since 2022 -07-09 17:19:40
+ * @author broad
+ * @since 2022-07-09 17:19:40
  */
 @Mapper
 public interface SysUserMapper extends BaseMapper<SysUser> {
@@ -36,10 +38,11 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
     /**
      * 查询所有.
      *
-     * @param sysAdmin the sys admin
-     * @return the page
+     * @param sysAdmin 查询条件
+     * @param page     分页对象
+     * @return 分页结果
      */
-    List<SysUser> selectAll(SysUser sysAdmin);
+    IPage<SysUser> selectAll(@Param("sysAdmin") SysUser sysAdmin, @Param("page") Page<SysUser> page);
 
     /**
      * 通过ids批量查询
@@ -50,4 +53,3 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
     List<SysUser> selectAllByIds(@Param("ids") List<Long> ids);
 
 }
-

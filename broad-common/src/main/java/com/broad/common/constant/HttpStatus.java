@@ -77,6 +77,11 @@ public class HttpStatus {
     public static final int UNSUPPORTED_TYPE = 415;
 
     /**
+     * 警告消息
+     */
+    public static final int WARN = 601;
+
+    /**
      * 系统内部错误
      */
     public static final int ERROR = 500;

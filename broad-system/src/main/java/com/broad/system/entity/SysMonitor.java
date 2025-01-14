@@ -1,6 +1,7 @@
 package com.broad.system.entity;
 
 import lombok.Data;
+import java.io.Serializable;
 
 /**
  * @author: XingGao
@@ -8,7 +9,7 @@ import lombok.Data;
  * @description:
  */
 @Data
-public class SysMonitor {
+public class SysMonitor implements Serializable {
 
     /**
      * 内存总量

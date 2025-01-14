@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.broad</groupId>
@@ -20,167 +20,209 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.7.17</version>
-        <relativePath/>
+        <version>3.2.1</version>
+        <relativePath />
     </parent>
 
     <properties>
-        <validator-version>5.3.5.Final</validator-version>
-        <boot-version>2.7.17</boot-version>
-        <broad-version>2.2.0</broad-version>
-        <druid-version>1.2.8</druid-version>
-        <mybatis-plus.version>3.5.6</mybatis-plus.version>
-        <satoken-version>1.38.0</satoken-version>
-        <swagger-version>3.0.0</swagger-version>
-        <xss-version>1.15.3</xss-version>
-        <fastjson-version>2.0.10</fastjson-version>
-        <ip2region-version>2.6.6</ip2region-version>
-        <pagehelper-version>2.1.0</pagehelper-version>
-        <poi.version>4.1.2</poi.version>
-        <commons.io.version>2.11.0</commons.io.version>
-        <bitwalker-version>1.21</bitwalker-version>
-        <hutool.version>5.8.27</hutool.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <java.version>17</java.version>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <spring-boot.version>3.2.1</spring-boot.version>
+        <druid.version>1.2.20</druid.version>
+        <mybatis-plus.version>3.5.10.1</mybatis-plus.version>
+        <satoken.version>1.39.0</satoken.version>
+        <springdoc.version>2.3.0</springdoc.version>
+        <fastjson.version>2.0.45</fastjson.version>
+        <commons.io.version>2.15.1</commons.io.version>
+        <commons.fileupload.version>1.5</commons.fileupload.version>
+        <commons.collections.version>3.2.2</commons.collections.version>
+        <poi.version>5.2.5</poi.version>
+        <velocity.version>2.3</velocity.version>
+        <jwt.version>4.4.0</jwt.version>
+        <bitwalker.version>1.21</bitwalker.version>
+        <lombok.version>1.18.30</lombok.version>
+        <pagehelper.boot.version>1.4.7</pagehelper.boot.version>
+        <jsoup.version>1.17.2</jsoup.version>
+        <hutool.version>5.8.25</hutool.version>
+        <broad.version>2.2.0</broad.version>
     </properties>
 
+    <!-- 依赖声明 -->
     <dependencyManagement>
         <dependencies>
-
-            <!--  springboot 版本控制   -->
+            <!-- SpringBoot的依赖配置-->
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
-                <version>${boot-version}</version>
+                <version>${spring-boot.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-
 
             <!-- 阿里数据库连接池 -->
             <dependency>
                 <groupId>com.alibaba</groupId>
                 <artifactId>druid-spring-boot-starter</artifactId>
-                <version>${druid-version}</version>
+                <version>${druid.version}</version>
             </dependency>
 
-
-            <!-- SpringBoot集成mybatis-plus框架 -->
+            <!-- MyBatis Plus -->
             <dependency>
                 <groupId>com.baomidou</groupId>
-                <artifactId>mybatis-plus-boot-starter</artifactId>
+                <artifactId>mybatis-plus-bom</artifactId>
                 <version>${mybatis-plus.version}</version>
-            </dependency>
-
-            <!-- Sa-Token 权限认证, 在线文档：http://sa-token.dev33.cn/ -->
-            <dependency>
-                <groupId>cn.dev33</groupId>
-                <artifactId>sa-token-dependencies</artifactId>
                 <type>pom</type>
                 <scope>import</scope>
-                <version>${satoken-version}</version>
             </dependency>
 
-            <!--  防XSS攻击   -->
+            <!-- Sa-Token -->
             <dependency>
-                <groupId>org.jsoup</groupId>
-                <artifactId>jsoup</artifactId>
-                <version>${xss-version}</version>
+                <groupId>cn.dev33</groupId>
+                <artifactId>sa-token-spring-boot3-starter</artifactId>
+                <version>${satoken.version}</version>
             </dependency>
 
-            <!-- io常用工具类 -->
+            <!-- Sa-Token Redis -->
+            <dependency>
+                <groupId>cn.dev33</groupId>
+                <artifactId>sa-token-redis-jackson</artifactId>
+                <version>${satoken.version}</version>
+            </dependency>
+
+            <!-- FastJson2 -->
+            <dependency>
+                <groupId>com.alibaba.fastjson2</groupId>
+                <artifactId>fastjson2</artifactId>
+                <version>${fastjson.version}</version>
+            </dependency>
+
+            <!-- Commons IO -->
             <dependency>
                 <groupId>commons-io</groupId>
                 <artifactId>commons-io</artifactId>
                 <version>${commons.io.version}</version>
             </dependency>
 
-            <!-- fastjson2 -->
-            <dependency>
-                <groupId>com.alibaba.fastjson2</groupId>
-                <artifactId>fastjson2</artifactId>
-                <version>${fastjson-version}</version>
-            </dependency>
-
-            <!-- pagehelper 分页插件 -->
-            <dependency>
-                <groupId>com.github.pagehelper</groupId>
-                <artifactId>pagehelper-spring-boot-starter</artifactId>
-                <version>${pagehelper-version}</version>
-            </dependency>
-
-            <!-- excel工具 -->
+            <!-- POI -->
             <dependency>
                 <groupId>org.apache.poi</groupId>
                 <artifactId>poi-ooxml</artifactId>
                 <version>${poi.version}</version>
             </dependency>
 
-            <!-- ip2region ip归属地 -->
-            <dependency>
-                <groupId>org.lionsoul</groupId>
-                <artifactId>ip2region</artifactId>
-                <version>${ip2region-version}</version>
-            </dependency>
-
-            <!--  hutool工具类  -->
-            <dependency>
-                <groupId>cn.hutool</groupId>
-                <artifactId>hutool-bom</artifactId>
-                <version>${hutool.version}</version>
-                <type>pom</type>
-                <!-- 注意这里是import -->
-                <scope>import</scope>
-            </dependency>
+            <!-- UserAgent -->
             <dependency>
                 <groupId>eu.bitwalker</groupId>
                 <artifactId>UserAgentUtils</artifactId>
-                <version>${bitwalker-version}</version>
+                <version>${bitwalker.version}</version>
             </dependency>
 
-            <!--  Swagger3    -->
+            <!-- JSoup -->
             <dependency>
-                <groupId>io.springfox</groupId>
-                <artifactId>springfox-boot-starter</artifactId>
-                <version>${swagger-version}</version>
+                <groupId>org.jsoup</groupId>
+                <artifactId>jsoup</artifactId>
+                <version>${jsoup.version}</version>
             </dependency>
 
-            <!-- 表单效验-->
+            <!-- Hutool -->
             <dependency>
-                <groupId>org.hibernate</groupId>
-                <artifactId>hibernate-validator</artifactId>
-                <version>${validator-version}</version>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-captcha</artifactId>
+                <version>${hutool.version}</version>
             </dependency>
-            <!-- 系统模块  -->
+
+            <!-- SpringDoc -->
+            <dependency>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+                <version>${springdoc.version}</version>
+            </dependency>
+
+            <!-- Jakarta EE Web API -->
+            <dependency>
+                <groupId>jakarta.platform</groupId>
+                <artifactId>jakarta.jakartaee-web-api</artifactId>
+                <version>10.0.0</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <!-- 系统模块 -->
             <dependency>
                 <groupId>com.broad</groupId>
                 <artifactId>broad-system</artifactId>
-                <version>${broad-version}</version>
+                <version>${broad.version}</version>
             </dependency>
-            <!-- 公共模块  -->
+
+            <!-- 公共模块 -->
             <dependency>
                 <groupId>com.broad</groupId>
                 <artifactId>broad-common</artifactId>
-                <version>${broad-version}</version>
+                <version>${broad.version}</version>
             </dependency>
-            <!-- 框架模块  -->
+
+            <!-- 框架模块 -->
             <dependency>
                 <groupId>com.broad</groupId>
                 <artifactId>broad-framework</artifactId>
-                <version>${broad-version}</version>
+                <version>${broad.version}</version>
             </dependency>
-            <!-- 生成模块  -->
-            <dependency>
-                <groupId>com.broad</groupId>
-                <artifactId>broad-generator</artifactId>
-                <version>${broad-version}</version>
-            </dependency>
-            <!-- 定时任务模块  -->
+
+            <!-- 定时任务模块 -->
             <dependency>
                 <groupId>com.broad</groupId>
                 <artifactId>broad-quartz</artifactId>
-                <version>${broad-version}</version>
+                <version>${broad.version}</version>
             </dependency>
 
+            <!-- JSqlParser -->
+            <dependency>
+                <groupId>com.github.jsqlparser</groupId>
+                <artifactId>jsqlparser</artifactId>
+                <version>4.7</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
+    <repositories>
+        <repository>
+            <id>public</id>
+            <name>aliyun nexus</name>
+            <url>https://maven.aliyun.com/repository/public</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>public</id>
+            <name>aliyun nexus</name>
+            <url>https://maven.aliyun.com/repository/public</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

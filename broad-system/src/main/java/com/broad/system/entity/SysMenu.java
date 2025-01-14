@@ -117,7 +117,6 @@ public class SysMenu implements Serializable {
     @TableField(value = "update_time", fill = FieldFill.INSERT_UPDATE)
     private Date updateTime;
 
-
     /**
      * 子路由
      */
@@ -130,4 +129,3 @@ public class SysMenu implements Serializable {
     @TableField(exist = false)
     private BooleanEnum isLeaf;
 }
-

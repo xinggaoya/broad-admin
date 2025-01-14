@@ -6,6 +6,7 @@ import lombok.*;
 
 import java.util.Date;
 import java.util.List;
+import java.io.Serializable;
 
 /**
  * 管理分组表(SysRole)实体类
@@ -17,9 +18,9 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode
 @TableName("sys_role")
-public class SysRole extends Model<SysRole> {
+public class SysRole extends Model<SysRole> implements Serializable {
 
     /**
      * ID
@@ -27,13 +28,11 @@ public class SysRole extends Model<SysRole> {
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
-
     /**
      * 组名
      */
     @TableField(value = "name")
     private String name;
-
 
     /**
      * 半选中规则
@@ -70,6 +69,4 @@ public class SysRole extends Model<SysRole> {
     @TableField(value = "remarks")
     private String remarks;
 
-
 }
-

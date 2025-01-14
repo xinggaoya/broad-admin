@@ -22,7 +22,7 @@ import org.apache.poi.xssf.usermodel.XSSFDataValidation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
@@ -51,7 +51,7 @@ public class ExcelUtil<T> {
     /**
      * The constant FORMULA_STR.
      */
-    public static final String[] FORMULA_STR = {"=", "-", "+", "@"};
+    public static final String[] FORMULA_STR = { "=", "-", "+", "@" };
 
     /**
      * Excel sheet最大行数，默认65536
@@ -383,9 +383,11 @@ public class ExcelUtil<T> {
                                 val = Convert.toStr(val);
                             }
                         }
-                    } else if ((Integer.TYPE == fieldType || Integer.class == fieldType) && StringUtils.isNumeric(Convert.toStr(val))) {
+                    } else if ((Integer.TYPE == fieldType || Integer.class == fieldType)
+                            && StringUtils.isNumeric(Convert.toStr(val))) {
                         val = Convert.toInt(val);
-                    } else if ((Long.TYPE == fieldType || Long.class == fieldType) && StringUtils.isNumeric(Convert.toStr(val))) {
+                    } else if ((Long.TYPE == fieldType || Long.class == fieldType)
+                            && StringUtils.isNumeric(Convert.toStr(val))) {
                         val = Convert.toLong(val);
                     } else if (Double.TYPE == fieldType || Double.class == fieldType) {
                         val = Convert.toDouble(val);
@@ -614,10 +616,12 @@ public class ExcelUtil<T> {
             cell.setCellValue(StringUtils.isNull(cellValue) ? attr.defaultValue() : cellValue + attr.suffix());
         } else if (ColumnType.NUMERIC == attr.cellType()) {
             if (StringUtils.isNotNull(value)) {
-                cell.setCellValue(StringUtils.contains(Convert.toStr(value), ".") ? Convert.toDouble(value) : Convert.toInt(value));
+                cell.setCellValue(StringUtils.contains(Convert.toStr(value), ".") ? Convert.toDouble(value)
+                        : Convert.toInt(value));
             }
         } else if (ColumnType.IMAGE == attr.cellType()) {
-            ClientAnchor anchor = new XSSFClientAnchor(0, 0, 0, 0, (short) cell.getColumnIndex(), cell.getRow().getRowNum(), (short) (cell.getColumnIndex() + 1), cell.getRow().getRowNum() + 1);
+            ClientAnchor anchor = new XSSFClientAnchor(0, 0, 0, 0, (short) cell.getColumnIndex(),
+                    cell.getRow().getRowNum(), (short) (cell.getColumnIndex() + 1), cell.getRow().getRowNum() + 1);
             String imagePath = Convert.toStr(value);
             if (StringUtils.isNotEmpty(imagePath)) {
                 byte[] data = ImageUtils.getImage(imagePath);
@@ -673,7 +677,8 @@ public class ExcelUtil<T> {
         // 写入列信息
         cell.setCellValue(attr.name());
         setDataValidation(attr, row, column);
-        cell.setCellStyle(styles.get(StringUtils.format("header_{}_{}", attr.headerColor(), attr.headerBackgroundColor())));
+        cell.setCellStyle(
+                styles.get(StringUtils.format("header_{}_{}", attr.headerColor(), attr.headerBackgroundColor())));
         return cell;
     }
 
@@ -684,10 +689,10 @@ public class ExcelUtil<T> {
      * @return the image type
      */
     public int getImageType(byte[] value) {
-        String type = FileTypeUtils.getFileExtendName(value);
-        if ("JPG".equalsIgnoreCase(type)) {
+        String extension = FileTypeUtils.getExtension(value);
+        if ("JPG".equalsIgnoreCase(extension)) {
             return Workbook.PICTURE_TYPE_JPEG;
-        } else if ("PNG".equalsIgnoreCase(type)) {
+        } else if ("PNG".equalsIgnoreCase(extension)) {
             return Workbook.PICTURE_TYPE_PNG;
         }
         return Workbook.PICTURE_TYPE_JPEG;
@@ -705,9 +710,10 @@ public class ExcelUtil<T> {
      * @param endCol        结束列
      */
     public void setPromptOrValidation(Sheet sheet, String[] textlist, String promptContent, int firstRow, int endRow,
-                                      int firstCol, int endCol) {
+            int firstCol, int endCol) {
         DataValidationHelper helper = sheet.getDataValidationHelper();
-        DataValidationConstraint constraint = textlist.length > 0 ? helper.createExplicitListConstraint(textlist) : helper.createCustomConstraint("DD1");
+        DataValidationConstraint constraint = textlist.length > 0 ? helper.createExplicitListConstraint(textlist)
+                : helper.createCustomConstraint("DD1");
         CellRangeAddressList regions = new CellRangeAddressList(firstRow, endRow, firstCol, endCol);
         DataValidation dataValidation = helper.createValidation(constraint, regions);
         if (StringUtils.isNotEmpty(promptContent)) {
@@ -764,7 +770,8 @@ public class ExcelUtil<T> {
             if (attr.isExport()) {
                 // 创建cell
                 cell = row.createCell(column);
-                cell.setCellStyle(styles.get(StringUtils.format("data_{}_{}_{}", attr.align(), attr.color(), attr.backgroundColor())));
+                cell.setCellStyle(styles
+                        .get(StringUtils.format("data_{}_{}_{}", attr.align(), attr.color(), attr.backgroundColor())));
 
                 // 用于读取对象中的属性
                 Object value = getTargetValue(vo, field, attr);
@@ -801,7 +808,7 @@ public class ExcelUtil<T> {
     public String dataFormatHandlerAdapter(Object value, Excel excel) {
         try {
             Object instance = excel.handler().newInstance();
-            Method formatMethod = excel.handler().getMethod("format", new Class[]{Object.class, String[].class});
+            Method formatMethod = excel.handler().getMethod("format", new Class[] { Object.class, String[].class });
             value = formatMethod.invoke(instance, value, excel.args());
         } catch (Exception e) {
             log.error("不能格式化数据 " + excel.handler(), e.getMessage());
@@ -894,7 +901,8 @@ public class ExcelUtil<T> {
      */
     private void createExcelField() {
         this.fields = getFields();
-        this.fields = this.fields.stream().sorted(Comparator.comparing(objects -> ((Excel) objects[1]).sort())).collect(Collectors.toList());
+        this.fields = this.fields.stream().sorted(Comparator.comparing(objects -> ((Excel) objects[1]).sort()))
+                .collect(Collectors.toList());
         this.maxHeight = getRowHeight();
     }
 
@@ -915,7 +923,7 @@ public class ExcelUtil<T> {
                     Excel attr = field.getAnnotation(Excel.class);
                     if (attr != null && (attr.type() == Type.ALL || attr.type() == type)) {
                         field.setAccessible(true);
-                        fields.add(new Object[]{field, attr});
+                        fields.add(new Object[] { field, attr });
                     }
                 }
 
@@ -926,7 +934,7 @@ public class ExcelUtil<T> {
                     for (Excel attr : excels) {
                         if (attr != null && (attr.type() == Type.ALL || attr.type() == type)) {
                             field.setAccessible(true);
-                            fields.add(new Object[]{field, attr});
+                            fields.add(new Object[] { field, attr });
                         }
                     }
                 }
