@@ -118,7 +118,7 @@
 
 <script lang="ts" setup>
 import { h, ref, reactive, onMounted } from 'vue'
-import { useMessage, useDialog } from 'naive-ui'
+import { useMessage, useDialog, NButton, NPopconfirm, NSpace, NTag } from 'naive-ui'
 import { AddOutline, RefreshOutline } from '@vicons/ionicons5'
 import type { FormInst } from 'naive-ui'
 import { usePagination } from '@/hooks/useTable'
@@ -199,7 +199,7 @@ const columns = [
     render: (row: any) => {
       const status = sys_normal_disable.value.find((item) => item.value === row.status)
       return h(
-        'n-tag',
+        NTag,
         {
           type: row.status === '0' ? 'success' : 'error',
           round: true,
@@ -215,31 +215,36 @@ const columns = [
     title: '操作',
     key: 'actions',
     fixed: 'right',
+    width: 180,
     render: (row: any) => {
-      return h('n-space', null, {
+      return h(NSpace, null, {
         default: () => [
           h(
-            'n-button',
+            NButton,
             {
-              text: true,
               type: 'primary',
-              onClick: () => handleEdit(row)
+              size: 'small',
+              ghost: true,
+              onClick: () => handleEdit(row),
+              'v-auth': "['sys:dict:edit']"
             },
             { default: () => '编辑' }
           ),
           h(
-            'n-popconfirm',
+            NPopconfirm,
             {
               onPositiveClick: () => handleDelete(row)
             },
             {
-              default: () => '确认删除该字典吗？',
+              default: () => '确认删除？',
               trigger: () =>
                 h(
-                  'n-button',
+                  NButton,
                   {
-                    text: true,
-                    type: 'error'
+                    type: 'error',
+                    size: 'small',
+                    ghost: true,
+                    'v-auth': "['sys:dict:delete']"
                   },
                   { default: () => '删除' }
                 )
@@ -411,6 +416,19 @@ onMounted(() => {
 
   :deep(.n-space) {
     margin-bottom: 16px;
+  }
+
+  .table-actions {
+    display: flex;
+    align-items: center;
+
+    .n-button {
+      margin-right: 8px;
+
+      &:last-child {
+        margin-right: 0;
+      }
+    }
   }
 }
 </style>

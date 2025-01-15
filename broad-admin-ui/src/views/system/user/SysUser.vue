@@ -423,7 +423,7 @@ const tableColumns: DataTableColumns = [
   {
     title: '操作',
     key: 'actions',
-    width: 200,
+    width: 300,
     fixed: 'right',
     render: (row) => {
       const user = row as unknown as UserForm
