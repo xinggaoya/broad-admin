@@ -27,7 +27,6 @@ import java.util.List;
 @CacheConfig(cacheNames = CacheConstants.ROUTE_KEY, keyGenerator = CacheConstants.CACHE_PREFIX_GENERATION)
 public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> implements SysMenuService {
 
-
     @Override
     public List<SysMenu> findMenuByUserId(Integer userId) {
         return this.baseMapper.findMenuByUserId(userId);
@@ -150,4 +149,3 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     }
 
 }
-

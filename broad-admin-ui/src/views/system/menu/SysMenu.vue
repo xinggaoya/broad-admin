@@ -410,8 +410,8 @@ const handleLoad = (row: MenuData): Promise<void> => {
     getMenuChild({ menuId: row.menuId })
       .then((res) => {
         if (res.code === 200 && res.data) {
-          row.children = res.data.map((item:any) => {
-            item.isLeaf = !(item.isLeaf && item.isLeaf === '1');
+          row.children = res.data.map((item: any) => {
+            item.isLeaf = !(item.isLeaf && item.isLeaf === '1')
             return item
           })
           resolve()
@@ -429,8 +429,8 @@ const loadTableData = async () => {
     tableData.loading = true
     const res = await getMenus({})
     if (res.code === 200 && res.data) {
-      tableData.list = res.data.map((item:any) => {
-        item.isLeaf = !(item.isLeaf && item.isLeaf === '1');
+      tableData.list = res.data.map((item: any) => {
+        item.isLeaf = !(item.isLeaf && item.isLeaf === '1')
         return item
       })
     }
