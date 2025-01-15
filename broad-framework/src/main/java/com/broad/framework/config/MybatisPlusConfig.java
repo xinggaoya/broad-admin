@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import javax.sql.DataSource;
+import org.apache.ibatis.plugin.Interceptor;
 
 /**
  * MyBatis Plus 配置类
@@ -44,6 +45,11 @@ public class MybatisPlusConfig {
         sqlSessionFactory.setMapperLocations(
                 new PathMatchingResourcePatternResolver().getResources("classpath*:mapper/**/*Mapper.xml"));
         sqlSessionFactory.setPlugins(mybatisPlusInterceptor());
+        sqlSessionFactory.setPlugins(new Interceptor[] {
+                mybatisPlusInterceptor(),
+                cryptoInterceptor(),
+                decryptInterceptor()
+        });
         return sqlSessionFactory.getObject();
     }
 

@@ -1,5 +1,16 @@
 <template>
-  <n-button @click="onAdd" ghost type="primary">
+  <n-button
+    @click="handleClick"
+    :disabled="disabled"
+    :loading="loading"
+    :type="type"
+    :size="size"
+    :ghost="ghost"
+    :round="round"
+    :circle="circle"
+    :quaternary="quaternary"
+    :dashed="dashed"
+  >
     <template #icon>
       <n-icon>
         <AddIcon />
@@ -12,17 +23,39 @@
 <script lang="ts" setup>
 import { Add as AddIcon } from '@vicons/ionicons5'
 
-defineProps({
-  title: {
-    type: String,
-    default: '新增'
-  }
-})
-
-const emit = defineEmits(['add'])
-
-function onAdd() {
-  emit('add')
+interface Props {
+  title?: string
+  disabled?: boolean
+  loading?: boolean
+  type?: 'default' | 'tertiary' | 'primary' | 'info' | 'success' | 'warning' | 'error'
+  size?: 'tiny' | 'small' | 'medium' | 'large'
+  ghost?: boolean
+  round?: boolean
+  circle?: boolean
+  quaternary?: boolean
+  dashed?: boolean
 }
 
+const props = withDefaults(defineProps<Props>(), {
+  title: '新增',
+  disabled: false,
+  loading: false,
+  type: 'primary',
+  size: 'small',
+  ghost: true,
+  round: false,
+  circle: false,
+  quaternary: false,
+  dashed: false
+})
+
+const emit = defineEmits<{
+  (e: 'click', event: MouseEvent): void
+}>()
+
+function handleClick(event: MouseEvent) {
+  if (!props.disabled && !props.loading) {
+    emit('click', event)
+  }
+}
 </script>

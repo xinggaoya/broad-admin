@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.lang.reflect.Field;
 import java.sql.Statement;
+import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
 
@@ -16,7 +17,7 @@ import java.util.Properties;
  * 出库数据解密拦截器
  */
 @Intercepts({
-        @Signature(type = ResultSetHandler.class, method = "handleResultSets", args = {Statement.class})
+        @Signature(type = ResultSetHandler.class, method = "handleResultSets", args = { Statement.class })
 })
 public class DecryptInterceptor implements Interceptor {
 
@@ -26,28 +27,44 @@ public class DecryptInterceptor implements Interceptor {
     @Override
     public Object intercept(Invocation invocation) throws Throwable {
         Object result = invocation.proceed();
-        if (result instanceof List) {
-            List resultList = (List) result;
-            for (Object obj : resultList) {
-                if (obj != null) {
-                    Class<?> objClass = obj.getClass();
-                    Field[] declaredFields = objClass.getDeclaredFields();
-                    for (Field field : declaredFields) {
-                        Crypto crypto = field.getAnnotation(Crypto.class);
-                        if (crypto != null) {
-                            field.setAccessible(true);
-                            String encryptedValue = (String) field.get(obj);
-                            if (encryptedValue != null) {
-                                // 在这里执行解密操作，然后设置回实体类
-                                String decryptedValue = decrypt(encryptedValue);
-                                field.set(obj, decryptedValue);
-                            }
-                        }
+        if (result == null) {
+            return null;
+        }
+
+        // 处理集合类型的结果
+        if (result instanceof Collection<?>) {
+            Collection<?> collection = (Collection<?>) result;
+            for (Object obj : collection) {
+                handleDecryption(obj);
+            }
+        } else {
+            // 处理单个对象
+            handleDecryption(result);
+        }
+        return result;
+    }
+
+    private void handleDecryption(Object obj) throws IllegalAccessException {
+        if (obj == null) {
+            return;
+        }
+        Class<?> objClass = obj.getClass();
+        Field[] declaredFields = objClass.getDeclaredFields();
+        for (Field field : declaredFields) {
+            Crypto crypto = field.getAnnotation(Crypto.class);
+            if (crypto != null) {
+                field.setAccessible(true);
+                Object value = field.get(obj);
+                if (value instanceof String) {
+                    String encryptedValue = (String) value;
+                    if (encryptedValue != null && !encryptedValue.isEmpty()) {
+                        // 在这里执行解密操作，然后设置回实体类
+                        String decryptedValue = decrypt(encryptedValue);
+                        field.set(obj, decryptedValue);
                     }
                 }
             }
         }
-        return result;
     }
 
     private String decrypt(String encryptedValue) {

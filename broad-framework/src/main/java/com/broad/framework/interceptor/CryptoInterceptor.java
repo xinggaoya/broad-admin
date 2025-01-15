@@ -9,6 +9,7 @@ import org.apache.ibatis.plugin.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.lang.reflect.Field;
+import java.util.Collection;
 import java.util.Properties;
 
 /**
@@ -16,7 +17,7 @@ import java.util.Properties;
  * @date: 2024/4/25
  * @description: 入库前加密数据
  */
-@Intercepts({@Signature(type = Executor.class, method = "update", args = {MappedStatement.class, Object.class})})
+@Intercepts({ @Signature(type = Executor.class, method = "update", args = { MappedStatement.class, Object.class }) })
 public class CryptoInterceptor implements Interceptor {
 
     @Autowired
@@ -29,19 +30,40 @@ public class CryptoInterceptor implements Interceptor {
         if (parameter == null) {
             return invocation.proceed();
         }
+
+        // 处理集合类型的参数
+        if (parameter instanceof Collection<?>) {
+            Collection<?> collection = (Collection<?>) parameter;
+            for (Object item : collection) {
+                handleEncryption(item);
+            }
+        } else {
+            handleEncryption(parameter);
+        }
+        return invocation.proceed();
+    }
+
+    private void handleEncryption(Object parameter) throws IllegalAccessException {
+        if (parameter == null) {
+            return;
+        }
         Class<?> parameterClass = parameter.getClass();
         Field[] declaredFields = parameterClass.getDeclaredFields();
         for (Field field : declaredFields) {
             Crypto crypto = field.getAnnotation(Crypto.class);
             if (crypto != null) {
                 field.setAccessible(true);
-                String value = (String) field.get(parameter);
-                // 在这里执行加密操作，然后设置回实体类
-                String encryptedValue = encrypt(value);
-                field.set(parameter, encryptedValue);
+                Object value = field.get(parameter);
+                if (value instanceof String) {
+                    String strValue = (String) value;
+                    if (strValue != null && !strValue.isEmpty()) {
+                        // 在这里执行加密操作，然后设置回实体类
+                        String encryptedValue = encrypt(strValue);
+                        field.set(parameter, encryptedValue);
+                    }
+                }
             }
         }
-        return invocation.proceed();
     }
 
     private String encrypt(String value) {

@@ -2,8 +2,10 @@ package com.broad.system.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.broad.common.exception.ServiceException;
+import com.broad.common.utils.PageUtils;
 import com.broad.system.entity.SysRole;
 import com.broad.system.entity.SysUserRole;
 import com.broad.system.mapper.SysRoleMapper;
@@ -28,7 +30,8 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
 
     @Override
     public List<SysRole> selectAll(SysRole sysUserRole) {
-        List<SysRole> pageList = baseMapper.selectList(new QueryWrapper<>(sysUserRole));
+        Page<SysRole> page = PageUtils.startPage();
+        List<SysRole> pageList = baseMapper.selectList(page, new QueryWrapper<>(sysUserRole));
         // 构建树形结构数据
 //        pageList.setRecords(buildTree(pageList.getRecords()));
         return pageList;

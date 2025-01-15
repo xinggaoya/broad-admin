@@ -1,42 +1,44 @@
 import { request } from '@/api/request'
+import type { ApiResponse, MenuData } from '@/views/system/menu/types'
 
-export function getMenus(data: any) {
-  return request.get({
+export function getMenus(params?: any) {
+  return request.get<ApiResponse<MenuData[]>>({
     url: '/sysMenu',
-    data,
+    params
   })
 }
-export function getMenusTree(data?: any) {
-  return request.get({
+
+export function getMenusTree(params?: any) {
+  return request.get<ApiResponse<MenuData[]>>({
     url: '/sysMenu/tree',
-    data,
+    params
   })
 }
 
-export function getMenuChild(data: any) {
-  return request.get({
+export function getMenuChild(params: { menuId: string | number }) {
+  return request.get<ApiResponse<MenuData[]>>({
     url: '/sysMenu/getMenuChild',
-    data,
+    params
   })
 }
 
-export function addMenus(data: any) {
-  return request.post({
+export function addMenus(data: Partial<MenuData>) {
+  return request.post<ApiResponse<any>>({
     url: '/sysMenu',
-    data,
+    data
   })
 }
 
-export function updateMenus(data: any) {
-  return request.put({
+export function updateMenus(data: Partial<MenuData>) {
+  return request.put<ApiResponse<any>>({
     url: '/sysMenu',
-    data,
+    data
   })
 }
 
-export function deleteMenus(data: any) {
-  return request.delete({
+export function deleteMenus(params: { menuId: string | number }) {
+  return request.delete<ApiResponse<any>>({
     url: '/sysMenu',
-    data,
+    params
   })
 }
