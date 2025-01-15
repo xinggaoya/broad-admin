@@ -119,19 +119,27 @@
             <n-switch v-model:value="appConfig.actionBar.isShowFooter" />
           </div>
           <n-divider />
+          <!-- 底部操作 -->
+          <div class="footer-actions">
+            <n-button block secondary type="primary" @click="resetToDefault">
+              恢复默认配置
+            </n-button>
+          </div>
         </div>
       </n-scrollbar>
     </n-drawer-content>
   </n-drawer>
 </template>
 
-<script lang="ts" setup>
+<script lang="ts" setup name="SystemSetting">
 import { onMounted, reactive, ref, watch } from 'vue'
 import type { ModalDialogType } from '@/types/components'
 import LeftBg from '@/assets/bg_img.webp'
-import useAppConfigStore from '@/store/modules/app-config'
-import { PageAnim } from '@/store/types'
+import { useAppConfigStore } from '@/store/modules/app-config'
+import { PageAnim, ThemeMode } from '@/store/types'
+import { useMessage } from 'naive-ui'
 
+const message = useMessage()
 const opened = ref(false)
 const appConfig = useAppConfigStore()
 const menuWidth = ref(appConfig.sideWidth)
@@ -206,14 +214,14 @@ const layoutExampleList = reactive([
 ])
 const primartyColorList = reactive([
   {
+    name: 'blue',
+    value: '#2B5CE7',
+    checked: true
+  },
+  {
     name: 'cyan',
     value: '#18a058',
     checked: false
-  },
-  {
-    name: 'blue',
-    value: '#409eff',
-    checked: true
   },
   {
     name: 'red',
@@ -226,73 +234,23 @@ const primartyColorList = reactive([
     checked: false
   },
   {
-    name: 'ee4f12',
+    name: 'orange',
     value: '#ee4f12',
     checked: false
   },
   {
-    name: '0096c7',
+    name: 'cyan-blue',
     value: '#0096c7',
     checked: false
   },
   {
-    name: 'ff9801',
+    name: 'yellow',
     value: '#ff9801',
     checked: false
   },
   {
-    name: 'ff3d68',
+    name: 'pink',
     value: '#ff3d68',
-    checked: false
-  },
-  {
-    name: '01c1d4',
-    value: '#01c1d4',
-    checked: false
-  },
-  {
-    name: '71efa3',
-    value: '#71efa3',
-    checked: false
-  },
-  {
-    name: '171010',
-    value: '#171010',
-    checked: false
-  },
-  {
-    name: '78dec7',
-    value: '#78dec7',
-    checked: false
-  },
-  {
-    name: '1768ac',
-    value: '#1768ac',
-    checked: false
-  },
-  {
-    name: '1427df',
-    value: '#1427df',
-    checked: false
-  },
-  {
-    name: '43c628',
-    value: '#43c628',
-    checked: false
-  },
-  {
-    name: 'ead41e',
-    value: '#ead41e',
-    checked: false
-  },
-  {
-    name: '22bd7c',
-    value: '#22bd7c',
-    checked: false
-  },
-  {
-    name: '9727bf',
-    value: '#9727bf',
     checked: false
   }
 ])
@@ -314,7 +272,13 @@ const animOptions = [
     value: 'scale'
   }
 ]
+
 onMounted(() => {
+  initCheckedState()
+})
+
+// 初始化选中状态
+function initCheckedState() {
   themeList.forEach((it) => {
     it.checked = appConfig.theme === it.themeId
   })
@@ -327,18 +291,20 @@ onMounted(() => {
   primartyColorList.forEach((it) => {
     it.checked = appConfig.themeColor.primaryColor === it.value
   })
-})
+}
 
 function openDrawer() {
   opened.value = true
+  // 打开时重新初始化选中状态
+  initCheckedState()
 }
 
 async function themeClick(item: any) {
   themeList.forEach((it) => {
     it.checked = it === item
   })
-  await appConfig.changeTheme(item.themeId)
-  if (item.themeId === 'dark') {
+  appConfig.changeTheme(item.themeId)
+  if (item.themeId === ThemeMode.DARK) {
     exampleClick(sideExampleList[0])
   } else {
     exampleClick(sideExampleList[1])
@@ -370,6 +336,17 @@ function onAnimUpdate(val: PageAnim) {
   appConfig.changePageAnim(val)
 }
 
+function resetToDefault() {
+  // 重置状态
+  appConfig.resetState()
+  // 重新初始化选中状态
+  initCheckedState()
+  // 重置菜单宽度
+  menuWidth.value = 220
+
+  message.success('已恢复默认配置')
+}
+
 watch(
   () => menuWidth.value,
   (newVal) => {
@@ -384,58 +361,6 @@ defineExpose({
 
 <style lang="scss" scoped>
 $width: 60px;
-
-.set-container {
-  position: fixed;
-  right: 0;
-  top: 0;
-  margin-top: calc(50vh - 100px);
-  z-index: 999;
-  max-width: calc(#{$width} + 20px);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12), 0 0 6px rgba(0, 0, 0, 0.04);
-
-  .tip-wrapper {
-    width: $width;
-    height: $width;
-    border-radius: 4px;
-    font-size: 10px;
-    transition: color 0.15s ease, background-color 0.15s ease;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-
-    & > i {
-      font-size: 20px;
-      margin-bottom: 8px;
-    }
-  }
-
-  .tip-wrapper + .tip-wrapper {
-    margin-top: 10px;
-  }
-
-  .bg1 {
-    color: #1bc3bb;
-  }
-
-  .bg1:hover {
-    background-color: #1bc3bb;
-    color: #ffffff;
-  }
-
-  .bg2 {
-    color: #3698fd;
-  }
-
-  .bg2:hover {
-    background-color: #3698fd;
-    color: #ffffff;
-  }
-}
 
 .wrapper {
   padding: 0 20px;
@@ -478,6 +403,11 @@ $width: 60px;
     align-items: center;
     padding: 10px;
     font-size: 14px;
+  }
+
+  .footer-actions {
+    margin-top: 24px;
+    padding: 0 12px;
   }
 }
 

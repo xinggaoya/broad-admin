@@ -38,7 +38,7 @@
 </template>
 
 <script lang="ts" setup>
-import useAppConfigStore from '@/store/modules/app-config'
+import { useAppConfigStore } from '@/store/modules/app-config'
 import { ThemeMode } from '@/store/types'
 import { useLoadingBar } from 'naive-ui'
 import { computed, onMounted, ref } from 'vue'
@@ -93,14 +93,20 @@ onMounted(() => {
 
 .nav-bar-open-status.fixed-nav-bar {
   width: calc(100% - #{$menuWidth});
+  background-color: var(--body-color);
+  box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
 }
 
 .nav-bar-close-status.fixed-nav-bar {
   width: calc(100% - #{$minMenuWidth});
+  background-color: var(--body-color);
+  box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
 }
 
 .nav-bar-ttb-status {
   width: 100%;
+  background-color: var(--body-color);
+  box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
 }
 
 .main-layout {
@@ -110,22 +116,26 @@ onMounted(() => {
 
 .main-layout_fixed-nav-bar {
   padding-top: $logoHeight + $tabHeight;
-  overflow-y: hidden;
+  height: 100vh;
+  overflow: hidden;
 
   .main-base-style {
+    height: calc(100vh - #{$logoHeight} - #{$tabHeight});
     overflow-y: auto;
+    position: relative;
   }
 }
 
 .vaw-main-layout-container {
-  height: 100%;
+  height: 100vh;
   box-sizing: border-box;
   transition: margin-left $transitionTime;
 
   .main-base-style {
     height: 100%;
     box-sizing: border-box;
-    padding: 5px;
+    padding: 16px;
+    position: relative;
   }
 
   .main-base-light-theme {
@@ -137,8 +147,9 @@ onMounted(() => {
   }
 
   .main-section {
-    min-height: calc(100% - #{$footerHeight} - 10px);
+    min-height: calc(100% - #{$footerHeight});
     overflow-x: hidden;
+    padding-bottom: $footerHeight;
   }
 
   .fixed-nav-bar {
@@ -154,7 +165,14 @@ onMounted(() => {
 }
 
 .footer-wrapper {
-  margin-top: 6px;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: var(--body-color);
+  z-index: 98;
+  margin-top: 0;
+  box-shadow: 0 -1px 4px rgba(0, 21, 41, 0.08);
 }
 
 .is-mobile {
@@ -167,6 +185,26 @@ onMounted(() => {
   .nav-bar-open-status,
   .nav-bar-close-status {
     width: 100%;
+  }
+
+  .footer-wrapper {
+    left: 0;
+  }
+}
+
+.scrollbar {
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background-color: transparent;
   }
 }
 </style>

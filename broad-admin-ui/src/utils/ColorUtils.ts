@@ -1,7 +1,7 @@
 interface HSL {
-  h: number;
-  s: number;
-  l: number;
+  h: number
+  s: number
+  l: number
 }
 
 export function hexToHSL(hex: string): HSL {
@@ -15,7 +15,8 @@ export function hexToHSL(hex: string): HSL {
 
   const max = Math.max(r, g, b)
   const min = Math.min(r, g, b)
-  let h: number = 0, s: number
+  let h: number = 0,
+    s: number
   const l = (max + min) / 2
 
   if (max == min) {
@@ -49,9 +50,11 @@ export function HSLToHex(h: number, s: number, l: number): string {
   l /= 100
 
   const c = (1 - Math.abs(2 * l - 1)) * s
-  const x = c * (1 - Math.abs((h / 60) % 2 - 1))
+  const x = c * (1 - Math.abs(((h / 60) % 2) - 1))
   const m = l - c / 2
-  let r = 0, g = 0, b = 0
+  let r = 0,
+    g = 0,
+    b = 0
 
   if (0 <= h && h < 60) {
     r = c
@@ -79,20 +82,64 @@ export function HSLToHex(h: number, s: number, l: number): string {
     b = x
   }
 
-  const rl = Math.round((r + m) * 255).toString(16).padStart(2, '0')
-  const gl = Math.round((g + m) * 255).toString(16).padStart(2, '0')
-  const bl = Math.round((b + m) * 255).toString(16).padStart(2, '0')
+  const rl = Math.round((r + m) * 255)
+    .toString(16)
+    .padStart(2, '0')
+  const gl = Math.round((g + m) * 255)
+    .toString(16)
+    .padStart(2, '0')
+  const bl = Math.round((b + m) * 255)
+    .toString(16)
+    .padStart(2, '0')
 
   return `#${rl}${gl}${bl}`
 }
 
+// 将十六进制颜色转换为RGB
+function hexToRgb(hex: string): number[] | null {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
+  return result ? [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)] : null
+}
 
-export function calculateHoverActiveColors(baseColor: string):
-  { baseColor: string, hoverColor: string, activeColor: string } {
-  const hsl = hexToHSL(baseColor)
+// 将RGB转换为十六进制颜色
+function rgbToHex(r: number, g: number, b: number): string {
+  return (
+    '#' +
+    [r, g, b]
+      .map((x) => {
+        const hex = x.toString(16)
+        return hex.length === 1 ? '0' + hex : hex
+      })
+      .join('')
+  )
+}
 
-  const hoverColor = HSLToHex(hsl.h, hsl.s, Math.min(100, hsl.l + 10))
-  const activeColor = HSLToHex(hsl.h, hsl.s, Math.max(0, hsl.l - 10))
+// 计算hover和active颜色
+export function calculateHoverActiveColors(baseColor: string) {
+  const rgb = hexToRgb(baseColor)
+  if (!rgb) {
+    return {
+      baseColor,
+      hoverColor: baseColor,
+      activeColor: baseColor
+    }
+  }
 
-  return { baseColor, hoverColor, activeColor }
+  const [r, g, b] = rgb
+
+  // hover颜色：变亮
+  const hoverR = Math.min(255, r + 25)
+  const hoverG = Math.min(255, g + 25)
+  const hoverB = Math.min(255, b + 25)
+
+  // active颜色：变暗
+  const activeR = Math.max(0, r - 25)
+  const activeG = Math.max(0, g - 25)
+  const activeB = Math.max(0, b - 25)
+
+  return {
+    baseColor,
+    hoverColor: rgbToHex(hoverR, hoverG, hoverB),
+    activeColor: rgbToHex(activeR, activeG, activeB)
+  }
 }

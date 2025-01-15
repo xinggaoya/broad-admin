@@ -1,7 +1,11 @@
 package com.broad.job.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.broad.common.constant.ScheduleConstants;
 import com.broad.common.exception.job.TaskException;
+import com.broad.common.utils.PageUtils;
 import com.broad.job.entity.SysJob;
 import com.broad.job.mapper.SysJobMapper;
 import com.broad.job.util.CronUtils;
@@ -23,7 +27,7 @@ import java.util.List;
  * @author XingGao
  */
 @Service
-public class SysJobServiceImpl implements ISysJobService {
+public class SysJobServiceImpl extends ServiceImpl<SysJobMapper, SysJob> implements ISysJobService {
     @Autowired
     private Scheduler scheduler;
 
@@ -52,8 +56,9 @@ public class SysJobServiceImpl implements ISysJobService {
      * @return
      */
     @Override
-    public List<SysJob> selectJobList(SysJob job) {
-        return jobMapper.selectJobList(job);
+    public IPage<SysJob> selectJobList(SysJob job) {
+        Page<SysJob> page = PageUtils.startPage();
+        return jobMapper.selectJobList(page,job);
     }
 
     /**

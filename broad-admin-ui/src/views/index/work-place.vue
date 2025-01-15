@@ -323,7 +323,6 @@ const handleQuickAction = (action: (typeof quickActions)[0]) => {
 
 <style lang="scss" scoped>
 .workplace-container {
-  padding: 16px;
   background: var(--n-color);
   min-height: 100%;
 

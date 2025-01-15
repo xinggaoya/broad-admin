@@ -5,9 +5,9 @@
     :content-style="{ padding: 0 }"
     style="border-radius: 0px"
     :class="[
-        !appConfig.isCollapse ? 'open-status' : 'close-status',
-        appConfig.sideTheme === 'image' ? 'sidebar-bg-img' : '',
-      ]"
+      !appConfig.isCollapse ? 'open-status' : 'close-status',
+      appConfig.sideTheme === 'image' ? 'sidebar-bg-img' : ''
+    ]"
   >
     <div class="tab-split-tab-wrapper" :style="{ backgroundColor: bgColor }">
       <LogoView class="tab-split-logo-wrapper" :show-title="false" />
@@ -25,7 +25,7 @@
               :class="{ 'vaw-tab-split-item-is-active': item.checked.value }"
               @click="changeTab(item)"
             >
-              <SvgIcon :prefix="item.iconPrefix" :name="item.icon" />
+              <SvgIcon :prefix="item.iconPrefix?.toString()" :name="item.icon" />
               <span>{{ item.label }}</span>
             </div>
           </div>
@@ -42,12 +42,20 @@
 
 <script lang="ts" setup>
 import { computed, onMounted, ref, shallowReactive, watch } from 'vue'
-import { type RouteLocationNormalizedLoaded, type RouteRecordRaw, useRoute, useRouter } from 'vue-router'
+import {
+  type RouteLocationNormalizedLoaded,
+  type RouteRecordRaw,
+  useRoute,
+  useRouter
+} from 'vue-router'
 import { isExternal } from '@/utils'
-import useAppConfigStore from '@/store/modules/app-config'
+import { useAppConfigStore } from '@/store/modules/app-config'
 import { SideTheme, type SplitTab, ThemeMode } from '@/store/types'
-import usePermissionStore from '@/store/modules/permission'
+import { usePermissionStore } from '@/store/modules/permission'
 import { transformSplitTabMenu } from '@/store/help'
+import LogoView from '../logo/LogoView.vue'
+import ScrollerMenu from './components/ScrollerMenu.vue'
+import SvgIcon from '@/components/svg-icon/SvgIcon.vue'
 
 defineProps({
   showLogo: {
@@ -55,7 +63,6 @@ defineProps({
     default: true
   }
 })
-
 
 const appConfig = useAppConfigStore()
 const permissionStore = usePermissionStore()
@@ -132,9 +139,7 @@ function findPath(item: SplitTab) {
 
 const contentWrapperStyle = computed(() => {
   return `--select-text-color: ${
-    appConfig.theme === 'light' || appConfig.sideTheme === 'white'
-      ? '#fff'
-      : 'var(--text-color)'
+    appConfig.theme === 'light' || appConfig.sideTheme === 'white' ? '#fff' : 'var(--text-color)'
   }`
 })
 const bgColor = computed(() => {
@@ -146,7 +151,6 @@ const bgColor = computed(() => {
   if (appConfig.sideTheme === SideTheme.IMAGE) return 'rgba(255,255,255, 0.1)'
   return '#ffffff'
 })
-
 </script>
 
 <style scoped lang="scss">

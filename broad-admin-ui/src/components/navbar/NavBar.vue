@@ -13,12 +13,11 @@
 </template>
 
 <script lang="ts" setup>
-import useAppConfigStore from '@/store/modules/app-config'
+import { useAppConfigStore } from '@/store/modules/app-config'
 import HumBurger from '@/components/humburger/HumBurger.vue'
 import Breadcrumb from '@/components/breadcrumb/BreadCrumb.vue'
 
 const appConfig = useAppConfigStore()
-
 </script>
 
 <style lang="scss" scoped>

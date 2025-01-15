@@ -53,7 +53,7 @@ import {
   NotificationsOutline as NotificationsIcon,
   RefreshOutline as RefreshIcon
 } from '@vicons/ionicons5'
-import useAppConfigStore from '@/store/modules/app-config'
+import { useAppConfigStore } from '@/store/modules/app-config'
 import { useDebounceFn } from '@vueuse/core'
 import PopoverMessage from '@/components/common/PopoverMessage.vue'
 

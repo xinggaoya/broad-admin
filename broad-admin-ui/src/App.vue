@@ -1,32 +1,45 @@
 <template>
   <n-config-provider
-    :locale="zhCN"
-    :date-locale="dateZhCN"
     :theme="theme"
     :theme-overrides="themeOverrides"
-    style="height: 100%"
+    :locale="zhCN"
+    :date-locale="dateZhCN"
   >
-    <n-notification-provider>
-      <n-message-provider>
-        <router-view />
-      </n-message-provider>
-    </n-notification-provider>
+    <n-loading-bar-provider>
+      <n-dialog-provider>
+        <n-notification-provider>
+          <n-message-provider>
+            <router-view></router-view>
+          </n-message-provider>
+        </n-notification-provider>
+      </n-dialog-provider>
+    </n-loading-bar-provider>
   </n-config-provider>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { computed } from 'vue'
 import { darkTheme, zhCN, dateZhCN } from 'naive-ui'
-import useAppConfigStore from '@/store/modules/app-config'
+import { useAppConfigStore } from '@/store/modules/app-config'
 import { ThemeMode } from '@/store/types'
 
 const appConfig = useAppConfigStore()
-const theme = computed(() => {
-  return appConfig.theme === ThemeMode.DARK ? darkTheme : null
-})
-const themeOverrides = computed(() => {
-  return {
-    common: appConfig.themeColor
+const theme = computed(() => (appConfig.theme === ThemeMode.DARK ? darkTheme : null))
+const themeOverrides = computed(() => ({
+  common: {
+    primaryColor: appConfig.themeColor.primaryColor,
+    primaryColorHover: appConfig.themeColor.primaryColorHover,
+    primaryColorPressed: appConfig.themeColor.primaryColorPressed,
+    primaryColorSuppl: appConfig.themeColor.primaryColorSuppl
   }
-})
+}))
 </script>
+
+<style>
+:root {
+  --primary-color: v-bind('appConfig.themeColor.primaryColor');
+  --primary-color-hover: v-bind('appConfig.themeColor.primaryColorHover');
+  --primary-color-pressed: v-bind('appConfig.themeColor.primaryColorPressed');
+  --menu-width: v-bind('appConfig.sideWidth + "px"');
+}
+</style>

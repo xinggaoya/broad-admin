@@ -1,15 +1,18 @@
 package com.broad.system.service.impl;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.broad.common.utils.PageUtils;
 import com.broad.common.utils.ip.IpUtils;
 import com.broad.system.entity.SysLoginLog;
 import com.broad.system.mapper.SysLoginLogMapper;
 import com.broad.system.service.SysLoginLogService;
 import eu.bitwalker.useragentutils.UserAgent;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -22,8 +25,9 @@ import java.util.List;
 public class SysLoginLogServiceImpl extends ServiceImpl<SysLoginLogMapper, SysLoginLog> implements SysLoginLogService {
 
     @Override
-    public List<SysLoginLog> findLoginLogList(SysLoginLog loginLog) {
-        return baseMapper.findLoginLogList(loginLog);
+    public IPage<SysLoginLog> findLoginLogList(SysLoginLog loginLog) {
+        Page<SysLoginLog> page = PageUtils.startPage();
+        return baseMapper.findLoginLogList(page, loginLog);
     }
 
     /**

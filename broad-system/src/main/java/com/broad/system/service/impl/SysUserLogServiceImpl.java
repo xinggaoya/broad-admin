@@ -1,7 +1,10 @@
 package com.broad.system.service.impl;
 
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.broad.common.utils.PageUtils;
 import com.broad.system.entity.SysUserLog;
 import com.broad.system.mapper.SysUserLogMapper;
 import com.broad.system.service.SysUserLogService;
@@ -22,7 +25,8 @@ import java.util.List;
 public class SysUserLogServiceImpl extends ServiceImpl<SysUserLogMapper, SysUserLog> implements SysUserLogService {
 
     @Override
-    public List<SysUserLog> selectAll(SysUserLog sysAdminLog) {
+    public IPage<SysUserLog> selectAll(SysUserLog sysAdminLog) {
+        Page<SysUserLog> page = PageUtils.startPage();
         if (StringUtils.isNotBlank(sysAdminLog.getOperatingTime())){
             // 使用%分割
             List<Date> dates = new ArrayList<>();
@@ -32,7 +36,7 @@ public class SysUserLogServiceImpl extends ServiceImpl<SysUserLogMapper, SysUser
              dates.add(new Date(Long.parseLong(split[1])));
              sysAdminLog.setOperatingTimeList(dates);
         }
-        return baseMapper.selectAll(sysAdminLog);
+        return baseMapper.selectAll(page,sysAdminLog);
     }
 
 }

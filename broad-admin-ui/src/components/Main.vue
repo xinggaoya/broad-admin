@@ -12,14 +12,15 @@
   </router-view>
 </template>
 
-<script lang="ts" setup>
-import useAppConfigStore from '@/store/modules/app-config'
+<script lang="ts" setup name="MainLayout">
+import { useAppConfigStore } from '@/store/modules/app-config'
 import { useUserStore } from '@/store/modules/user'
 import { computed, onMounted } from 'vue'
 import { useNotification } from 'naive-ui'
 import { checkUser } from '@/api/common'
 import { useVisitedRouteStore } from '@/store/modules/visited-routes'
 import { getWebSocketUrl } from '@/utils'
+import Iframe from '@/components/common/Iframe.vue'
 
 const visitedRouteStore = useVisitedRouteStore()
 const notification = useNotification()

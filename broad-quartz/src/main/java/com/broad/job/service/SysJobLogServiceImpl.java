@@ -1,6 +1,9 @@
 package com.broad.job.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.broad.common.utils.PageUtils;
 import com.broad.job.entity.SysJobLog;
 import com.broad.job.mapper.SysJobLogMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +28,9 @@ public class SysJobLogServiceImpl extends ServiceImpl<SysJobLogMapper, SysJobLog
      * @return 调度任务日志集合
      */
     @Override
-    public List<SysJobLog> selectJobLogList(SysJobLog jobLog) {
-        return jobLogMapper.selectJobLogList(jobLog);
+    public IPage<SysJobLog> selectJobLogList(SysJobLog jobLog) {
+        Page<SysJobLog> page = PageUtils.startPage();
+        return jobLogMapper.selectJobLogList(page,jobLog);
     }
 
     /**

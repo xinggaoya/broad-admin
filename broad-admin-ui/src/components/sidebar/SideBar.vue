@@ -5,9 +5,9 @@
     :style="{ borderRadius: '0px', marginTop: appConfig.layoutMode === 'ttb' ? '48px' : 0 }"
     :content-style="{ padding: 0 }"
     :class="[
-        !appConfig.isCollapse ? 'open-status' : 'close-status',
-        appConfig.sideTheme === 'image' ? 'sidebar-bg-img' : '',
-      ]"
+      !appConfig.isCollapse ? 'open-status' : 'close-status',
+      appConfig.sideTheme === 'image' ? 'sidebar-bg-img' : ''
+    ]"
   >
     <transition name="logo">
       <LogoView v-if="showLogo" />
@@ -18,8 +18,10 @@
 </template>
 
 <script lang="ts" setup>
-import useAppConfigStore from '@/store/modules/app-config'
-import usePermissionStore from '@/store/modules/permission'
+import { useAppConfigStore } from '@/store/modules/app-config'
+import { usePermissionStore } from '@/store/modules/permission'
+import LogoView from '../logo/LogoView.vue'
+import ScrollerMenu from './components/ScrollerMenu.vue'
 
 defineProps({
   showLogo: {
@@ -30,7 +32,6 @@ defineProps({
 
 const appConfig = useAppConfigStore()
 const permissionStore = usePermissionStore()
-
 </script>
 
 <style scoped lang="scss">

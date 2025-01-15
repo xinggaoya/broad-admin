@@ -20,18 +20,18 @@
 </template>
 
 <script lang="ts" setup>
-import useAppConfigStore from '@/store/modules/app-config'
+import { useAppConfigStore } from '@/store/modules/app-config'
 import { DeviceType } from '@/store/types'
 import type { MenuOption } from 'naive-ui'
 import { type PropType, ref, shallowReactive, watch, watchEffect } from 'vue'
-import { type RouteRecordNormalized, useRoute, useRouter } from 'vue-router'
+import { type RouteRecordNormalized, type RouteRecordRaw, useRoute, useRouter } from 'vue-router'
 import { isExternal } from '@/utils'
 import { transfromMenu } from '@/store/help'
 
 const props = defineProps({
   routes: {
-    type: Object as PropType<Array<RouteRecordNormalized>>,
-    require: true
+    type: Array as PropType<RouteRecordRaw[]>,
+    required: true
   }
 })
 
@@ -45,7 +45,7 @@ const router = useRouter()
 defaultPath.value = currentRoute.fullPath
 handleExpandPath()
 
-function handleMenu(routes?: Array<RouteRecordNormalized>) {
+function handleMenu(routes?: Array<RouteRecordRaw>) {
   menuOptions.length = 0
   const tempMenus = transfromMenu(routes || [])
   menuOptions.push(...tempMenus)

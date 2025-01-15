@@ -2,6 +2,8 @@ package com.broad.job.mapper;
 
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.broad.job.entity.SysJobLog;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -20,7 +22,7 @@ public interface SysJobLogMapper extends BaseMapper<SysJobLog> {
      * @param jobLog 调度日志信息
      * @return 调度任务日志集合 list
      */
-    List<SysJobLog> selectJobLogList(SysJobLog jobLog);
+    IPage<SysJobLog> selectJobLogList(Page<SysJobLog> page, SysJobLog jobLog);
 
     /**
      * 查询所有调度任务日志

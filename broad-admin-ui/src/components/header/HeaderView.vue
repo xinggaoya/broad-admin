@@ -16,8 +16,8 @@
 </template>
 
 <script lang="ts" setup>
-import useAppConfigStore from '@/store/modules/app-config'
-import usePermissionStore from '@/store/modules/permission'
+import { useAppConfigStore } from '@/store/modules/app-config'
+import { usePermissionStore } from '@/store/modules/permission'
 
 const appConfig = useAppConfigStore()
 const permissionStore = usePermissionStore()

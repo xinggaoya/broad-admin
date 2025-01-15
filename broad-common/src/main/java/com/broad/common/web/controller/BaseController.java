@@ -2,6 +2,7 @@ package com.broad.common.web.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.broad.common.utils.PageUtils;
 import com.broad.common.web.page.TableDataInfo;
 import com.broad.common.web.entity.ResultData;
 import com.broad.common.utils.ServletUtils;
@@ -37,28 +38,14 @@ public class BaseController {
      * 设置请求分页数据
      */
     protected <T> Page<T> startPage() {
-        Integer pageNum = ServletUtils.getParameterToInt("pageNum");
-        Integer pageSize = ServletUtils.getParameterToInt("pageSize");
-        if (pageNum == null) {
-            pageNum = 1;
-        }
-        if (pageSize == null) {
-            pageSize = 10;
-        }
-        return new Page<>(pageNum, pageSize);
+        return PageUtils.startPage();
     }
 
     /**
      * 设置请求分页数据
      */
     protected <T> Page<T> startPage(Integer pageNum, Integer pageSize) {
-        if (pageNum == null) {
-            pageNum = 1;
-        }
-        if (pageSize == null) {
-            pageSize = 10;
-        }
-        return new Page<>(pageNum, pageSize);
+        return PageUtils.startPage(pageNum, pageSize);
     }
 
     /**

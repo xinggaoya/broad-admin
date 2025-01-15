@@ -2,6 +2,8 @@ package com.broad.system.mapper;
 
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.broad.system.entity.SysUserLog;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -22,6 +24,6 @@ public interface SysUserLogMapper extends BaseMapper<SysUserLog> {
      * @param sysAdminLog the sys admin log
      * @return the page
      */
-    List<SysUserLog> selectAll(SysUserLog sysAdminLog);
+    IPage<SysUserLog> selectAll(Page<SysUserLog> page, SysUserLog sysAdminLog);
 }
 

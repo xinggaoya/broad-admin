@@ -1,6 +1,7 @@
 package com.broad.job.service;
 
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.broad.job.entity.SysJobLog;
 
@@ -18,7 +19,7 @@ public interface ISysJobLogService extends IService<SysJobLog> {
      * @param jobLog 调度日志信息
      * @return 调度任务日志集合 list
      */
-    List<SysJobLog> selectJobLogList(SysJobLog jobLog);
+    IPage<SysJobLog> selectJobLogList(SysJobLog jobLog);
 
     /**
      * 通过调度任务日志ID查询调度信息

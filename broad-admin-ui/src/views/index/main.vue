@@ -173,7 +173,6 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .dashboard-container {
-  padding: 16px;
   background: var(--n-color);
   min-height: 100%;
 

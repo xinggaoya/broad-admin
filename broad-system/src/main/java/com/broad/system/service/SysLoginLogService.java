@@ -1,5 +1,6 @@
 package com.broad.system.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.broad.common.constant.ThreadPoolConstant;
 import com.broad.system.entity.SysLoginLog;
@@ -22,7 +23,7 @@ public interface SysLoginLogService extends IService<SysLoginLog> {
      * @param loginLog the login log
      * @return the list
      */
-    List<SysLoginLog> findLoginLogList(SysLoginLog loginLog);
+    IPage<SysLoginLog> findLoginLogList(SysLoginLog loginLog);
 
     /**
      * 保存登录日志

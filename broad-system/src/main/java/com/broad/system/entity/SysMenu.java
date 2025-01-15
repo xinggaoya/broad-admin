@@ -127,5 +127,5 @@ public class SysMenu implements Serializable {
      * 是否有子路由
      */
     @TableField(exist = false)
-    private BooleanEnum isLeaf;
+    private String isLeaf;
 }

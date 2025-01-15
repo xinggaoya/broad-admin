@@ -1,5 +1,5 @@
 import { useUserStoreHook } from '@/store/modules/user'
-import usePermissionStore from '@/store/modules/permission'
+import { usePermissionStore } from '@/store/modules/permission'
 import router from '..'
 
 const whiteRoutes: string[] = ['/login']

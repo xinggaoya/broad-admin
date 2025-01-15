@@ -1,6 +1,7 @@
 package com.broad.web.controller.job;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.broad.common.annotation.Log;
 import com.broad.common.constant.Constants;
@@ -47,11 +48,7 @@ public class SysJobController extends BaseController {
     @GetMapping("/list")
     @Operation(summary = "查询定时任务列表")
     public TableDataInfo list(SysJob sysJob) {
-        Page<SysJob> page = startPage();
-        List<SysJob> list = jobService.selectJobList(sysJob);
-        page.setRecords(list);
-        page.setTotal(list.size());
-        return getDataTable(page);
+        return getDataTable(jobService.selectJobList(sysJob));
     }
 
     /**
@@ -64,7 +61,7 @@ public class SysJobController extends BaseController {
     @Log(description = "导出定时任务数据", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, SysJob sysJob) {
-        List<SysJob> list = jobService.selectJobList(sysJob);
+        List<SysJob> list = jobService.list(new LambdaQueryWrapper<>(sysJob));
         ExcelUtil<SysJob> util = new ExcelUtil<>(SysJob.class);
         util.exportExcel(response, list, "定时任务");
     }

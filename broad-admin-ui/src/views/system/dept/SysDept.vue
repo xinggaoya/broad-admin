@@ -378,7 +378,6 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .dept-container {
-  padding: 16px;
 
   .search-card {
     margin-bottom: 16px;

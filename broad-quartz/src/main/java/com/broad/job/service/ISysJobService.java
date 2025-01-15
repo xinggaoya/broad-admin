@@ -1,8 +1,11 @@
 package com.broad.job.service;
 
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.broad.common.exception.job.TaskException;
 import com.broad.job.entity.SysJob;
+import com.broad.job.mapper.SysJobMapper;
 import org.quartz.SchedulerException;
 
 import java.util.List;
@@ -12,14 +15,14 @@ import java.util.List;
  *
  * @author XingGao
  */
-public interface ISysJobService {
+public interface ISysJobService extends IService<SysJob> {
     /**
      * 获取quartz调度器的计划任务
      *
      * @param job 调度信息
      * @return 调度任务集合 list
      */
-    List<SysJob> selectJobList(SysJob job);
+    IPage<SysJob> selectJobList(SysJob job);
 
     /**
      * 通过调度任务ID查询调度信息

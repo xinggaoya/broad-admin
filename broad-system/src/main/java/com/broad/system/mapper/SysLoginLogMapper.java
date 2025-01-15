@@ -1,6 +1,8 @@
 package com.broad.system.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.broad.system.entity.SysLoginLog;
 
 import java.util.List;
@@ -19,7 +21,7 @@ public interface SysLoginLogMapper extends BaseMapper<SysLoginLog> {
      * @param loginLog the login log
      * @return the list
      */
-    List<SysLoginLog> findLoginLogList(SysLoginLog loginLog);
+    IPage<SysLoginLog> findLoginLogList(Page<SysLoginLog> page, SysLoginLog loginLog);
 
 }
 

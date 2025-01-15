@@ -1,6 +1,7 @@
 package com.broad.web.controller.system;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.broad.common.annotation.Log;
@@ -40,7 +41,7 @@ public class SysDictTypeController extends BaseController {
     @SaCheckPermission("sys:dict:list")
     public TableDataInfo selectAll(SysDictType sysDictType) {
         Page<SysDictType> page = startPage();
-        return getDataTable(sysDictTypeService.page(page, new QueryWrapper<>(sysDictType)));
+        return getDataTable(sysDictTypeService.page(page, new LambdaQueryWrapper<>(sysDictType)));
     }
 
     /**
@@ -52,7 +53,7 @@ public class SysDictTypeController extends BaseController {
     @GetMapping("/list")
     @SaCheckPermission("sys:dict:list")
     public ResultData getDictTypeList(SysDictType sysDictType) {
-        return success(this.sysDictTypeService.list(new QueryWrapper<>(sysDictType)));
+        return success(this.sysDictTypeService.list(new LambdaQueryWrapper<>(sysDictType)));
     }
 
     /**

@@ -697,7 +697,6 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .sys-user-container {
-  padding: 16px;
 
   .dept-tree-card {
     height: 100%;

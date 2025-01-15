@@ -1,6 +1,9 @@
 package com.broad.job.mapper;
 
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.broad.job.entity.SysJob;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -12,14 +15,14 @@ import java.util.List;
  * @author XingGao
  */
 @Mapper
-public interface SysJobMapper {
+public interface SysJobMapper extends BaseMapper<SysJob> {
     /**
      * 查询调度任务日志集合
      *
      * @param job 调度信息
      * @return 操作日志集合 list
      */
-    List<SysJob> selectJobList(SysJob job);
+    IPage<SysJob> selectJobList(Page<SysJob> page, SysJob job);
 
     /**
      * 查询所有调度任务

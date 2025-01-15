@@ -2,6 +2,7 @@ package com.broad.web.controller.system;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.broad.common.annotation.Log;
 import com.broad.common.enums.BusinessType;
 import com.broad.common.utils.poi.ExcelUtil;
@@ -42,7 +43,6 @@ public class SysUserLogController extends BaseController {
     @GetMapping
     @SaCheckPermission("monitor:log:list")
     public TableDataInfo selectAll(SysUserLog sysAdminLog) {
-        startPage();
         return getDataTable(this.sysAdminLogService.selectAll(sysAdminLog));
     }
 
@@ -105,7 +105,7 @@ public class SysUserLogController extends BaseController {
     @PostMapping("export")
     @Log(description = "导出管理员日志", businessType = BusinessType.EXPORT)
     public void export(@RequestBody SysUserLog sysAdminLog, HttpServletResponse response) {
-        List<SysUserLog> list = this.sysAdminLogService.selectAll(sysAdminLog);
+        List<SysUserLog> list = this.sysAdminLogService.list(new LambdaQueryWrapper<>(sysAdminLog));
         ExcelUtil<SysUserLog> util = new ExcelUtil<>(SysUserLog.class);
         util.exportExcel(response, list, "管理员日志");
     }

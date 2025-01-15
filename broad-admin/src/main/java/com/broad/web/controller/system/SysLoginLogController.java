@@ -38,7 +38,6 @@ public class SysLoginLogController extends BaseController {
     @GetMapping
     @SaCheckPermission("sys:loginLog:list")
     public TableDataInfo selectAll(SysLoginLog sysLoginLog) {
-        startPage();
         return getDataTable(this.sysLoginLogService.findLoginLogList(sysLoginLog));
     }
 

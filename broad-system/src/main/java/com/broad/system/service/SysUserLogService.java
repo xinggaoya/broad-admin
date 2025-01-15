@@ -1,6 +1,7 @@
 package com.broad.system.service;
 
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.broad.system.entity.SysUserLog;
 
@@ -20,6 +21,6 @@ public interface SysUserLogService extends IService<SysUserLog> {
      * @param sysAdminLog the sys admin log
      * @return the page
      */
-    List<SysUserLog> selectAll(SysUserLog sysAdminLog);
+    IPage<SysUserLog> selectAll(SysUserLog sysAdminLog);
 }
 

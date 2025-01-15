@@ -2,18 +2,6 @@ import type { Ref, UnwrapRef } from 'vue'
 import type { RouteMeta, RouteRecordNormalized, RouteRecordRaw } from 'vue-router'
 import type { ThemeCommonVars } from 'naive-ui'
 
-export enum LayoutMode {
-  LTR = 'ltr',
-  LCR = 'lcr',
-  TTB = 'ttb'
-}
-
-export enum DeviceType {
-  PC = 'pc',
-  PAD = 'pad',
-  MOBILE = 'mobile'
-}
-
 export enum ThemeMode {
   LIGHT = 'light',
   DARK = 'dark'
@@ -22,8 +10,19 @@ export enum ThemeMode {
 export enum SideTheme {
   DARK = 'dark',
   WHITE = 'white',
-  BLUE = 'blue',
   IMAGE = 'image'
+}
+
+export enum LayoutMode {
+  LTR = 'ltr',
+  TTB = 'ttb',
+  LCR = 'lcr'
+}
+
+export enum DeviceType {
+  PC = 'pc',
+  PAD = 'pad',
+  MOBILE = 'mobile'
 }
 
 export enum PageAnim {
@@ -31,6 +30,36 @@ export enum PageAnim {
   OPACITY = 'opacity',
   DOWN = 'down',
   SCALE = 'scale'
+}
+
+export interface ThemeColor {
+  primaryColor: string
+  primaryColorHover: string
+  primaryColorPressed: string
+  primaryColorSuppl: string
+}
+
+export interface ActionBar {
+  isShowSearch: boolean
+  isShowMessage: boolean
+  isShowRefresh: boolean
+  isShowFullScreen: boolean
+  isShowFooter: boolean
+}
+
+export interface AppConfigState {
+  projectName: string
+  theme: ThemeMode
+  sideTheme: SideTheme
+  themeColor: ThemeColor
+  layoutMode: LayoutMode
+  sideWidth: number
+  deviceType: DeviceType
+  pageAnim: PageAnim
+  isCollapse: boolean
+  isFixedNavBar: boolean
+  isAccordion: boolean
+  actionBar: ActionBar
 }
 
 export interface UserState {
@@ -41,27 +70,6 @@ export interface UserState {
   userName: string
   nickName: string
   avatar: string
-}
-
-export interface AppConfigState {
-  projectName: string
-  theme: ThemeMode
-  sideTheme: SideTheme
-  themeColor: ThemeCommonVars
-  layoutMode: LayoutMode
-  deviceType: DeviceType
-  sideWidth: number
-  pageAnim: PageAnim
-  isFixedNavBar: boolean
-  isCollapse: boolean
-  isAccordion: boolean
-  actionBar: {
-    isShowSearch: boolean
-    isShowMessage: boolean
-    isShowRefresh: boolean
-    isShowFullScreen: boolean
-    isShowFooter: boolean
-  }
 }
 
 export interface VisitedRouteState {

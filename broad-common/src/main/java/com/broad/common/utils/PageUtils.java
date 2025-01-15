@@ -15,13 +15,7 @@ public class PageUtils {
     public static <T> Page<T> startPage() {
         Integer pageNum = ServletUtils.getParameterToInt("pageNum");
         Integer pageSize = ServletUtils.getParameterToInt("pageSize");
-        if (pageNum == null) {
-            pageNum = 1;
-        }
-        if (pageSize == null) {
-            pageSize = 10;
-        }
-        return new Page<>(pageNum, pageSize);
+        return startPage(pageNum, pageSize);
     }
 
     /**

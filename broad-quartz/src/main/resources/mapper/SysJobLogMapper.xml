@@ -30,17 +30,17 @@
     <select id="selectJobLogList" parameterType="com.broad.job.entity.SysJobLog" resultMap="SysJobLogResult">
         <include refid="selectJobLogVo"/>
         <where>
-            <if test="jobName != null and jobName != ''">
-                AND job_name like concat('%', #{jobName}, '%')
+            <if test="jobLog.jobName != null and jobLog.jobName != ''">
+                AND job_name like concat('%', #{jobLog.jobName}, '%')
             </if>
-            <if test="jobGroup != null and jobGroup != ''">
-                AND job_group = #{jobGroup}
+            <if test="jobLog.jobGroup != null and jobLog.jobGroup != ''">
+                AND job_group = #{jobLog.jobGroup}
             </if>
-            <if test="status != null and status != ''">
-                AND status = #{status}
+            <if test="jobLog.status != null and jobLog.status != ''">
+                AND status = #{jobLog.status}
             </if>
-            <if test="invokeTarget != null and invokeTarget != ''">
-                AND invoke_target like concat('%', #{invokeTarget}, '%')
+            <if test="jobLog.invokeTarget != null and jobLog.invokeTarget != ''">
+                AND invoke_target like concat('%', #{jobLog.invokeTarget}, '%')
             </if>
             <!--			<if test="params.beginTime != null and params.beginTime != ''">&lt;!&ndash; 开始时间检索 &ndash;&gt;-->
             <!--				and date_format(create_time,'%y%m%d') &gt;= date_format(#{params.beginTime},'%y%m%d')-->

@@ -9,14 +9,13 @@
 </template>
 
 <script lang="ts" setup>
-import useAppConfigStore from '@/store/modules/app-config'
+import { useAppConfigStore } from '@/store/modules/app-config'
 
 const appConfig = useAppConfigStore()
 
 function toggleFold() {
   appConfig.toggleCollapse(!appConfig.isCollapse)
 }
-
 </script>
 
 <style lang="scss" scoped>

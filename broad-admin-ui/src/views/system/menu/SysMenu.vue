@@ -9,18 +9,20 @@
       :cascade="false"
       allow-checking-not-loaded
       row-key="menuId"
-      :children-key="childrenKey"
       :indent="20"
+      remote
       :expandable="true"
       :default-expand-all="false"
-      @load="handleLoad"
+      :on-load="handleLoad"
     >
       <template #header>
         <div class="table-header">
           <n-button-group>
             <n-button type="primary" @click="handleAdd">
               <template #icon>
-                <n-icon><AddOutline /></n-icon>
+                <n-icon>
+                  <AddOutline />
+                </n-icon>
               </template>
               新增菜单
             </n-button>
@@ -161,8 +163,8 @@
         <n-space justify="end">
           <n-button @click="formDialog.visible = false">取消</n-button>
           <n-button type="primary" :loading="formDialog.submitLoading" @click="handleSubmit"
-            >确定</n-button
-          >
+            >确定
+          </n-button>
         </n-space>
       </template>
     </n-modal>
@@ -170,17 +172,17 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, onMounted, h } from 'vue'
-import { useMessage, useDialog, NTag, NSpace, NButton, NPopconfirm, NIcon } from 'naive-ui'
-import type { FormInst, TreeOption, DataTableColumns } from 'naive-ui'
+import { h, onMounted, reactive, ref } from 'vue'
+import type { DataTableColumns, FormInst, TreeOption } from 'naive-ui'
+import { NButton, NIcon, NPopconfirm, NSpace, NTag, useDialog, useMessage } from 'naive-ui'
 import { AddOutline } from '@vicons/ionicons5'
 import {
+  addMenus,
+  deleteMenus,
+  getMenuChild,
   getMenus,
   getMenusTree,
-  addMenus,
-  updateMenus,
-  deleteMenus,
-  getMenuChild
+  updateMenus
 } from '@/api/system/menu'
 import type { MenuData } from './types'
 import TableMain from '@/components/table/main/TableMain.vue'
@@ -233,7 +235,8 @@ const formRules = {
   menuType: {
     required: true,
     message: '请选择菜单类型',
-    trigger: ['blur', 'change']
+    trigger: ['blur', 'change'],
+    type: 'number'
   },
   menuUrl: {
     required: true,
@@ -327,7 +330,7 @@ const tableColumns: DataTableColumns<MenuData> = [
   {
     title: '状态',
     key: 'status',
-    width: 200,
+    width: 250,
     render: (row: MenuData) => {
       return h(
         NSpace,
@@ -357,7 +360,7 @@ const tableColumns: DataTableColumns<MenuData> = [
   {
     title: '操作',
     key: 'actions',
-    width: 140,
+    width: 200,
     fixed: 'right' as const,
     render: (row: MenuData) => {
       return h(
@@ -401,22 +404,23 @@ const tableColumns: DataTableColumns<MenuData> = [
   }
 ]
 
-// 修改子节点键的定义
-const childrenKey = 'children'
-
 // 处理加载子节点数据
-const handleLoad = async (row: MenuData): Promise<void> => {
-  try {
-    return new Promise<void>(async (resolve) => {
-      const res = await getMenuChild({menuId: row.menuId})
-      if (res.code === 200 && res.data) {
-        row.children = res.data
-        resolve()
-      }
-    })
-  } catch (error) {
-    message.error('加载子菜单失败')
-  }
+const handleLoad = (row: MenuData): Promise<void> => {
+  return new Promise<void>((resolve) => {
+    getMenuChild({ menuId: row.menuId })
+      .then((res) => {
+        if (res.code === 200 && res.data) {
+          row.children = res.data.map((item:any) => {
+            item.isLeaf = !(item.isLeaf && item.isLeaf === '1');
+            return item
+          })
+          resolve()
+        }
+      })
+      .catch((error) => {
+        console.error('加载子菜单失败:', error)
+      })
+  })
 }
 
 // 修改加载表格数据的函数
@@ -424,12 +428,11 @@ const loadTableData = async () => {
   try {
     tableData.loading = true
     const res = await getMenus({})
-    console.log('初始数据:', res)
     if (res.code === 200 && res.data) {
-      tableData.list = res.data.map((item) => ({
-        ...item,
-        isLeaf: false
-      }))
+      tableData.list = res.data.map((item:any) => {
+        item.isLeaf = !(item.isLeaf && item.isLeaf === '1');
+        return item
+      })
     }
   } catch (error) {
     console.error('加载菜单数据失败:', error)
