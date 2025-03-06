@@ -31,6 +31,8 @@ export const useUserStore = defineStore(
       nickName.value = ''
       // 清理路由
       usePermissionStore().clearPermissionRoute()
+      // 清理本地存储的路由信息
+      localStorage.removeItem('permission-routes')
       goLogin()
     }
 
@@ -60,6 +62,8 @@ export const useUserStore = defineStore(
       // 删除用户信息
       removeUser = () => {
         localStorage.removeItem('user-info')
+        // 清理本地存储的路由信息
+        localStorage.removeItem('permission-routes')
         visitedRouteStore.clearVisitedView()
         sessionStorage.clear()
       },

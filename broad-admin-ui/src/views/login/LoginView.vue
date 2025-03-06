@@ -124,6 +124,7 @@ import { useUserStore } from '@/store/modules/user'
 import { useAppConfigStore } from '@/store/modules/app-config'
 import { getCaptchaImage, login } from '@/api/common'
 import type { UserState } from '@/store/types'
+import { usePermissionStore } from '@/store/modules/permission'
 import {
   PersonOutline,
   LockClosedOutline,
@@ -139,6 +140,7 @@ const message = useMessage()
 const notification = useNotification()
 const userStore = useUserStore()
 const appConfig = useAppConfigStore()
+const permissionStore = usePermissionStore()
 
 // 计算暗黑模式状态
 const isDarkMode = computed(() => appConfig.theme === 'dark')
@@ -199,7 +201,11 @@ const handleLogin = () => {
         ...loginForm
       })
 
-      await userStore.saveUser(data as UserState)
+      // 保存用户信息
+      await userStore.saveUser(data.userInfo as UserState)
+
+      // 保存路由信息到 permissionStore
+      await permissionStore.saveRoutes(data.routes)
 
       // 登录成功后跳转
       await router.replace({
@@ -208,7 +214,7 @@ const handleLogin = () => {
 
       notification.success({
         content: '登录成功',
-        meta: `欢迎回来, ${data.nickName}`,
+        meta: `欢迎回来, ${data.userInfo.nickName}`,
         duration: 2500,
         keepAliveOnHover: true
       })

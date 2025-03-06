@@ -14,6 +14,7 @@ import com.broad.system.entity.SysUser;
 import com.broad.system.mapper.SysUserMapper;
 import com.broad.system.service.SysLoginLogService;
 import com.broad.system.service.SysSessionService;
+import com.broad.system.service.SysMenuService;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Date;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * @author: XingGao
@@ -39,6 +42,9 @@ public class SysSessionServiceImpl implements SysSessionService {
 
     @Autowired
     private RedisService redisService;
+
+    @Autowired
+    private SysMenuService sysMenuService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -83,7 +89,13 @@ public class SysSessionServiceImpl implements SysSessionService {
             sysLoginLog.setMessage("登录成功");
             sysLoginLog.setUserId(admin.getId());
             loginLogService.saveLoginLog(request, sysLoginLog);
-            return admin;
+            
+            // 获取用户路由信息并添加到返回数据中
+            Map<String, Object> result = new HashMap<>();
+            result.put("userInfo", admin);
+            result.put("routes", this.sysMenuService.findTreeMenuByUserId(admin.getId()));
+            
+            return result;
         } catch (ServiceException e) {
             String msg = e.getMessage();
             sysLoginLog.setLoginStatus("1");

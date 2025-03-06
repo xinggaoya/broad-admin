@@ -1,6 +1,35 @@
 <template>
   <div class="system-monitor-container">
     <n-grid :cols="24" :x-gap="16" :y-gap="16">
+      <!-- 操作按钮区 -->
+      <n-grid-item :span="24">
+        <div class="action-buttons">
+          <n-space>
+            <n-button
+              type="primary"
+              :color="autoRefresh ? '#18a058' : ''"
+              @click="toggleAutoRefresh"
+            >
+              <template #icon>
+                <n-icon>
+                  <RefreshCircleOutline />
+                </n-icon>
+              </template>
+              {{ autoRefresh ? '停止自动刷新' : '开始自动刷新' }}
+            </n-button>
+            <n-button v-if="!autoRefresh" @click="fetchMonitorData">
+              <template #icon>
+                <n-icon>
+                  <RefreshOutline />
+                </n-icon>
+              </template>
+              手动刷新
+            </n-button>
+            <n-text v-if="autoRefresh" depth="3">每2秒自动刷新一次</n-text>
+          </n-space>
+        </div>
+      </n-grid-item>
+
       <!-- 服务器信息卡片 -->
       <n-grid-item :span="24">
         <n-card title="服务器信息" class="server-info-card">
@@ -257,9 +286,9 @@ const servicesList = ref<any[]>([])
 const loadingServices = ref(false)
 
 // 自动刷新
-const autoRefresh = ref(false)
+const autoRefresh = ref(true)
 let refreshTimer: any = null
-const refreshInterval = 30000 // 30秒刷新一次
+const refreshInterval = 5000 // 修改为5秒刷新一次
 
 // 图表引用
 const cpuGaugeRef = ref<HTMLElement | null>(null)
@@ -485,21 +514,20 @@ const getGaugeOption = (name: string, value: number, color: string) => {
           }
         },
         title: {
-          offsetCenter: [0, '-20%'],
-          color: '#999',
-          fontSize: 12
+          show: false
         },
         detail: {
           valueAnimation: true,
           formatter: '{value}%',
           color: 'auto',
-          fontSize: 18,
-          offsetCenter: [0, '0%']
+          fontSize: 24,
+          fontWeight: 'bold',
+          offsetCenter: [0, '30%']
         },
         data: [
           {
             value: value,
-            name: name
+            name: ''
           }
         ]
       }
@@ -511,7 +539,7 @@ const getGaugeOption = (name: string, value: number, color: string) => {
 const toggleAutoRefresh = () => {
   autoRefresh.value = !autoRefresh.value
   if (autoRefresh.value) {
-    message.success('已开启自动刷新，每30秒刷新一次')
+    message.success('已开启自动刷新，每2秒刷新一次')
     refreshTimer = setInterval(() => {
       fetchMonitorData()
       fetchServiceStatus()
@@ -550,6 +578,12 @@ onMounted(() => {
   setTimeout(() => {
     initGaugeCharts()
   }, 100)
+
+  // 自动开启定时刷新
+  refreshTimer = setInterval(() => {
+    fetchMonitorData()
+    fetchServiceStatus()
+  }, refreshInterval)
 
   // 窗口大小变化时重新调整图表大小
   window.addEventListener('resize', handleResize)
@@ -595,6 +629,14 @@ const handleResize = () => {
   min-height: 100%;
   position: relative;
 
+  .action-buttons {
+    margin-bottom: 16px;
+    padding: 12px;
+    border-radius: 8px;
+    background-color: var(--card-color);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+
   .server-info-card,
   .resource-card,
   .services-card {
@@ -618,14 +660,14 @@ const handleResize = () => {
 
       .gauge-text {
         position: absolute;
-        top: 65%;
+        top: 40%;
         left: 50%;
         transform: translate(-50%, -50%);
         text-align: center;
 
         h4 {
           font-size: 14px;
-          margin: 0 0 5px;
+          margin: 0;
           color: var(--text-color-2);
         }
 
@@ -671,13 +713,7 @@ const handleResize = () => {
   }
 
   .refresh-options {
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    z-index: 100;
+    display: none; /* 隐藏原来的固钉按钮 */
   }
 }
 </style>

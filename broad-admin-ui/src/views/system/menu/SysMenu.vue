@@ -1,43 +1,192 @@
 <template>
-  <div class="menu-container">
-    <!-- 表格区域 -->
-    <TableMain
-      ref="tableRef"
-      :columns="tableColumns"
-      :data="tableData.list"
-      :loading="tableData.loading"
-      :cascade="false"
-      allow-checking-not-loaded
-      row-key="menuId"
-      :indent="20"
-      remote
-      :expandable="true"
-      :default-expand-all="false"
-      :on-load="handleLoad"
-    >
-      <template #header>
-        <div class="table-header">
-          <n-button-group>
-            <n-button type="primary" @click="handleAdd">
-              <template #icon>
-                <n-icon>
-                  <AddOutline />
-                </n-icon>
-              </template>
-              新增菜单
-            </n-button>
-          </n-button-group>
-        </div>
-      </template>
-    </TableMain>
+  <div class="menu-page">
+    <!-- 顶部操作区 -->
+    <div class="menu-page-header">
+      <n-card class="action-card">
+        <n-grid :cols="24" :x-gap="16">
+          <n-grid-item :span="16">
+            <n-space>
+              <n-button type="primary" @click="handleAdd">
+                <template #icon>
+                  <n-icon><AddOutline /></n-icon>
+                </template>
+                新增菜单
+              </n-button>
+              <n-button @click="loadTableData" :loading="tableData.loading">
+                <template #icon>
+                  <n-icon><RefreshOutline /></n-icon>
+                </template>
+                刷新
+              </n-button>
+            </n-space>
+          </n-grid-item>
+          <n-grid-item :span="8">
+            <div class="search-box">
+              <n-input
+                v-model:value="searchText"
+                placeholder="搜索菜单名称"
+                clearable
+                @keydown.enter="onSearch"
+              >
+                <template #prefix>
+                  <n-icon><SearchOutline /></n-icon>
+                </template>
+                <template #suffix>
+                  <n-button tertiary circle type="primary" @click="onSearch">
+                    <template #icon>
+                      <n-icon><Search /></n-icon>
+                    </template>
+                  </n-button>
+                </template>
+              </n-input>
+            </div>
+          </n-grid-item>
+        </n-grid>
+      </n-card>
+    </div>
+
+    <!-- 主体内容区 -->
+    <div class="menu-page-content">
+      <n-card class="content-card">
+        <n-grid :cols="24" :x-gap="16">
+          <!-- 左侧菜单树 -->
+          <n-grid-item :span="7">
+            <n-card title="菜单层级" size="small" class="tree-card">
+              <n-spin :show="tableData.loading">
+                <n-tree
+                  block-line
+                  :data="menuTreeData"
+                  :selected-keys="selectedKeys"
+                  :expanded-keys="expandedKeys"
+                  selectable
+                  @update:selected-keys="handleSelectMenu"
+                  @update:expanded-keys="handleExpandMenu"
+                >
+                  <template #default="{ option }">
+                    <div class="tree-node-label">
+                      <div class="tree-node-icon">
+                        <n-icon v-if="option.menuType !== 2">
+                          <SvgIcon
+                            :prefix="option.iconPrefix || 'iconfont'"
+                            :name="option.icon || 'menu'"
+                          />
+                        </n-icon>
+                        <n-icon v-else>
+                          <KeyOutline />
+                        </n-icon>
+                      </div>
+                      <span>{{ option.label }}</span>
+                      <n-tag
+                        size="small"
+                        class="type-tag"
+                        :type="getMenuTypeTagType(option.menuType)"
+                      >
+                        {{ getMenuTypeLabel(option.menuType) }}
+                      </n-tag>
+                    </div>
+                  </template>
+                </n-tree>
+                <n-empty v-if="menuTreeData.length === 0" description="暂无菜单数据" />
+              </n-spin>
+            </n-card>
+          </n-grid-item>
+
+          <!-- 右侧详情与编辑 -->
+          <n-grid-item :span="17">
+            <div v-if="selectedMenu">
+              <n-card title="菜单详情" size="small" class="detail-card">
+                <template #header-extra>
+                  <n-space>
+                    <n-button secondary strong @click="handleEdit(selectedMenu)">
+                      <template #icon>
+                        <n-icon><PencilOutline /></n-icon>
+                      </template>
+                      编辑
+                    </n-button>
+                    <n-popconfirm @positive-click="handleDelete(selectedMenu)">
+                      <template #trigger>
+                        <n-button secondary strong type="error">
+                          <template #icon>
+                            <n-icon><TrashOutline /></n-icon>
+                          </template>
+                          删除
+                        </n-button>
+                      </template>
+                      确定要删除此菜单吗？
+                    </n-popconfirm>
+                  </n-space>
+                </template>
+
+                <n-descriptions bordered :column="2" class="info-descriptions">
+                  <n-descriptions-item label="菜单名称">
+                    <n-ellipsis>{{ selectedMenu.menuName }}</n-ellipsis>
+                  </n-descriptions-item>
+                  <n-descriptions-item label="菜单类型">
+                    <n-tag :type="getMenuTypeTagType(selectedMenu.menuType)">
+                      {{ getMenuTypeLabel(selectedMenu.menuType) }}
+                    </n-tag>
+                  </n-descriptions-item>
+                  <n-descriptions-item label="菜单图标" v-if="selectedMenu.menuType !== 2">
+                    <n-space align="center">
+                      <SvgIcon
+                        v-if="selectedMenu.icon"
+                        :prefix="selectedMenu.iconPrefix || 'iconfont'"
+                        :name="selectedMenu.icon"
+                      />
+                      <span v-if="selectedMenu.icon">{{ selectedMenu.icon }}</span>
+                      <span v-else>无</span>
+                    </n-space>
+                  </n-descriptions-item>
+                  <n-descriptions-item label="显示排序">
+                    {{ selectedMenu.orderNum }}
+                  </n-descriptions-item>
+                  <n-descriptions-item label="权限标识" :span="selectedMenu.menuType !== 2 ? 1 : 2">
+                    <n-ellipsis>{{ selectedMenu.perme || '无' }}</n-ellipsis>
+                  </n-descriptions-item>
+                  <n-descriptions-item v-if="selectedMenu.menuType !== 2" label="路由地址">
+                    <n-ellipsis>{{ selectedMenu.menuUrl || '无' }}</n-ellipsis>
+                  </n-descriptions-item>
+                  <n-descriptions-item v-if="selectedMenu.menuType === 1" label="组件路径">
+                    <n-ellipsis>{{ selectedMenu.localFilePath || '无' }}</n-ellipsis>
+                  </n-descriptions-item>
+                  <n-descriptions-item
+                    v-if="selectedMenu.menuType !== 2"
+                    label="状态设置"
+                    :span="2"
+                  >
+                    <n-space>
+                      <n-tag :type="selectedMenu.hidden ? 'warning' : 'success'">
+                        {{ selectedMenu.hidden ? '隐藏' : '显示' }}
+                      </n-tag>
+                      <n-tag :type="selectedMenu.cacheable ? 'info' : 'default'">
+                        {{ selectedMenu.cacheable ? '缓存' : '不缓存' }}
+                      </n-tag>
+                      <n-tag :type="selectedMenu.affix ? 'error' : 'default'">
+                        {{ selectedMenu.affix ? '固定' : '不固定' }}
+                      </n-tag>
+                    </n-space>
+                  </n-descriptions-item>
+                  <n-descriptions-item label="备注" :span="2">
+                    {{ selectedMenu.remark || '无' }}
+                  </n-descriptions-item>
+                </n-descriptions>
+              </n-card>
+            </div>
+            <n-empty v-else description="请选择左侧菜单项查看详情" />
+          </n-grid-item>
+        </n-grid>
+      </n-card>
+    </div>
 
     <!-- 表单弹窗 -->
     <n-modal
       v-model:show="formDialog.visible"
       :title="formDialog.title"
       preset="card"
-      :style="{ width: '650px' }"
+      :style="{ width: '700px', maxWidth: '90vw' }"
       :mask-closable="false"
+      transform-origin="center"
+      class="menu-form-modal"
     >
       <n-spin :show="formDialog.submitLoading">
         <n-form
@@ -48,122 +197,173 @@
           label-width="100"
           require-mark-placement="right-hanging"
         >
-          <n-grid :cols="24" :x-gap="24">
-            <!-- 菜单类型 -->
-            <n-form-item-gi :span="12" label="菜单类型" path="menuType">
-              <n-radio-group v-model:value="formData.menuType">
-                <n-space>
-                  <n-radio :value="1">菜单</n-radio>
-                  <n-radio :value="0">目录</n-radio>
-                  <n-radio :value="2">按钮</n-radio>
-                </n-space>
-              </n-radio-group>
-            </n-form-item-gi>
+          <n-tabs type="line" animated>
+            <!-- 基本信息 -->
+            <n-tab-pane name="basic" tab="基本信息">
+              <n-grid :cols="24" :x-gap="24">
+                <!-- 菜单类型 -->
+                <n-form-item-gi :span="24" label="菜单类型" path="menuType">
+                  <n-radio-group v-model:value="formData.menuType">
+                    <n-radio-button :value="0">
+                      <n-space align="center">
+                        <n-icon><FolderOpenOutline /></n-icon>
+                        <span>目录</span>
+                      </n-space>
+                    </n-radio-button>
+                    <n-radio-button :value="1">
+                      <n-space align="center">
+                        <n-icon><MenuOutline /></n-icon>
+                        <span>菜单</span>
+                      </n-space>
+                    </n-radio-button>
+                    <n-radio-button :value="2">
+                      <n-space align="center">
+                        <n-icon><KeyOutline /></n-icon>
+                        <span>按钮</span>
+                      </n-space>
+                    </n-radio-button>
+                  </n-radio-group>
+                </n-form-item-gi>
 
-            <!-- 上级菜单 -->
-            <n-form-item-gi :span="12" label="上级菜单" path="parentId">
-              <n-tree-select
-                v-model:value="formData.parentId"
-                :options="menuTreeOptions"
-                placeholder="请选择上级菜单"
-                clearable
-              />
-            </n-form-item-gi>
+                <!-- 上级菜单 -->
+                <n-form-item-gi :span="24" label="上级菜单" path="parentId">
+                  <n-tree-select
+                    v-model:value="formData.parentId"
+                    :options="menuTreeOptions"
+                    placeholder="请选择上级菜单"
+                    clearable
+                  />
+                </n-form-item-gi>
 
-            <!-- 菜单名称 -->
-            <n-form-item-gi :span="12" label="菜单名称" path="menuName">
-              <n-input v-model:value="formData.menuName" placeholder="请输入菜单名称" />
-            </n-form-item-gi>
+                <!-- 菜单名称 -->
+                <n-form-item-gi :span="12" label="菜单名称" path="menuName">
+                  <n-input v-model:value="formData.menuName" placeholder="请输入菜单名称" />
+                </n-form-item-gi>
 
-            <!-- 菜单路径 -->
-            <n-form-item-gi
-              v-if="formData.menuType !== 2"
-              :span="12"
-              label="菜单路径"
-              path="menuUrl"
-            >
-              <n-input
-                v-model:value="formData.menuUrl"
-                placeholder="请输入菜单路径，例：/system/menu"
-              />
-            </n-form-item-gi>
+                <!-- 显示排序 -->
+                <n-form-item-gi :span="12" label="显示排序" path="orderNum">
+                  <n-input-number
+                    v-model:value="formData.orderNum"
+                    :min="0"
+                    :max="999"
+                    placeholder="请输入显示排序"
+                    class="full-width"
+                  />
+                </n-form-item-gi>
 
-            <!-- 组件路径 -->
-            <n-form-item-gi
-              v-if="formData.menuType === 1"
-              :span="12"
-              label="组件路径"
-              path="localFilePath"
-            >
-              <n-input
-                v-model:value="formData.localFilePath"
-                placeholder="请输入组件路径，例：/menu/index"
-              />
-            </n-form-item-gi>
+                <!-- 菜单路径 -->
+                <n-form-item-gi
+                  v-if="formData.menuType !== 2"
+                  :span="12"
+                  label="菜单路径"
+                  path="menuUrl"
+                >
+                  <n-input
+                    v-model:value="formData.menuUrl"
+                    placeholder="请输入菜单路径，例：/system/menu"
+                  />
+                </n-form-item-gi>
 
-            <!-- 权限标识 -->
-            <n-form-item-gi :span="12" label="权限标识" path="perme">
-              <n-input
-                v-model:value="formData.perme"
-                placeholder="请输入权限标识，例：system:menu:list"
-              />
-            </n-form-item-gi>
+                <!-- 组件路径 -->
+                <n-form-item-gi
+                  v-if="formData.menuType === 1"
+                  :span="12"
+                  label="组件路径"
+                  path="localFilePath"
+                >
+                  <n-input
+                    v-model:value="formData.localFilePath"
+                    placeholder="请输入组件路径，例：/menu/index"
+                  />
+                </n-form-item-gi>
 
-            <!-- 菜单图标 -->
-            <n-form-item-gi v-if="formData.menuType !== 2" :span="12" label="菜单图标" path="icon">
-              <IconSelect v-model:value="formData.icon" />
-            </n-form-item-gi>
+                <!-- 权限标识 -->
+                <n-form-item-gi
+                  :span="formData.menuType === 2 ? 24 : 12"
+                  label="权限标识"
+                  path="perme"
+                >
+                  <n-input
+                    v-model:value="formData.perme"
+                    placeholder="请输入权限标识，例：system:menu:list"
+                  />
+                </n-form-item-gi>
 
-            <!-- 显示排序 -->
-            <n-form-item-gi :span="12" label="显示排序" path="orderNum">
-              <n-input-number
-                v-model:value="formData.orderNum"
-                :min="0"
-                :max="999"
-                placeholder="请输入显示排序"
-              />
-            </n-form-item-gi>
+                <!-- 菜单图标 -->
+                <n-form-item-gi
+                  v-if="formData.menuType !== 2"
+                  :span="24"
+                  label="菜单图标"
+                  path="icon"
+                >
+                  <IconSelect v-model:value="formData.icon" />
+                </n-form-item-gi>
+              </n-grid>
+            </n-tab-pane>
 
-            <!-- 是否缓存 -->
-            <n-form-item-gi
-              v-if="formData.menuType !== 2"
-              :span="8"
-              label="是否缓存"
-              path="cacheable"
-            >
-              <n-switch
-                v-model:value="formData.cacheable"
-                :checked-value="1"
-                :unchecked-value="0"
-              />
-            </n-form-item-gi>
+            <!-- 高级设置 -->
+            <n-tab-pane name="advanced" tab="高级设置" v-if="formData.menuType !== 2">
+              <n-divider title-placement="left">显示设置</n-divider>
+              <n-grid :cols="24" :x-gap="24">
+                <n-grid-item :span="8">
+                  <n-space vertical align="center">
+                    <n-switch
+                      v-model:value="formData.hidden"
+                      :checked-value="0"
+                      :unchecked-value="1"
+                    />
+                    <span>{{ formData.hidden ? '隐藏菜单' : '显示菜单' }}</span>
+                  </n-space>
+                </n-grid-item>
+                <n-grid-item :span="8">
+                  <n-space vertical align="center">
+                    <n-switch
+                      v-model:value="formData.cacheable"
+                      :checked-value="1"
+                      :unchecked-value="0"
+                    />
+                    <span>{{ formData.cacheable ? '开启缓存' : '关闭缓存' }}</span>
+                  </n-space>
+                </n-grid-item>
+                <n-grid-item :span="8">
+                  <n-space vertical align="center">
+                    <n-switch
+                      v-model:value="formData.affix"
+                      :checked-value="1"
+                      :unchecked-value="0"
+                    />
+                    <span>{{ formData.affix ? '固定标签' : '不固定标签' }}</span>
+                  </n-space>
+                </n-grid-item>
+              </n-grid>
 
-            <!-- 是否显示 -->
-            <n-form-item-gi v-if="formData.menuType !== 2" :span="8" label="是否显示" path="hidden">
-              <n-switch v-model:value="formData.hidden" :checked-value="0" :unchecked-value="1" />
-            </n-form-item-gi>
-
-            <!-- 是否固定 -->
-            <n-form-item-gi v-if="formData.menuType !== 2" :span="8" label="是否固定" path="affix">
-              <n-switch v-model:value="formData.affix" :checked-value="1" :unchecked-value="0" />
-            </n-form-item-gi>
-
-            <!-- 备注 -->
-            <n-form-item-gi :span="24" label="备注" path="remark">
+              <n-divider title-placement="left">备注</n-divider>
               <n-input
                 v-model:value="formData.remark"
                 type="textarea"
                 placeholder="请输入备注信息"
+                :autosize="{ minRows: 3, maxRows: 5 }"
               />
-            </n-form-item-gi>
-          </n-grid>
+            </n-tab-pane>
+
+            <!-- 按钮设置 -->
+            <n-tab-pane name="button" tab="按钮设置" v-if="formData.menuType === 2">
+              <n-divider title-placement="left">备注</n-divider>
+              <n-input
+                v-model:value="formData.remark"
+                type="textarea"
+                placeholder="请输入备注信息"
+                :autosize="{ minRows: 3, maxRows: 5 }"
+              />
+            </n-tab-pane>
+          </n-tabs>
         </n-form>
       </n-spin>
       <template #footer>
         <n-space justify="end">
           <n-button @click="formDialog.visible = false">取消</n-button>
-          <n-button type="primary" :loading="formDialog.submitLoading" @click="handleSubmit"
-            >确定
+          <n-button type="primary" :loading="formDialog.submitLoading" @click="handleSubmit">
+            保存
           </n-button>
         </n-space>
       </template>
@@ -172,10 +372,30 @@
 </template>
 
 <script lang="ts" setup>
-import { h, onMounted, reactive, ref } from 'vue'
+import { h, onMounted, reactive, ref, computed, watch } from 'vue'
 import type { DataTableColumns, FormInst, TreeOption } from 'naive-ui'
-import { NButton, NIcon, NPopconfirm, NSpace, NTag, useDialog, useMessage } from 'naive-ui'
-import { AddOutline } from '@vicons/ionicons5'
+import {
+  NButton,
+  NIcon,
+  NPopconfirm,
+  NSpace,
+  NTag,
+  useDialog,
+  useMessage,
+  NEmpty,
+  NTree
+} from 'naive-ui'
+import {
+  AddOutline,
+  RefreshOutline,
+  SearchOutline,
+  Search,
+  PencilOutline,
+  TrashOutline,
+  FolderOpenOutline,
+  MenuOutline,
+  KeyOutline
+} from '@vicons/ionicons5'
 import {
   addMenus,
   deleteMenus,
@@ -198,6 +418,18 @@ const tableData = reactive({
   list: [] as MenuData[],
   loading: false
 })
+
+// 搜索相关
+const searchText = ref('')
+const onSearch = () => {
+  loadTableData(searchText.value)
+}
+
+// 菜单树相关
+const menuTreeData = ref<any[]>([])
+const selectedKeys = ref<string[]>([])
+const expandedKeys = ref<string[]>([])
+const selectedMenu = ref<MenuData | null>(null)
 
 // 表单相关
 const formRef = ref<FormInst | null>(null)
@@ -254,155 +486,61 @@ const formRules = {
 // 菜单树选项
 const menuTreeOptions = ref<TreeOption[]>([])
 
-// 表格列定义
-const tableColumns: DataTableColumns<MenuData> = [
-  {
-    title: '菜单名称',
-    key: 'menuName',
-    width: 250,
-    ellipsis: {
-      tooltip: true
+// 选择菜单
+const handleSelectMenu = (keys: string[]) => {
+  selectedKeys.value = keys
+  if (keys.length > 0) {
+    const id = keys[0]
+    const menu = findMenuById(id)
+    if (menu) {
+      selectedMenu.value = menu
     }
-  },
-  {
-    title: '图标',
-    key: 'icon',
-    width: 60,
-    align: 'center' as const,
-    render: (row: MenuData) => {
-      if (!row.icon) return null
-      return h(SvgIcon, {
-        prefix: row.iconPrefix || 'iconfont',
-        name: row.icon
-      })
-    }
-  },
-  {
-    title: '排序',
-    key: 'orderNum',
-    width: 60,
-    align: 'center' as const
-  },
-  {
-    title: '权限标识',
-    key: 'perme',
-    width: 180,
-    ellipsis: {
-      tooltip: true
-    }
-  },
-  {
-    title: '路由地址',
-    key: 'menuUrl',
-    width: 180,
-    ellipsis: {
-      tooltip: true
-    }
-  },
-  {
-    title: '组件路径',
-    key: 'localFilePath',
-    width: 180,
-    ellipsis: {
-      tooltip: true
-    }
-  },
-  {
-    title: '菜单类型',
-    key: 'menuType',
-    width: 80,
-    render: (row: MenuData) => {
-      const typeMap = {
-        0: { label: '目录', type: 'default' },
-        1: { label: '菜单', type: 'info' },
-        2: { label: '按钮', type: 'success' }
-      }
-      const type = typeMap[row.menuType as keyof typeof typeMap]
-      return h(
-        NTag,
-        { type: type.type as 'default' | 'info' | 'success', size: 'small' },
-        {
-          default: () => type.label
-        }
-      )
-    }
-  },
-  {
-    title: '状态',
-    key: 'status',
-    width: 250,
-    render: (row: MenuData) => {
-      return h(
-        NSpace,
-        { size: 'small' },
-        {
-          default: () => [
-            h(
-              NTag,
-              { type: row.hidden ? 'warning' : 'success', size: 'small' },
-              { default: () => (row.hidden ? '隐藏' : '显示') }
-            ),
-            h(
-              NTag,
-              { type: row.cacheable ? 'info' : 'default', size: 'small' },
-              { default: () => (row.cacheable ? '缓存' : '不缓存') }
-            ),
-            h(
-              NTag,
-              { type: row.affix ? 'error' : 'default', size: 'small' },
-              { default: () => (row.affix ? '固定' : '不固定') }
-            )
-          ]
-        }
-      )
-    }
-  },
-  {
-    title: '操作',
-    key: 'actions',
-    width: 200,
-    fixed: 'right' as const,
-    render: (row: MenuData) => {
-      return h(
-        NSpace,
-        { size: 'small' },
-        {
-          default: () => [
-            h(
-              NButton,
-              {
-                size: 'small',
-                type: 'primary',
-                ghost: true,
-                onClick: () => handleEdit(row)
-              },
-              { default: () => '编辑' }
-            ),
-            h(
-              NPopconfirm,
-              {
-                onPositiveClick: () => handleDelete(row)
-              },
-              {
-                default: () => '确认删除？',
-                trigger: () =>
-                  h(
-                    NButton,
-                    {
-                      size: 'small',
-                      type: 'error',
-                      ghost: true
-                    },
-                    { default: () => '删除' }
-                  )
-              }
-            )
-          ]
-        }
-      )
-    }
+  } else {
+    selectedMenu.value = null
   }
-]
+}
+
+// 展开菜单
+const handleExpandMenu = (keys: string[]) => {
+  expandedKeys.value = keys
+}
+
+// 根据ID查找菜单
+const findMenuById = (id: string): MenuData | null => {
+  const findInList = (list: any[]) => {
+    for (const item of list) {
+      if (item.menuId.toString() === id) {
+        return item
+      }
+      if (item.children && item.children.length > 0) {
+        const found = findInList(item.children)
+        if (found) return found
+      }
+    }
+    return null
+  }
+  return findInList(tableData.list)
+}
+
+// 获取菜单类型标签类型
+const getMenuTypeTagType = (type: number) => {
+  const typeMap = {
+    0: 'default',
+    1: 'info',
+    2: 'success'
+  }
+  return typeMap[type as keyof typeof typeMap]
+}
+
+// 获取菜单类型标签文字
+const getMenuTypeLabel = (type: number) => {
+  const typeMap = {
+    0: '目录',
+    1: '菜单',
+    2: '按钮'
+  }
+  return typeMap[type as keyof typeof typeMap]
+}
 
 // 处理加载子节点数据
 const handleLoad = (row: MenuData): Promise<void> => {
@@ -423,16 +561,57 @@ const handleLoad = (row: MenuData): Promise<void> => {
   })
 }
 
-// 修改加载表格数据的函数
-const loadTableData = async () => {
+// 转换菜单数据为树形结构
+const transformMenuToTree = (menuList: MenuData[]) => {
+  return menuList.map((menu) => {
+    const node = {
+      key: menu.menuId.toString(),
+      label: menu.menuName,
+      menuId: menu.menuId,
+      menuName: menu.menuName,
+      menuUrl: menu.menuUrl,
+      localFilePath: menu.localFilePath,
+      perme: menu.perme,
+      icon: menu.icon,
+      iconPrefix: menu.iconPrefix,
+      orderNum: menu.orderNum,
+      menuType: menu.menuType,
+      hidden: menu.hidden,
+      cacheable: menu.cacheable,
+      affix: menu.affix,
+      remark: menu.remark,
+      children:
+        menu.children && menu.children.length > 0 ? transformMenuToTree(menu.children) : undefined
+    }
+    return node
+  })
+}
+
+// 加载表格数据
+const loadTableData = async (keyword = '') => {
   try {
     tableData.loading = true
-    const res = await getMenus({})
+    const res = await getMenusTree({ menuName: keyword })
     if (res.code === 200 && res.data) {
-      tableData.list = res.data.map((item: any) => {
-        item.isLeaf = !(item.isLeaf && item.isLeaf === '1')
-        return item
-      })
+      tableData.list = res.data || []
+
+      // 转换为树形结构
+      menuTreeData.value = transformMenuToTree(tableData.list)
+
+      // 如果有选中菜单，重新获取菜单数据
+      if (selectedKeys.value.length > 0) {
+        const id = selectedKeys.value[0]
+        const menu = findMenuById(id)
+        if (menu) {
+          selectedMenu.value = menu
+        } else {
+          selectedMenu.value = null
+          selectedKeys.value = []
+        }
+      }
+
+      // 默认展开所有节点
+      expandAllNodes()
     }
   } catch (error) {
     console.error('加载菜单数据失败:', error)
@@ -478,7 +657,7 @@ const handleAdd = () => {
     iconPrefix: 'iconfont',
     orderNum: 0,
     menuType: 1,
-    parentId: undefined,
+    parentId: selectedMenu.value?.menuId || undefined,
     cacheable: 0,
     hidden: 0,
     affix: 0,
@@ -501,10 +680,27 @@ const handleEdit = (row: MenuData) => {
 // 删除菜单
 const handleDelete = async (row: MenuData) => {
   try {
-    await deleteMenus({ menuId: row.menuId })
-    message.success('删除成功')
-    loadTableData()
+    dialog.warning({
+      title: '确认删除',
+      content: `确定要删除菜单 "${row.menuName}" 吗？删除后不可恢复！`,
+      positiveText: '确定',
+      negativeText: '取消',
+      onPositiveClick: async () => {
+        const res = await deleteMenus({ menuId: row.menuId })
+        if (res.code === 200) {
+          message.success('删除成功')
+          if (selectedMenu.value?.menuId === row.menuId) {
+            selectedMenu.value = null
+            selectedKeys.value = []
+          }
+          loadTableData()
+        } else {
+          message.error(res.message || '删除失败')
+        }
+      }
+    })
   } catch (error) {
+    console.error('删除失败:', error)
     message.error('删除失败')
   }
 }
@@ -524,6 +720,16 @@ const handleSubmit = async () => {
       message.success(`${formDialog.mode === 'add' ? '新增' : '编辑'}成功`)
       formDialog.visible = false
       loadTableData()
+
+      // 更新选中的菜单
+      if (formDialog.mode === 'edit' && selectedMenu.value) {
+        if (selectedMenu.value.menuId === formData.menuId) {
+          setTimeout(() => {
+            const menu = findMenuById(formData.menuId?.toString() || '')
+            if (menu) selectedMenu.value = menu
+          }, 500)
+        }
+      }
     } else {
       message.error(res.message || `${formDialog.mode === 'add' ? '新增' : '编辑'}失败`)
     }
@@ -535,33 +741,115 @@ const handleSubmit = async () => {
   }
 }
 
+// 修改展开所有节点的函数，默认不展开任何节点
+const expandAllNodes = () => {
+  // 返回空数组，表示不展开任何节点
+  expandedKeys.value = []
+}
+
 // 初始化
 onMounted(() => {
   loadTableData()
   loadMenuTree()
+  // 移除默认调用展开节点函数
+  // setTimeout(() => {
+  //   expandAllNodes()
+  // }, 500)
 })
 </script>
 
 <style lang="scss" scoped>
-.menu-container {
-  padding: 16px;
-  background-color: #fff;
-  border-radius: 4px;
+.menu-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  box-sizing: border-box;
 
-  .table-header {
+  &-header {
     margin-bottom: 16px;
+
+    .action-card {
+      background-color: var(--card-color);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+      border-radius: 8px;
+
+      .search-box {
+        display: flex;
+        justify-content: flex-end;
+      }
+    }
   }
 
-  :deep(.n-data-table .n-data-table-td) {
-    padding: 8px;
-  }
+  &-content {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 
-  :deep(.n-tag) {
-    padding: 0 12px;
-  }
+    .content-card {
+      height: 100%;
+      background-color: var(--card-color);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+      border-radius: 8px;
 
-  :deep(.n-button) {
-    padding: 0 16px;
+      :deep(.n-card-header) {
+        padding: 12px 20px;
+      }
+
+      :deep(.n-card__content) {
+        height: calc(100% - 52px);
+
+        .n-grid {
+          height: 100%;
+        }
+      }
+    }
+
+    .tree-card {
+      height: 100%;
+      overflow: auto;
+
+      :deep(.n-card__content) {
+        padding: 8px;
+        height: calc(100% - 45px);
+        overflow: auto;
+      }
+
+      .tree-node-label {
+        display: flex;
+        align-items: center;
+        padding: 4px 0;
+
+        .tree-node-icon {
+          margin-right: 6px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: var(--text-color-3);
+        }
+
+        .type-tag {
+          margin-left: 8px;
+          padding: 0 8px;
+          font-size: 12px;
+        }
+      }
+    }
+
+    .detail-card {
+      height: 100%;
+
+      :deep(.n-card__content) {
+        padding: 16px;
+        overflow: auto;
+      }
+
+      .info-descriptions {
+        :deep(.n-descriptions-table-header) {
+          background-color: var(--card-color);
+        }
+      }
+    }
   }
 }
 </style>

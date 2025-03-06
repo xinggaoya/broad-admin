@@ -18,12 +18,14 @@ import type { StoreDefinition } from 'pinia'
 interface PermissionStoreState {
   permissionRoutes: RouteRecordRaw[]
   permission: string[]
+  localRoutes: any[]
 }
 
 export const usePermissionStore: StoreDefinition = defineStore('permission-route', () => {
   // 状态定义
   const permissionRoutes = ref<RouteRecordRaw[]>([])
   const permission = ref<string[]>([])
+  const localRoutes = ref<any[]>([])
 
   // 计算属性
   const getPermissionSideBar = computed(() => {
@@ -39,7 +41,31 @@ export const usePermissionStore: StoreDefinition = defineStore('permission-route
   })
 
   // Actions
+  const saveRoutes = (routes: any[]) => {
+    localRoutes.value = routes
+    localStorage.setItem('permission-routes', JSON.stringify(routes))
+  }
+
+  const loadLocalRoutes = () => {
+    const savedRoutes = localStorage.getItem('permission-routes')
+    if (savedRoutes) {
+      localRoutes.value = JSON.parse(savedRoutes)
+      return true
+    }
+    return false
+  }
+
   const getRoutesAction = async () => {
+    // 优先从本地加载路由信息
+    if (loadLocalRoutes() && localRoutes.value.length > 0) {
+      const tempRoutes = generatorRoutes(localRoutes.value || [])
+      permission.value = findPermission(localRoutes.value || [])
+      // 写入默认路由
+      tempRoutes.unshift(...asyncRoutes)
+      return tempRoutes
+    }
+
+    // 如果本地没有路由信息，从后端获取
     const res: any = await getRoutes()
     const tempRoutes = generatorRoutes(res.data || [])
     permission.value = findPermission(res.data || [])
@@ -89,6 +115,8 @@ export const usePermissionStore: StoreDefinition = defineStore('permission-route
   const reset = () => {
     permissionRoutes.value = []
     permission.value = []
+    localRoutes.value = []
+    localStorage.removeItem('permission-routes')
   }
 
   const hasPermissionExists = (permissions: Array<string> | string) => {
@@ -99,16 +127,21 @@ export const usePermissionStore: StoreDefinition = defineStore('permission-route
   const clearPermissionRoute = () => {
     permissionRoutes.value = []
     permission.value = []
+    localRoutes.value = []
+    localStorage.removeItem('permission-routes')
   }
 
   return {
     // 状态
     permissionRoutes,
     permission,
+    localRoutes,
     // 计算属性
     getPermissionSideBar,
     getPermissionSplitTabs,
     // Actions
+    saveRoutes,
+    loadLocalRoutes,
     getRoutesAction,
     initPermissionRoute,
     isEmptyPermissionRoute,
