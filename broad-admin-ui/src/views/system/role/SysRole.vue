@@ -108,7 +108,8 @@
           :data="menuTreeData"
           checkable
           cascade
-          :check-strategy="'child'"
+          selectable
+          :check-strategy="'all'"
         />
       </n-spin>
       <template #footer>
@@ -384,7 +385,7 @@ const handleDelete = async (row: any) => {
 // 处理菜单树数据
 const handleMenuTreeData = (data: any[]): TreeOption[] => {
   return data.map((item) => ({
-    key: item.menuId,
+    key: String(item.menuId),
     label: item.menuName,
     children: item.children ? handleMenuTreeData(item.children) : undefined
   }))
@@ -405,7 +406,7 @@ const handleAssignMenu = async (row: any) => {
     // 加载已分配的菜单
     const roleMenuRes = await getRoleMenu({ roleId: row.id })
     if (roleMenuRes.code === 200) {
-      checkedMenuKeys.value = roleMenuRes.data?.map((item: any) => item.menuId) || []
+      checkedMenuKeys.value = roleMenuRes.data?.map((item: any) => String(item.menuId)) || []
     }
   } catch (error) {
     console.error('加载菜单数据失败:', error)
@@ -419,9 +420,11 @@ const handleMenuSubmit = async () => {
   if (!currentRole.value) return
   submitLoading.value = true
   try {
+    // 将字符串类型的菜单ID转换回数字类型，后端可能需要数字类型
+    const menuIds = checkedMenuKeys.value.map((key) => Number(key))
     const res = await addRoleMenu({
       roleId: currentRole.value.id,
-      menuIds: checkedMenuKeys.value
+      menuIds: menuIds
     })
     if (res.code === 200) {
       message.success('分配权限成功')
@@ -445,7 +448,6 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .role-container {
-
   .search-card {
     margin-bottom: 16px;
   }

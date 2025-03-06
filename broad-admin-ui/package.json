@@ -10,6 +10,7 @@
   "dependencies": {
     "@vueuse/core": "^10.9.0",
     "clipboard": "^2.0.11",
+    "date-fns": "^4.1.0",
     "echarts": "^5.5.0",
     "file-saver": "^2.0.5",
     "font-awesome": "^4.7.0",

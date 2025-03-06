@@ -32,6 +32,13 @@
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
 
+        <!-- 添加系统监控依赖 -->
+        <dependency>
+            <groupId>com.github.oshi</groupId>
+            <artifactId>oshi-core</artifactId>
+            <version>6.4.9</version>
+        </dependency>
+
     </dependencies>
 
 </project>

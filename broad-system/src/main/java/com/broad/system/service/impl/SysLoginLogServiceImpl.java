@@ -1,5 +1,6 @@
 package com.broad.system.service.impl;
 
+import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -46,6 +47,7 @@ public class SysLoginLogServiceImpl extends ServiceImpl<SysLoginLogMapper, SysLo
         sysLoginLog.setOperatingSystem(userAgent.getOperatingSystem().getName());
         sysLoginLog.setLoginIp(ip);
         sysLoginLog.setLoginAddress(IpUtils.getIpAddress(ip));
+        sysLoginLog.setCreateTime(DateUtil.date());
         this.save(sysLoginLog);
     }
 

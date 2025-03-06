@@ -110,6 +110,7 @@ import { useRouter } from 'vue-router'
 import { useUserStore } from '@/store/modules/user'
 import { useAppConfigStore } from '@/store/modules/app-config'
 import { format } from 'date-fns'
+import { zhCN } from 'date-fns/locale'
 import { NProgress, NTag } from 'naive-ui'
 import {
   HomeOutline,
@@ -130,7 +131,7 @@ const appConfigStore = useAppConfigStore()
 // 计算属性
 const isDark = computed(() => appConfigStore.theme === 'dark')
 const avatar = computed(() => userStore.avatar)
-const formattedDate = computed(() => format(new Date(), 'yyyy/MM/dd'))
+const formattedDate = computed(() => format(new Date(), 'yyyy/MM/dd', { locale: zhCN }))
 const greeting = computed(() => {
   const hour = new Date().getHours()
   if (hour < 6) return '凌晨好'

@@ -62,6 +62,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         if (StringUtils.isNull(entity.getParentId())) {
             entity.setParentId(0);
         }
+        entity.setMenuId(null);
         return this.baseMapper.insert(entity);
     }
 

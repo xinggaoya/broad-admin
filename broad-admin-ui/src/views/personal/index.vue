@@ -34,7 +34,7 @@
 
           <!-- 用户基本信息 -->
           <div class="user-info">
-            <h2 class="nickname">{{ nickName }}</h2>
+            <h2 class="nickname">{{ userInfo.nickName || userInfo.userName }}</h2>
             <div class="user-bio">
               <n-input
                 v-model:value="userBio"
@@ -96,7 +96,7 @@
           <div class="todo-list">
             <TransitionGroup name="list">
               <div
-                v-for="(item, index) in watingJobs"
+                v-for="(item, index) in todoItems"
                 :key="item.id"
                 class="todo-item"
                 :class="{ 'todo-completed': item.status === 1 }"
@@ -121,6 +121,9 @@
                 </div>
               </div>
             </TransitionGroup>
+            <div v-if="todoItems.length === 0" class="empty-status">
+              <n-empty description="暂无待办事项" />
+            </div>
           </div>
         </n-card>
 
@@ -155,6 +158,9 @@
                 </div>
               </div>
             </TransitionGroup>
+            <div v-if="messages.length === 0" class="empty-status">
+              <n-empty description="暂无消息" />
+            </div>
           </div>
         </n-card>
       </div>
@@ -199,8 +205,8 @@
   </div>
 </template>
 
-<script lang="ts" setup>
-import { ref, computed } from 'vue'
+<script lang="ts" setup name="PersonalCenterView">
+import { ref, computed, onMounted } from 'vue'
 import {
   CameraOutline,
   PersonOutline,
@@ -214,42 +220,29 @@ import {
   TrashOutline,
   ChevronForward
 } from '@vicons/ionicons5'
-import useUserStore from '@/store/modules/user'
+import { useUserStore } from '@/store/modules/user'
 import Upload from '@/components/upload/UpdateView.vue'
-import { updateUser } from '@/api/system/user'
+import { updateUser, getUserInfo } from '@/api/system/user'
 import { useMessage } from 'naive-ui'
 import defaultAvatar from '@/assets/defaultProfilePicture.gif'
+import { getUserTags, addUserTag, deleteUserTag } from '@/api/system/userTag'
+import { getTodoList, addTodo, updateTodo, deleteTodo } from '@/api/system/todo'
+import { getMessageList, readMessage } from '@/api/system/message'
 
 const message = useMessage()
 const userStore = useUserStore()
 
 // 用户基本信息
-const avatar = ref(userStore.avatar)
-const nickName = ref(userStore.nickName)
-const userBio = ref('冰冻三尺，非一日之寒，成大事者不拘小节。')
+const avatar = ref(userStore.avatar || '')
+const userInfo = ref<any>({})
+const userBio = ref('')
 const isAvatarHovered = ref(false)
 
 // 用户详细信息列表
-const userInfoList = [
-  { label: '昵称', value: nickName.value, icon: PersonOutline, color: '#2080f0' },
-  { label: '性别', value: '男', icon: PersonOutline, color: '#f0a020' },
-  { label: '生日', value: '2021-1-1', icon: CalendarOutline, color: '#18a058' },
-  { label: '部门', value: '研发部', icon: BusinessOutline, color: '#d03050' },
-  { label: '邮箱', value: 'example@email.com', icon: MailOutline, color: '#2080f0' },
-  { label: '手机', value: '138****8888', icon: PhonePortraitOutline, color: '#f0a020' },
-  { label: '地址', value: '浙江省杭州市', icon: LocationOutline, color: '#18a058' }
-]
+const userInfoList = ref<any[]>([])
 
 // 用户标签
-const userTags = ref([
-  { name: '技术控', type: 'info' },
-  { name: '爱学习', type: 'success' },
-  { name: '大嘴巴', type: 'warning' },
-  { name: '宅男', type: 'error' },
-  { name: '嘚嘚没完', type: 'info' },
-  { name: 'UP主', type: 'success' },
-  { name: '手机控', type: 'warning' }
-])
+const userTags = ref<any[]>([])
 
 // 标签相关
 const showTagModal = ref(false)
@@ -270,6 +263,107 @@ const todoForm = ref({
   id: ''
 })
 const editingTodoIndex = ref(-1)
+const todoItems = ref<any[]>([])
+
+// 消息数据
+const messages = ref<any[]>([])
+
+// 获取用户信息
+const loadUserInfo = async () => {
+  try {
+    const res = await getUserInfo(userStore.userId)
+    if (res.code === 200) {
+      userInfo.value = res.data
+      avatar.value = userInfo.value.avatar || userStore.avatar || ''
+      userBio.value = userInfo.value.bio || '暂无简介'
+
+      // 构建用户详细信息列表
+      userInfoList.value = [
+        {
+          label: '昵称',
+          value: userInfo.value.nickName || userInfo.value.userName,
+          icon: PersonOutline,
+          color: '#2080f0'
+        },
+        {
+          label: '性别',
+          value: userInfo.value.sex === '0' ? '男' : '女',
+          icon: PersonOutline,
+          color: '#f0a020'
+        },
+        {
+          label: '生日',
+          value: userInfo.value.birthday || '暂无',
+          icon: CalendarOutline,
+          color: '#18a058'
+        },
+        {
+          label: '部门',
+          value: userInfo.value.deptName || '暂无',
+          icon: BusinessOutline,
+          color: '#d03050'
+        },
+        {
+          label: '邮箱',
+          value: userInfo.value.email || '暂无',
+          icon: MailOutline,
+          color: '#2080f0'
+        },
+        {
+          label: '手机',
+          value: userInfo.value.phoneNumber || '暂无',
+          icon: PhonePortraitOutline,
+          color: '#f0a020'
+        },
+        {
+          label: '地址',
+          value: userInfo.value.address || '暂无',
+          icon: LocationOutline,
+          color: '#18a058'
+        }
+      ]
+    }
+  } catch (error) {
+    console.error('获取用户信息失败', error)
+    message.error('获取用户信息失败')
+  }
+}
+
+// 获取用户标签
+const loadUserTags = async () => {
+  try {
+    const res = await getUserTags(userStore.userId)
+    if (res.code === 200) {
+      userTags.value = res.data || []
+    }
+  } catch (error) {
+    console.error('获取用户标签失败', error)
+  }
+}
+
+// 获取待办事项
+const loadTodoList = async () => {
+  try {
+    const res = await getTodoList(userStore.userId)
+    if (res.code === 200) {
+      todoItems.value = res.data || []
+    }
+  } catch (error) {
+    console.error('获取待办事项失败', error)
+  }
+}
+
+// 获取消息列表
+const loadMessages = async () => {
+  try {
+    const res = await getMessageList(userStore.userId)
+    if (res.code === 200) {
+      messages.value = res.data || []
+    }
+  } catch (error) {
+    console.error('获取消息列表失败', error)
+  }
+}
 
 // 头像相关方法
 function handleAvatarHover() {
@@ -290,7 +384,13 @@ function handleUpload(url: string) {
 
 // 个人简介更新
 function handleBioUpdate() {
-  message.success('个人简介更新成功')
+  updateUser({ bio: userBio.value, id: userStore.userId })
+    .then(() => {
+      message.success('个人简介更新成功')
+    })
+    .catch(() => {
+      message.error('个人简介更新失败')
+    })
 }
 
 // 待办事项方法
@@ -302,7 +402,7 @@ function handleAddTodo() {
 }
 
 function handleEditTodo(index: number) {
-  const todo = watingJobs.value[index]
+  const todo = todoItems.value[index]
   if (todo) {
     todoModalTitle.value = '编辑待办'
     todoForm.value = { ...todo }
@@ -311,35 +411,88 @@ function handleEditTodo(index: number) {
   }
 }
 
-function handleDeleteTodo(index: number) {
-  watingJobs.value.splice(index, 1)
-  message.success('删除成功')
-}
+async function handleDeleteTodo(index: number) {
+  try {
+    const todo = todoItems.value[index]
+    if (!todo.id) {
+      todoItems.value.splice(index, 1)
+      message.success('删除成功')
+      return
+    }
 
-function handleTodoStatusChange(index: number) {
-  const todo = watingJobs.value[index]
-  if (todo) {
-    todo.status = todo.status === 1 ? 0 : 1
+    const res = await deleteTodo(todo.id)
+    if (res.code === 200) {
+      todoItems.value.splice(index, 1)
+      message.success('删除成功')
+    }
+  } catch (error) {
+    message.error('删除失败')
+    console.error('删除待办事项失败', error)
   }
 }
 
-function handleTodoSubmit() {
+async function handleTodoStatusChange(index: number) {
+  const todo = todoItems.value[index]
+  if (todo) {
+    const newStatus = todo.status === 1 ? 0 : 1
+    try {
+      if (todo.id) {
+        await updateTodo({
+          id: todo.id,
+          status: newStatus
+        })
+      }
+      todo.status = newStatus
+    } catch (error) {
+      message.error('更新状态失败')
+      console.error('更新待办状态失败', error)
+    }
+  }
+}
+
+async function handleTodoSubmit() {
   if (!todoForm.value.title.trim()) {
     message.warning('请输入待办内容')
     return
   }
 
-  if (editingTodoIndex.value === -1) {
-    watingJobs.value.unshift({
-      title: todoForm.value.title,
-      status: 0
-    })
-    message.success('添加成功')
-  } else {
-    watingJobs[editingTodoIndex.value].title = todoForm.value.title
-    message.success('更新成功')
+  try {
+    // 新增待办
+    if (editingTodoIndex.value === -1) {
+      const formData = {
+        title: todoForm.value.title,
+        status: 0,
+        userId: userStore.userId
+      }
+      const res = await addTodo(formData)
+      if (res.code === 200) {
+        todoItems.value.unshift({
+          id: res.data,
+          title: todoForm.value.title,
+          status: 0
+        })
+        message.success('添加成功')
+      }
+    }
+    // 编辑待办
+    else {
+      const todo = todoItems.value[editingTodoIndex.value]
+      const formData = {
+        id: todo.id,
+        title: todoForm.value.title,
+        status: todo.status
+      }
+      const res = await updateTodo(formData)
+      if (res.code === 200) {
+        todoItems.value[editingTodoIndex.value].title = todoForm.value.title
+        message.success('更新成功')
+      }
+    }
+    showTodoModal.value = false
+  } catch (error) {
+    message.error('操作失败')
+    console.error('保存待办失败', error)
   }
-  showTodoModal.value = false
 }
 
 function handleTodoCancel() {
@@ -352,18 +505,33 @@ function handleAddTag() {
   showTagModal.value = true
 }
 
-function handleTagSubmit() {
+async function handleTagSubmit() {
   if (!newTag.value.trim()) {
     message.warning('请输入标签名称')
     return
   }
-  userTags.value.push({
-    name: newTag.value,
-    type: newTagType.value
-  })
-  showTagModal.value = false
-  newTag.value = ''
-  message.success('添加标签成功')
+
+  try {
+    const formData = {
+      name: newTag.value,
+      type: newTagType.value,
+      userId: userStore.userId
+    }
+    const res = await addUserTag(formData)
+    if (res.code === 200) {
+      userTags.value.push({
+        id: res.data,
+        name: newTag.value,
+        type: newTagType.value
+      })
+      showTagModal.value = false
+      newTag.value = ''
+      message.success('添加标签成功')
+    }
+  } catch (error) {
+    message.error('添加标签失败')
+    console.error('添加标签失败', error)
+  }
 }
 
 function handleTagCancel() {
@@ -372,63 +540,34 @@ function handleTagCancel() {
 }
 
 // 消息相关方法
-function handleReadMessage(index: number) {
+async function handleReadMessage(index: number) {
   const msg = messages.value[index]
   if (msg && msg.status === 0) {
-    msg.status = 1
-    message.success('已标记为已读')
+    try {
+      const res = await readMessage(msg.id)
+      if (res.code === 200) {
+        msg.status = 1
+        message.success('已标记为已读')
+      }
+    } catch (error) {
+      message.error('操作失败')
+      console.error('标记消息已读失败', error)
+    }
   }
 }
 
 function handleViewAllMessages() {
-  message.info('查看全部消息')
+  // 可以导航到消息列表页面
+  message.info('查看全部消息功能待实现')
 }
 
-// 待办事项数据类型定义
-interface TodoItem {
-  title: string
-  status: number
-  id?: string
-}
-
-// 消息数据类型定义
-interface MessageItem {
-  title: string
-  content: string
-  status: number
-  time: string
-}
-
-// 待办事项数据
-const watingJobs = ref<TodoItem[]>([
-  { title: '和朋友同事一起玩王者，吃鸡', status: 0, id: '1' },
-  { title: '下班写今日总结', status: 1, id: '2' },
-  { title: '中午打卡，吃饭，下去买一瓶快乐水', status: 0, id: '3' },
-  { title: '给项目经理演示项目成果，汇报项目进度', status: 1, id: '4' },
-  { title: '上班打卡', status: 0, id: '5' }
-])
-
-// 消息数据
-const messages = ref<MessageItem[]>([
-  {
-    title: '【总经理通知】',
-    content: '明天【下午】有【不拘一格】课程直播，公司尝试全新直播模式...',
-    status: 0,
-    time: '10分钟前'
-  },
-  {
-    title: '重要通知：今天要加班',
-    content: '为了配合市场家人们努力开单，从今天开始，技术部及教研老师们要努力加班...',
-    status: 0,
-    time: '30分钟前'
-  },
-  {
-    title: '系统更新通知',
-    content: '系统将于今晚进行例行维护更新，请及时保存工作内容...',
-    status: 1,
-    time: '2小时前'
-  }
-])
+// 生命周期钩子
+onMounted(() => {
+  loadUserInfo()
+  loadUserTags()
+  loadTodoList()
+  loadMessages()
+})
 </script>
 
 <style lang="scss" scoped>
@@ -440,11 +579,16 @@ const messages = ref<MessageItem[]>([
   .personal-content {
     display: flex;
     gap: 20px;
+    flex-wrap: wrap;
 
     // 左侧个人信息卡片
     .personal-info-card {
       width: 360px;
       height: fit-content;
+
+      @media (max-width: 768px) {
+        width: 100%;
+      }
 
       .info-wrapper {
         .avatar-container {
@@ -560,10 +704,13 @@ const messages = ref<MessageItem[]>([
       display: flex;
       flex-direction: column;
       gap: 20px;
+      min-width: 300px;
 
       // 待办事项卡片
       .todo-card {
         .todo-list {
+          min-height: 80px;
+
           .todo-item {
             display: flex;
             align-items: center;
@@ -597,12 +744,18 @@ const messages = ref<MessageItem[]>([
               gap: 8px;
             }
           }
+
+          .empty-status {
+            padding: 24px 0;
+          }
         }
       }
 
       // 消息中心卡片
       .message-card {
         .message-list {
+          min-height: 80px;
+
           .message-item {
             display: flex;
             padding: 16px;
@@ -671,6 +824,10 @@ const messages = ref<MessageItem[]>([
               }
             }
           }
+
+          .empty-status {
+            padding: 24px 0;
+          }
         }
       }
     }
@@ -687,5 +844,18 @@ const messages = ref<MessageItem[]>([
 .list-leave-to {
   opacity: 0;
   transform: translateX(30px);
+}
+
+// 响应式优化
+@media (max-width: 1024px) {
+  .personal-container {
+    .personal-content {
+      flex-direction: column;
+
+      .personal-info-card {
+        width: 100%;
+      }
+    }
+  }
 }
 </style>

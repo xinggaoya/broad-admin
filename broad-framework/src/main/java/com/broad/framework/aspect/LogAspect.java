@@ -1,6 +1,7 @@
 package com.broad.framework.aspect;
 
 import cn.dev33.satoken.stp.StpUtil;
+import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import com.broad.common.annotation.Log;
@@ -77,6 +78,7 @@ public class LogAspect {
             operLog.setOperIp(ip);
             operLog.setOperUrl(StringUtils.substring(ServletUtils.getRequest().getRequestURI(), 0, 255));
             operLog.setOperName(username);
+            operLog.setAdminId(Integer.valueOf(username));
 
             if (e != null) {
                 operLog.setStatus(LogType.FAIL.ordinal());
@@ -91,6 +93,7 @@ public class LogAspect {
             // 处理设置注解上的参数
             getControllerMethodDescription(joinPoint, controllerLog, operLog, jsonResult);
             // 保存数据库
+            operLog.setCreateTime(DateUtil.date());
             sysUserLogService.save(operLog);
         } catch (Exception exp) {
             // 记录本地异常日志
