@@ -1,32 +1,5 @@
 <template>
   <div class="sys-user-container">
-    <!-- 搜索区域 -->
-    <TableSearch @search="handleSearch" @reset="handleReset">
-      <n-form label-placement="left" inline>
-        <n-grid :cols="24" :x-gap="24">
-          <n-form-item-gi :span="6" label="昵称">
-            <n-input v-model:value="searchForm.nickName" placeholder="请输入昵称" />
-          </n-form-item-gi>
-          <n-form-item-gi :span="6" label="用户名">
-            <n-input v-model:value="searchForm.userName" placeholder="请输入用户名" />
-          </n-form-item-gi>
-          <n-form-item-gi :span="6" label="手机号">
-            <n-input v-model:value="searchForm.mobile" placeholder="请输入手机号" />
-          </n-form-item-gi>
-          <n-form-item-gi :span="6" label="邮箱">
-            <n-input v-model:value="searchForm.email" placeholder="请输入邮箱" />
-          </n-form-item-gi>
-          <n-form-item-gi :span="6" label="状态">
-            <n-select
-              v-model:value="searchForm.userStatus"
-              :options="sys_normal_disable"
-              placeholder="请选择状态"
-            />
-          </n-form-item-gi>
-        </n-grid>
-      </n-form>
-    </TableSearch>
-
     <!-- 主体区域 -->
     <n-grid :cols="24" :x-gap="24">
       <!-- 部门树 -->
@@ -83,33 +56,49 @@
           :loading="tableLoading"
           row-key="id"
           :pagination="pagination"
+          :search-config="searchConfig"
+          :search-form="searchForm"
+          v-model:search-model="searchModel"
+          @search="handleSearch"
+          @reset="handleReset"
+          @update:page="handlePageChange"
+          @update:page-size="handlePageSizeChange"
+          @update:checked-row-keys="handleSelectionChange"
         >
+          <!-- 表格标题 -->
           <template #header>
-            <n-button-group>
-              <n-button type="primary" @click="handleAddUser" v-auth="['sys:user:add']">
-                <template #icon>
-                  <n-icon><AddOutline /></n-icon>
-                </template>
-                新增用户
-              </n-button>
-              <n-button
-                type="error"
-                @click="handleBatchDelete"
-                v-auth="['sys:user:delete']"
+            <div class="table-title">
+              <h3>用户管理</h3>
+              <p>系统用户信息管理，支持用户的增删改查操作</p>
+            </div>
+          </template>
+
+          <!-- 表格操作按钮 -->
+          <template #header-extra>
+            <n-space>
+              <AddButton @add="handleAddUser" title="新增用户" v-auth="['sys:user:add']" />
+              <DeleteButton
+                @delete="handleBatchDelete"
                 :disabled="!selectedRows.length"
-              >
-                <template #icon>
-                  <n-icon><TrashOutline /></n-icon>
-                </template>
-                批量删除
-              </n-button>
-              <n-button @click="handleExport" v-auth="['sys:user:export']">
-                <template #icon>
-                  <n-icon><DownloadOutline /></n-icon>
-                </template>
-                导出
-              </n-button>
-            </n-button-group>
+                confirm-content="确定要删除选中的用户吗？"
+                v-auth="['sys:user:delete']"
+              />
+              <ExportButton
+                @export="handleExport"
+                filename="用户列表"
+                v-auth="['sys:user:export']"
+              />
+            </n-space>
+          </template>
+
+          <!-- 表格底部统计信息 -->
+          <template #footer>
+            <div class="table-footer">
+              <n-space justify="space-between">
+                <span>共 {{ pagination.total }} 条数据</span>
+                <span>已选择 {{ selectedRows.length }} 项</span>
+              </n-space>
+            </div>
           </template>
         </TableMain>
       </n-grid-item>
@@ -235,7 +224,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, onMounted, h } from 'vue'
+import { ref, computed, onMounted, h, reactive } from 'vue'
 import {
   useMessage,
   useDialog,
@@ -246,20 +235,17 @@ import {
   NPopconfirm,
   type DataTableColumns
 } from 'naive-ui'
-import {
-  SearchOutline,
-  AddOutline,
-  TrashOutline,
-  DownloadOutline,
-  ChevronUpOutline,
-  ChevronDownOutline
-} from '@vicons/ionicons5'
+import { SearchOutline, ChevronUpOutline, ChevronDownOutline } from '@vicons/ionicons5'
 import { getUserPage, getUserRole, addUser, updateUser, delUser } from '@/api/system/user'
 import { getRolePage } from '@/api/system/role'
 import { getDeptPage } from '@/api/system/dept'
 import { useDict } from '@/utils/useDict'
 import { usePagination } from '@/hooks/useTable'
-import { clearFormObject } from '@/utils'
+import TableMain from '@/components/table/main/TableMain.vue'
+import AddButton from '@/components/table/button/AddButton.vue'
+import DeleteButton from '@/components/table/button/DeleteButton.vue'
+import ExportButton from '@/components/table/button/ExportButton.vue'
+import type { SearchConfig, SearchFormConfig } from '@/types/table'
 
 // 状态定义
 const message = useMessage()
@@ -279,12 +265,16 @@ const tableLoading = ref(false)
 const submitLoading = ref(false)
 const roleLoading = ref(false)
 
+// 部门树相关
+const pattern = ref('')
+const expandAllFlag = ref(false)
+
 interface SearchForm {
   nickName?: string
   userName?: string
   mobile?: string
   email?: string
-  userStatus?: number | null
+  userStatus?: string | null
   deptId?: string | number
 }
 
@@ -296,25 +286,30 @@ interface UserForm {
   roleIds: number[]
   email: string
   mobile: string
-  userStatus: number
+  userStatus: string // 改为字符串类型
   avatar?: string
   deptName?: string
 }
 
 const dataList = ref<UserForm[]>([])
-const departmentData = ref([])
-const roleData = ref([])
+const departmentData = ref<any[]>([])
+const roleData = ref<Array<{ label: string; value: number; disabled?: boolean }>>([])
 const selectedRows = ref<UserForm[]>([])
 
 // 表单对象
 const userFormRef = ref()
-const searchForm = ref<SearchForm>({
+const updatePassWordFormRef = ref()
+
+// 搜索模型
+const searchModel = ref<SearchForm>({
   nickName: '',
   userName: '',
   mobile: '',
   email: '',
-  userStatus: null
+  userStatus: null,
+  deptId: undefined
 })
+
 const userForm = ref<UserForm>({
   userName: '',
   nickName: '',
@@ -322,13 +317,71 @@ const userForm = ref<UserForm>({
   roleIds: [],
   email: '',
   mobile: '',
-  userStatus: 0
+  userStatus: '0'
 })
+
 const updatePassWordForm = ref({
   id: 0,
   password: '',
   password_two: ''
 })
+
+// 搜索配置
+const searchConfig: SearchConfig = {
+  show: true,
+  title: '搜索条件',
+  defaultCollapse: true,
+  resetOnSearch: true,
+  autoSearch: false, // 手动触发搜索
+  searchDelay: 300
+}
+
+// 搜索表单配置
+const searchForm: SearchFormConfig = {
+  items: [
+    {
+      key: 'nickName',
+      label: '昵称',
+      type: 'input',
+      placeholder: '请输入昵称',
+      span: 6
+    },
+    {
+      key: 'userName',
+      label: '用户名',
+      type: 'input',
+      placeholder: '请输入用户名',
+      span: 6
+    },
+    {
+      key: 'mobile',
+      label: '手机号',
+      type: 'input',
+      placeholder: '请输入手机号',
+      span: 6
+    },
+    {
+      key: 'email',
+      label: '邮箱',
+      type: 'input',
+      placeholder: '请输入邮箱',
+      span: 6
+    },
+    {
+      key: 'userStatus',
+      label: '状态',
+      type: 'select',
+      placeholder: '请选择状态',
+      options: sys_normal_disable.value,
+      span: 6
+    }
+  ],
+  cols: 24,
+  xGap: 24,
+  yGap: 16,
+  labelWidth: 80,
+  labelPlacement: 'left'
+}
 
 // 表单校验规则
 const userRules = {
@@ -376,10 +429,11 @@ const emailOptions = computed(() => {
 // 分页配置
 const pagination = usePagination(() => doRefresh())
 
-// 表格列配置
-const tableColumns: DataTableColumns = [
-  { title: '昵称', key: 'nickName' },
-  { title: '用户名', key: 'userName' },
+// 表格列配置 - 使用 ref 并创建新数组引用
+const tableColumns = ref<DataTableColumns>([
+  { type: 'selection' },
+  { title: '昵称', key: 'nickName', width: 120 },
+  { title: '用户名', key: 'userName', width: 120 },
   {
     title: '头像',
     key: 'avatar',
@@ -400,22 +454,23 @@ const tableColumns: DataTableColumns = [
       )
     }
   },
-  { title: '部门', key: 'deptName' },
-  { title: '手机号', key: 'mobile' },
-  { title: '邮箱', key: 'email' },
+  { title: '部门', key: 'deptName', width: 120 },
+  { title: '手机号', key: 'mobile', width: 140 },
+  { title: '邮箱', key: 'email', width: 200 },
   {
     title: '状态',
     key: 'userStatus',
+    width: 100,
     render: (row) => {
       const user = row as unknown as UserForm
       return h(
         NTag,
         {
-          type: user.userStatus === 0 ? 'success' : 'error',
+          type: user.userStatus === '0' ? 'success' : 'error',
           round: true
         },
         {
-          default: () => (user.userStatus === 0 ? '正常' : '停用')
+          default: () => (user.userStatus === '0' ? '正常' : '停用')
         }
       )
     }
@@ -476,35 +531,65 @@ const tableColumns: DataTableColumns = [
       )
     }
   }
-]
+])
 
 // 方法定义
 function doRefresh() {
   tableLoading.value = true
-  getUserPage(pagination.getPageInfo(searchForm.value))
+  getUserPage(pagination.getPageInfo(searchModel.value))
     .then((res) => {
-      dataList.value = res.rows
-      pagination.setTotalSize(res.total)
+      dataList.value = res.rows || []
+      pagination.setTotalSize(res.total || 0)
+    })
+    .catch((error) => {
+      console.error('获取用户数据失败:', error)
+      message.error('获取用户数据失败')
     })
     .finally(() => {
       tableLoading.value = false
     })
 }
 
-function handleSearch() {
+function handleSearch(params: Record<string, any>) {
+  // 更新搜索模型
+  Object.assign(searchModel.value, params)
+  // 重置到第一页
   pagination.page = 1
   doRefresh()
+  message.success('搜索完成')
 }
 
 function handleReset() {
-  searchForm.value = {
+  // 清空搜索模型
+  Object.assign(searchModel.value, {
     nickName: '',
     userName: '',
     mobile: '',
     email: '',
-    userStatus: null
-  }
-  handleSearch()
+    userStatus: null,
+    deptId: undefined
+  })
+  // 重置到第一页
+  pagination.page = 1
+  doRefresh()
+  message.success('重置成功')
+}
+
+// 分页处理
+function handlePageChange(page: number) {
+  pagination.page = page
+  doRefresh()
+}
+
+function handlePageSizeChange(pageSize: number) {
+  pagination.pageSize = pageSize
+  pagination.page = 1
+  doRefresh()
+}
+
+// 选择处理
+function handleSelectionChange(keys: Array<string | number>) {
+  selectedRows.value = dataList.value.filter((item) => keys.includes(item.id!))
 }
 
 async function loadRoles() {
@@ -543,7 +628,7 @@ async function handleAddUser() {
     roleIds: [],
     email: '',
     mobile: '',
-    userStatus: 0
+    userStatus: '0'
   }
   showModelUpdate.value = true
 }
@@ -589,22 +674,15 @@ function handleBatchDelete() {
     message.warning('请选择要删除的用户')
     return
   }
-  dialog.warning({
-    title: '警告',
-    content: '确认删除选中的用户吗？',
-    positiveText: '确定',
-    negativeText: '取消',
-    onPositiveClick: () => {
-      const ids = selectedRows.value.map((row: UserForm) => row.id).filter(Boolean)
-      if (ids.length) {
-        delUser(ids.join(',')).then(() => {
-          message.success('删除成功')
-          selectedRows.value = []
-          doRefresh()
-        })
-      }
-    }
-  })
+
+  const ids = selectedRows.value.map((row: UserForm) => row.id).filter(Boolean)
+  if (ids.length) {
+    delUser(ids.join(',')).then(() => {
+      message.success('删除成功')
+      selectedRows.value = []
+      doRefresh()
+    })
+  }
 }
 
 function handleExport() {
@@ -654,14 +732,14 @@ async function handleUpdatePassWordSubmit() {
     message.success('密码修改成功')
     showUpdatePasswordModel.value = false
   } catch (error) {
-    console.error(error)
+    message.error('密码修改失败')
   }
 }
 
 function onCheckedKeys(keys: string[], _event: MouseEvent) {
   if (keys.length) {
-    searchForm.value.deptId = keys[0]
-    handleSearch()
+    searchModel.value.deptId = keys[0]
+    handleSearch(searchModel.value)
   }
 }
 
@@ -672,7 +750,7 @@ onMounted(() => {
   getDeptPage({})
     .then(({ data }) => {
       // 处理部门树数据,添加key和value字段用于级联选择
-      const processDeptData = (depts: any[]) => {
+      const processDeptData = (depts: any[]): any[] => {
         return depts.map((dept) => ({
           ...dept,
           key: dept.deptId,
@@ -681,7 +759,7 @@ onMounted(() => {
           children: dept.children ? processDeptData(dept.children) : []
         }))
       }
-      departmentData.value = processDeptData(data)
+      departmentData.value = processDeptData(data || [])
     })
     .finally(() => {
       deptLoading.value = false
@@ -708,6 +786,28 @@ onMounted(() => {
         padding: 8px;
       }
     }
+  }
+
+  .table-title {
+    h3 {
+      margin: 0 0 4px 0;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-color);
+    }
+
+    p {
+      margin: 0;
+      font-size: 14px;
+      color: var(--text-color-2);
+    }
+  }
+
+  .table-footer {
+    padding: 12px 0;
+    font-size: 14px;
+    color: var(--text-color-2);
+    border-top: 1px solid var(--divider-color);
   }
 
   :deep(.n-tag) {

@@ -13,7 +13,7 @@
   >
     <template #icon>
       <n-icon>
-        <ExportIcon />
+        <SearchIcon />
       </n-icon>
     </template>
     {{ title }}
@@ -21,7 +21,7 @@
 </template>
 
 <script lang="ts" setup>
-import { LogOutOutline as ExportIcon } from '@vicons/ionicons5'
+import { Search as SearchIcon } from '@vicons/ionicons5'
 
 interface Props {
   title?: string
@@ -34,36 +34,30 @@ interface Props {
   circle?: boolean
   quaternary?: boolean
   dashed?: boolean
-  filename?: string
-  fileType?: 'csv' | 'xlsx' | 'pdf'
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  title: '导出',
+  title: '查询',
   disabled: false,
   loading: false,
-  type: 'default',
+  type: 'primary',
   size: 'small',
   ghost: true,
   round: false,
   circle: false,
   quaternary: false,
-  dashed: false,
-  filename: 'export',
-  fileType: 'xlsx'
+  dashed: false
 })
 
 const emit = defineEmits<{
   (e: 'click', event: MouseEvent): void
-  (e: 'export'): void
-  (e: 'success', filename: string): void
-  (e: 'error', error: Error): void
+  (e: 'search'): void
 }>()
 
 function handleClick(event: MouseEvent) {
   if (!props.disabled && !props.loading) {
     emit('click', event)
-    emit('export')
+    emit('search')
   }
 }
 </script>

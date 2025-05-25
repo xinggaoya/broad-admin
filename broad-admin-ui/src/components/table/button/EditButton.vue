@@ -13,7 +13,7 @@
   >
     <template #icon>
       <n-icon>
-        <ExportIcon />
+        <EditIcon />
       </n-icon>
     </template>
     {{ title }}
@@ -21,7 +21,7 @@
 </template>
 
 <script lang="ts" setup>
-import { LogOutOutline as ExportIcon } from '@vicons/ionicons5'
+import { CreateOutline as EditIcon } from '@vicons/ionicons5'
 
 interface Props {
   title?: string
@@ -34,36 +34,30 @@ interface Props {
   circle?: boolean
   quaternary?: boolean
   dashed?: boolean
-  filename?: string
-  fileType?: 'csv' | 'xlsx' | 'pdf'
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  title: '导出',
+  title: '编辑',
   disabled: false,
   loading: false,
-  type: 'default',
+  type: 'warning',
   size: 'small',
   ghost: true,
   round: false,
   circle: false,
   quaternary: false,
-  dashed: false,
-  filename: 'export',
-  fileType: 'xlsx'
+  dashed: false
 })
 
 const emit = defineEmits<{
   (e: 'click', event: MouseEvent): void
-  (e: 'export'): void
-  (e: 'success', filename: string): void
-  (e: 'error', error: Error): void
+  (e: 'edit'): void
 }>()
 
 function handleClick(event: MouseEvent) {
   if (!props.disabled && !props.loading) {
     emit('click', event)
-    emit('export')
+    emit('edit')
   }
 }
 </script>

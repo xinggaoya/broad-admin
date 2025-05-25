@@ -1,57 +1,42 @@
 <template>
-  <n-card size="small" class="search-card">
-    <template #header>
-      <n-space align="center" justify="space-between">
-        <div class="title">
-          <slot name="title">搜索</slot>
-        </div>
-        <n-space>
-          <n-button ghost type="primary" @click="handleSearch" size="small" :loading="loading">
-            <template #icon>
-              <n-icon>
-                <SearchIcon />
-              </n-icon>
-            </template>
-            查询
-          </n-button>
-          <n-button type="tertiary" ghost @click="handleReset" size="small">
-            <template #icon>
-              <n-icon>
-                <RefreshIcon />
-              </n-icon>
-            </template>
-            重置
-          </n-button>
-          <n-button type="tertiary" ghost @click="handleCollapse" size="small">
-            <template #icon>
-              <n-icon>
-                <ArrowUpIcon v-if="collapse" />
-                <ArrowDownIcon v-else />
-              </n-icon>
-            </template>
-            {{ !collapse ? '展开' : '收起' }}
-          </n-button>
+  <div class="table-search-wrapper">
+    <n-card size="small" class="search-card">
+      <template #header>
+        <n-space align="center" justify="space-between">
+          <div class="search-title">
+            <slot name="title">搜索</slot>
+          </div>
+          <n-space>
+            <SearchButton @search="handleSearch" :loading="loading" />
+            <ResetButton @reset="handleReset" />
+            <n-button type="tertiary" ghost @click="handleCollapse" size="small">
+              <template #icon>
+                <n-icon>
+                  <ArrowUpIcon v-if="collapsed" />
+                  <ArrowDownIcon v-else />
+                </n-icon>
+              </template>
+              {{ collapsed ? '展开' : '收起' }}
+            </n-button>
+          </n-space>
         </n-space>
-      </n-space>
-    </template>
-    <template #default>
-      <n-collapse-transition :show="collapse">
-        <div class="search-form">
-          <slot name="default" />
-        </div>
-      </n-collapse-transition>
-    </template>
-  </n-card>
+      </template>
+      <template #default>
+        <n-collapse-transition :show="!collapsed">
+          <div class="search-form-container">
+            <slot />
+          </div>
+        </n-collapse-transition>
+      </template>
+    </n-card>
+  </div>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue'
-import {
-  Search as SearchIcon,
-  RefreshOutline as RefreshIcon,
-  ChevronUp as ArrowUpIcon,
-  ChevronDown as ArrowDownIcon
-} from '@vicons/ionicons5'
+import { ChevronUp as ArrowUpIcon, ChevronDown as ArrowDownIcon } from '@vicons/ionicons5'
+import SearchButton from '../button/SearchButton.vue'
+import ResetButton from '../button/ResetButton.vue'
 
 interface Props {
   loading?: boolean
@@ -60,49 +45,49 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   loading: false,
-  defaultCollapse: true
+  defaultCollapse: false
 })
 
 const emit = defineEmits<{
-  (e: 'search'): void
-  (e: 'reset'): void
-  (e: 'update:collapse', value: boolean): void
+  search: []
+  reset: []
 }>()
 
-const collapse = ref(props.defaultCollapse)
+const collapsed = ref(props.defaultCollapse)
 
-function handleCollapse() {
-  collapse.value = !collapse.value
-  emit('update:collapse', collapse.value)
-}
-
-function handleSearch() {
+const handleSearch = () => {
   emit('search')
 }
 
-function handleReset() {
+const handleReset = () => {
   emit('reset')
+}
+
+const handleCollapse = () => {
+  collapsed.value = !collapsed.value
 }
 </script>
 
-<style lang="scss" scoped>
-.search-card {
+<style scoped lang="scss">
+.table-search-wrapper {
   margin-bottom: 16px;
 
-  :deep(.n-card__content) {
-    padding: 0;
-  }
+  .search-card {
+    :deep(.n-card__content) {
+      padding: 0;
+    }
 
-  .title {
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--text-color);
-  }
+    .search-title {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-color);
+    }
 
-  .search-form {
-    padding: 16px;
-    background-color: var(--card-color);
-    border-radius: 0 0 3px 3px;
+    .search-form-container {
+      padding: 16px;
+      background-color: var(--card-color);
+      border-radius: 0 0 3px 3px;
+    }
   }
 }
 </style>

@@ -73,6 +73,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<{
   (e: 'click', event: MouseEvent): void
+  (e: 'delete'): void
   (e: 'confirm'): void
   (e: 'cancel'): void
 }>()
@@ -91,6 +92,7 @@ function handleClick(event: MouseEvent) {
 
 function handleConfirm() {
   emit('confirm')
+  emit('delete')
   showConfirm.value = false
 }
 
@@ -103,3 +105,14 @@ function handleUpdateShow(show: boolean) {
   showConfirm.value = show
 }
 </script>
+
+<style lang="scss" scoped>
+.n-button {
+  display: inline-flex;
+  align-items: center;
+
+  .n-icon {
+    margin-right: 4px;
+  }
+}
+</style>

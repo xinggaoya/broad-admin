@@ -7,7 +7,11 @@
             <n-input v-model:value="searchForm.logDescription" placeholder="请输入用户名" />
           </n-form-item-gi>
           <n-form-item-gi label="状态">
-            <n-select v-model:value="searchForm.logStatus" :options="sys_log_status" placeholder="请选择状态" />
+            <n-select
+              v-model:value="searchForm.logStatus"
+              :options="sys_log_status"
+              placeholder="请选择状态"
+            />
           </n-form-item-gi>
           <n-form-item-gi label="操作时间">
             <n-date-picker
@@ -158,11 +162,10 @@ function doRefresh() {
 function exportOperationLogs() {
   loading.value = true
   const timestamp = new Date().getTime()
-  exportForm(pagination.getPageInfo(searchForm.value), `操作日志_${timestamp}.xlsx`)
-    .finally(() => {
-      message.success('导出成功')
-      loading.value = false
-    })
+  exportForm(pagination.getPageInfo(searchForm.value), `操作日志_${timestamp}.xlsx`).finally(() => {
+    message.success('导出成功')
+    loading.value = false
+  })
 }
 
 function onResetSearch() {

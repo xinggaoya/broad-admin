@@ -287,14 +287,76 @@ getCaptcha()
       background: rgba(255, 255, 255, 0.05);
     }
 
-    @for $i from 1 through 10 {
-      &:nth-child(#{$i}) {
-        left: random(90) + 0%;
-        width: random(80) + 20px;
-        height: random(80) + 20px;
-        animation-delay: random(5) + 0s;
-        animation-duration: random(10) + 15s;
-      }
+    // 使用固定值替代 random() 函数，避免 Sass 弃用警告
+    &:nth-child(1) {
+      left: 10%;
+      width: 40px;
+      height: 40px;
+      animation-delay: 0s;
+      animation-duration: 15s;
+    }
+    &:nth-child(2) {
+      left: 20%;
+      width: 60px;
+      height: 60px;
+      animation-delay: 1s;
+      animation-duration: 18s;
+    }
+    &:nth-child(3) {
+      left: 35%;
+      width: 30px;
+      height: 30px;
+      animation-delay: 2s;
+      animation-duration: 20s;
+    }
+    &:nth-child(4) {
+      left: 50%;
+      width: 80px;
+      height: 80px;
+      animation-delay: 3s;
+      animation-duration: 22s;
+    }
+    &:nth-child(5) {
+      left: 65%;
+      width: 45px;
+      height: 45px;
+      animation-delay: 4s;
+      animation-duration: 16s;
+    }
+    &:nth-child(6) {
+      left: 75%;
+      width: 35px;
+      height: 35px;
+      animation-delay: 1.5s;
+      animation-duration: 19s;
+    }
+    &:nth-child(7) {
+      left: 85%;
+      width: 70px;
+      height: 70px;
+      animation-delay: 2.5s;
+      animation-duration: 24s;
+    }
+    &:nth-child(8) {
+      left: 5%;
+      width: 55px;
+      height: 55px;
+      animation-delay: 3.5s;
+      animation-duration: 17s;
+    }
+    &:nth-child(9) {
+      left: 90%;
+      width: 25px;
+      height: 25px;
+      animation-delay: 0.5s;
+      animation-duration: 21s;
+    }
+    &:nth-child(10) {
+      left: 25%;
+      width: 65px;
+      height: 65px;
+      animation-delay: 4.5s;
+      animation-duration: 23s;
     }
   }
 }

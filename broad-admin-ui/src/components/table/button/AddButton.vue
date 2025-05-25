@@ -51,11 +51,24 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<{
   (e: 'click', event: MouseEvent): void
+  (e: 'add'): void
 }>()
 
 function handleClick(event: MouseEvent) {
   if (!props.disabled && !props.loading) {
     emit('click', event)
+    emit('add')
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.n-button {
+  display: inline-flex;
+  align-items: center;
+
+  .n-icon {
+    margin-right: 4px;
+  }
+}
+</style>

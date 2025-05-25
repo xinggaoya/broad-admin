@@ -47,7 +47,7 @@
     "npm-run-all2": "^6.1.2",
     "postcss": "^8.4.38",
     "prettier": "^3.2.5",
-    "sass": "^1.75.0",
+    "sass": "^1.77.0",
     "sass-loader": "^13.3.3",
     "ts-node": "^10.9.2",
     "typescript": "~5.4.0",
