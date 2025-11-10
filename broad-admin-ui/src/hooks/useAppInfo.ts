@@ -1,0 +1,93 @@
+import { ref, onMounted } from 'vue'
+
+interface PackageInfo {
+  version: string
+  dependencies: Record<string, string>
+  devDependencies: Record<string, string>
+}
+
+/**
+ * 获取应用信息的hook
+ * @returns 应用信息对象
+ */
+export default function useAppInfo() {
+  const version = ref<string>('')
+  const dependencies = ref<Record<string, string>>({})
+  const devDependencies = ref<Record<string, string>>({})
+
+  const loadPackageInfo = async () => {
+    try {
+      // 在浏览器环境中，需要通过import动态获取package.json信息
+      // 这里使用硬编码的版本信息，或者可以从package.json导入
+      version.value = '2.2.5'
+
+      // 从package.json获取依赖信息
+      dependencies.value = {
+        '@vueuse/core': '^13.3.0',
+        'clipboard': '^2.0.11',
+        'date-fns': '^4.1.0',
+        'echarts': '^5.5.0',
+        'file-saver': '^2.0.5',
+        'font-awesome': '^4.7.0',
+        'ky': '^1.2.4',
+        'path-browserify': '^1.0.1',
+        'pinia': '^2.1.7',
+        'qs': '^6.12.1',
+        'quill': '2.0.0-rc.0',
+        'screenfull': '^6.0.2',
+        'vue': '^3.5.0',
+        'vue-router': '^4.3.2',
+        'vuedraggable': '^4.1.0',
+        'xgplayer': '^2.32.6'
+      }
+
+      devDependencies.value = {
+        '@rushstack/eslint-patch': '^1.8.0',
+        '@tsconfig/node20': '^20.1.4',
+        '@types/file-saver': '^2.0.7',
+        '@types/js-cookie': '^3.0.6',
+        '@types/node': '^20.12.5',
+        '@types/path-browserify': '^1.0.2',
+        '@types/qs': '^6.9.15',
+        '@types/quill': '^2.0.14',
+        '@vicons/ionicons5': '^0.12.0',
+        '@vitejs/plugin-vue': '^5.0.4',
+        '@vitejs/plugin-vue-jsx': '^3.1.0',
+        '@vue/eslint-config-prettier': '^9.0.0',
+        '@vue/eslint-config-typescript': '^13.0.0',
+        '@vue/tsconfig': '^0.5.1',
+        'autoprefixer': '^10.4.19',
+        'eslint': '^8.57.0',
+        'eslint-plugin-vue': '^9.23.0',
+        'naive-ui': '^2.40.0',
+        'npm-run-all2': '^6.1.2',
+        'postcss': '^8.4.38',
+        'prettier': '^3.2.5',
+        'sass': '^1.77.0',
+        'sass-loader': '^13.3.3',
+        'ts-node': '^10.9.2',
+        'typescript': '~5.9.2',
+        'unplugin-auto-import': '^0.17.5',
+        'unplugin-vue-components': '^0.26.0',
+        'vfonts': '^0.1.0',
+        'vite': '^5.4.0',
+        'vite-plugin-compression': '^0.5.1',
+        'vite-plugin-svg-icons': '^2.0.1',
+        'vite-plugin-vue-devtools': '^7.0.25',
+        'vue-tsc': '^2.0.11'
+      }
+    } catch (error) {
+      console.error('Failed to load package info:', error)
+    }
+  }
+
+  onMounted(() => {
+    loadPackageInfo()
+  })
+
+  return {
+    version,
+    dependencies,
+    devDependencies
+  }
+}

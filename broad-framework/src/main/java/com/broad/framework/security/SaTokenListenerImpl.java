@@ -1,7 +1,7 @@
 package com.broad.framework.security;
 
 import cn.dev33.satoken.listener.SaTokenListener;
-import cn.dev33.satoken.stp.SaLoginModel;
+import cn.dev33.satoken.stp.parameter.SaLoginParameter;
 import com.broad.common.web.socket.UserSocket;
 import org.springframework.stereotype.Component;
 
@@ -19,7 +19,7 @@ public class SaTokenListenerImpl implements SaTokenListener {
      * 每次登录时触发
      */
     @Override
-    public void doLogin(String loginType, Object loginId, String tokenValue, SaLoginModel loginModel) {
+    public void doLogin(String loginType, Object loginId, String tokenValue, SaLoginParameter parameter) {
 //        SysNotice sysNotice = new SysNotice();
 //        sysNotice.setTitle("您有一条新的消息");
 //        sysNotice.setDescription("You have a new message");
@@ -101,7 +101,7 @@ public class SaTokenListenerImpl implements SaTokenListener {
      * 每次Token续期时触发
      */
     @Override
-    public void doRenewTimeout(String tokenValue, Object loginId, long timeout) {
+    public void doRenewTimeout(String loginType, Object loginId, String service, long timeout) {
     }
 }
 

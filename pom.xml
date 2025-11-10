@@ -20,7 +20,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.1</version>
+        <version>3.5.3</version>
         <relativePath />
     </parent>
 
@@ -30,10 +30,10 @@
         <java.version>17</java.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <spring-boot.version>3.2.1</spring-boot.version>
-        <druid.version>1.2.20</druid.version>
-        <mybatis-plus.version>3.5.10.1</mybatis-plus.version>
-        <satoken.version>1.39.0</satoken.version>
+        <spring-boot.version>3.5.3</spring-boot.version>
+        <druid.version>1.2.23</druid.version>
+        <mybatis-plus.version>3.5.9</mybatis-plus.version>
+        <satoken.version>1.44.0</satoken.version>
         <springdoc.version>2.3.0</springdoc.version>
         <fastjson.version>2.0.45</fastjson.version>
         <commons.io.version>2.15.1</commons.io.version>
