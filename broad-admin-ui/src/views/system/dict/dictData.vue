@@ -1,39 +1,37 @@
 <template>
   <div class="dict-data">
-    <!-- 操作栏 -->
-    <n-card class="action-card">
+    <n-space justify="space-between" class="action-row">
+      <n-button type="default" @click="handleBack">
+        <template #icon>
+          <n-icon><ArrowBackOutline /></n-icon>
+        </template>
+        返回字典类型
+      </n-button>
       <n-space>
-        <n-button type="default" @click="handleBack">
-          <template #icon>
-            <n-icon><ArrowBackOutline /></n-icon>
-          </template>
-          返回字典类型
-        </n-button>
         <n-button type="primary" @click="handleAdd" v-auth="['sys:dict:add']">
           <template #icon>
             <n-icon><AddOutline /></n-icon>
           </template>
           新增字典数据
         </n-button>
-        <n-button type="success" @click="handleRefresh">
+        <n-button tertiary @click="handleRefresh" :loading="loading">
           <template #icon>
             <n-icon><RefreshOutline /></n-icon>
           </template>
           刷新
         </n-button>
       </n-space>
+    </n-space>
+
+    <n-card class="table-panel" :bordered="false">
+      <TableMain
+        :columns="columns"
+        :data="tableData"
+        :loading="loading"
+        :pagination="pagination"
+        row-key="dictCode"
+      />
     </n-card>
-
-    <!-- 表格区域 -->
-    <TableMain
-      :columns="columns"
-      :data="tableData"
-      :loading="loading"
-      :pagination="pagination"
-      row-key="dictCode"
-    />
-
-    <!-- 编辑对话框 -->
     <n-modal
       v-model:show="showModal"
       :title="modalTitle"

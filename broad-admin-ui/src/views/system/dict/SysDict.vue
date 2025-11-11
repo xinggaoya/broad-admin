@@ -1,6 +1,12 @@
 <template>
-  <div class="dict-container">
-    <n-card>
+  <section class="dict-page">
+    <header class="page-header">
+      <div>
+        <p class="header-subtitle">系统管理</p>
+        <h2>字典管理</h2>
+      </div>
+    </header>
+    <n-card class="tabs-panel" :bordered="false">
       <n-tabs type="segment" size="large" :value="activeTab" @update:value="handleTabChange">
         <n-tab-pane name="type" tab="字典类型">
           <DictType v-if="activeTab === 'type'" @select-dict="handleSelectDict" />
@@ -10,7 +16,7 @@
         </n-tab-pane>
       </n-tabs>
     </n-card>
-  </div>
+  </section>
 </template>
 
 <script lang="ts" setup>
@@ -38,22 +44,35 @@ const handleBack = () => {
 }
 </script>
 
-<style lang="scss" scoped>
-.dict-container {
-  background-color: #f5f7fa;
-  min-height: calc(100vh - 120px);
+<style scoped lang="scss">
+.dict-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--shell-gap);
+}
 
-  :deep(.n-card) {
-    border-radius: 8px;
-    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.05);
-  }
+.page-header {
+  background: var(--shell-surface);
+  border-radius: var(--shell-radius-lg);
+  padding: 20px;
+  box-shadow: var(--shell-shadow);
+}
 
-  :deep(.n-tabs) {
-    margin: -16px;
-  }
+.tabs-panel {
+  border-radius: var(--shell-radius-lg);
+  box-shadow: var(--shell-shadow);
+}
 
-  :deep(.n-tab-pane) {
-    padding: 16px;
-  }
+:deep(.n-tab-pane) {
+  padding-top: 16px;
+}
+
+.header-subtitle {
+  margin: 0;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--shell-muted-text-color);
+}
 }
 </style>

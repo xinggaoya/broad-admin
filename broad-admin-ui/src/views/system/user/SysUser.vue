@@ -1,55 +1,67 @@
 <template>
-  <div class="sys-user-container">
-    <!-- 主体区域 -->
-    <n-grid :cols="24" :x-gap="24">
-      <!-- 部门树 -->
-      <n-grid-item :span="6">
-        <n-card
-          title="部门列表"
-          :bordered="false"
-          size="small"
-          :segmented="{ content: true }"
-          class="dept-tree-card"
-        >
-          <template #header-extra>
-            <n-input-group>
-              <n-input v-model:value="pattern" placeholder="搜索部门" size="small" clearable>
-                <template #prefix>
-                  <n-icon><SearchOutline /></n-icon>
-                </template>
-              </n-input>
-              <n-tooltip trigger="hover" placement="top">
-                <template #trigger>
-                  <n-button size="small" quaternary circle @click="expandAllFlag = !expandAllFlag">
-                    <template #icon>
-                      <n-icon>
-                        <component :is="expandAllFlag ? ChevronUpOutline : ChevronDownOutline" />
-                      </n-icon>
-                    </template>
-                  </n-button>
-                </template>
-                {{ expandAllFlag ? '收起' : '展开' }}
-              </n-tooltip>
-            </n-input-group>
+  <section class="sys-user-page">
+    <header class="page-header">
+      <div>
+        <p class="header-subtitle">系统管理</p>
+        <h2>用户管理</h2>
+      </div>
+      <div class="header-actions">
+        <n-button tertiary round size="small" :loading="tableLoading" @click="doRefresh">
+          <template #icon>
+            <n-icon><RefreshOutline /></n-icon>
           </template>
-          <div class="dept-tree-content">
-            <n-spin :show="deptLoading">
-              <n-tree
-                block-line
-                :pattern="pattern"
-                :data="departmentData"
-                selectable
-                v-model:default-expand-all="expandAllFlag"
-                :on-update:selected-keys="onCheckedKeys"
-                class="dept-tree"
-              />
-            </n-spin>
-          </div>
-        </n-card>
-      </n-grid-item>
+          刷新
+        </n-button>
+        <AddButton @add="handleAddUser" title="新增用户" v-auth="['sys:user:add']" />
+        <DeleteButton
+          @delete="handleBatchDelete"
+          :disabled="!selectedRows.length"
+          confirm-content="确定要删除选中的用户吗？"
+          v-auth="['sys:user:delete']"
+        />
+        <ExportButton @export="handleExport" filename="用户列表" v-auth="['sys:user:export']" />
+      </div>
+    </header>
 
-      <!-- 用户表格 -->
-      <n-grid-item :span="18">
+    <div class="sys-user-layout">
+      <aside class="dept-panel">
+        <div class="dept-panel__header">
+          <h3>部门列表</h3>
+          <n-input-group size="small">
+            <n-input v-model:value="pattern" placeholder="搜索部门" clearable>
+              <template #prefix>
+                <n-icon><SearchOutline /></n-icon>
+              </template>
+            </n-input>
+            <n-tooltip trigger="hover" placement="top">
+              <template #trigger>
+                <n-button size="small" quaternary circle @click="expandAllFlag = !expandAllFlag">
+                  <template #icon>
+                    <n-icon>
+                      <component :is="expandAllFlag ? ChevronUpOutline : ChevronDownOutline" />
+                    </n-icon>
+                  </template>
+                </n-button>
+              </template>
+              {{ expandAllFlag ? '收起' : '展开' }}
+            </n-tooltip>
+          </n-input-group>
+        </div>
+        <div class="dept-panel__body">
+          <n-spin :show="deptLoading">
+            <n-tree
+              block-line
+              :pattern="pattern"
+              :data="departmentData"
+              selectable
+              v-model:default-expand-all="expandAllFlag"
+              :on-update:selected-keys="onCheckedKeys"
+            />
+          </n-spin>
+        </div>
+      </aside>
+
+      <n-card class="table-panel" :bordered="false">
         <TableMain
           :data="dataList"
           :columns="tableColumns"
@@ -65,33 +77,6 @@
           @update:page-size="handlePageSizeChange"
           @update:checked-row-keys="handleSelectionChange"
         >
-          <!-- 表格标题 -->
-          <template #header>
-            <div class="table-title">
-              <h3>用户管理</h3>
-              <p>系统用户信息管理，支持用户的增删改查操作</p>
-            </div>
-          </template>
-
-          <!-- 表格操作按钮 -->
-          <template #header-extra>
-            <n-space>
-              <AddButton @add="handleAddUser" title="新增用户" v-auth="['sys:user:add']" />
-              <DeleteButton
-                @delete="handleBatchDelete"
-                :disabled="!selectedRows.length"
-                confirm-content="确定要删除选中的用户吗？"
-                v-auth="['sys:user:delete']"
-              />
-              <ExportButton
-                @export="handleExport"
-                filename="用户列表"
-                v-auth="['sys:user:export']"
-              />
-            </n-space>
-          </template>
-
-          <!-- 表格底部统计信息 -->
           <template #footer>
             <div class="table-footer">
               <n-space justify="space-between">
@@ -101,8 +86,8 @@
             </div>
           </template>
         </TableMain>
-      </n-grid-item>
-    </n-grid>
+      </n-card>
+    </div>
 
     <!-- 用户表单弹窗 -->
     <n-modal
@@ -220,7 +205,7 @@
         </n-space>
       </template>
     </n-modal>
-  </div>
+  </section>
 </template>
 
 <script lang="ts" setup>

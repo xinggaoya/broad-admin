@@ -1,16 +1,30 @@
 <template>
-  <div class="main-container">
-    <TableSearch @search="doRefresh" @reset="onResetSearch"></TableSearch>
-    <TableMain
-      :data="tableList"
-      :columns="tableColumns"
-      :loading="tableLoading"
-      :pagination="pagination"
-    >
-      <template v-slot:header>
+  <section class="job-page">
+    <header class="page-header">
+      <div>
+        <p class="header-subtitle">定时任务</p>
+        <h2>任务调度</h2>
+      </div>
+      <div class="header-actions">
+        <n-button tertiary round size="small" :loading="tableLoading" @click="doRefresh">
+          <template #icon>
+            <n-icon><RefreshOutline /></n-icon>
+          </template>
+          刷新
+        </n-button>
         <AddButton @add="onAddItem" />
-      </template>
-    </TableMain>
+      </div>
+    </header>
+
+    <n-card class="table-panel" :bordered="false">
+      <TableSearch @search="doRefresh" @reset="onResetSearch" />
+      <TableMain
+        :data="tableList"
+        :columns="tableColumns"
+        :loading="tableLoading"
+        :pagination="pagination"
+      />
+    </n-card>
 
     <ModalDialog
       v-model="modalDialog"
@@ -40,19 +54,20 @@
               type="textarea"
             />
           </n-form-item>
-          <n-form-item label="cron执行表达式" path="cronExpression">
-            <n-input v-model:value="jobFrom.cronExpression" placeholder="输入cron执行表达式" />
+          <n-form-item label="CRON 表达式" path="cronExpression">
+            <n-input v-model:value="jobFrom.cronExpression" placeholder="输入 cron 执行表达式" />
           </n-form-item>
           <n-form-item label="执行策略" path="misfirePolicy">
-            <n-select
-              v-model:value="jobFrom.misfirePolicy"
-              placeholder="选择执行策略"
-            />
+            <n-select v-model:value="jobFrom.misfirePolicy" placeholder="选择执行策略" />
           </n-form-item>
           <n-form-item label="是否并发" path="concurrent">
             <n-radio-group v-model:value="jobFrom.concurrent">
-              <n-radio-button v-for="(item, index) in sys_yes_no" :value="item.value" :key="index"
-              >{{ item.label }}
+              <n-radio-button
+                v-for="(item, index) in sys_yes_no"
+                :value="item.value"
+                :key="index"
+              >
+                {{ item.label }}
               </n-radio-button>
             </n-radio-group>
           </n-form-item>
@@ -62,7 +77,8 @@
                 v-for="(item, index) in sys_job_status"
                 :value="item.value"
                 :key="index"
-              >{{ item.label }}
+              >
+                {{ item.label }}
               </n-radio-button>
             </n-radio-group>
           </n-form-item>
@@ -72,12 +88,12 @@
         </n-form>
       </template>
     </ModalDialog>
-  </div>
+  </section>
 </template>
 
 <script lang="ts" setup>
 import { usePagination, useRenderAction, renderDictTag } from '@/hooks/useTable'
-import { useDialog, useMessage } from 'naive-ui'
+import { useDialog, useMessage, NIcon } from 'naive-ui'
 import { onMounted, ref } from 'vue'
 import { addJob, getJobList, getJobRun, jobUpdate, jobDelete } from '@/api/monitor/job'
 import { useDict } from '@/utils/useDict'
@@ -85,6 +101,7 @@ import AddButton from '@/components/table/button/AddButton.vue'
 import TableMain from '@/components/table/main/TableMain.vue'
 import TableSearch from '@/components/table/search/TableSearch.vue'
 import type { TableActionModel } from '@/types/table'
+import { RefreshOutline } from '@vicons/ionicons5'
 
 const { sys_job_status, sys_yes_no } = useDict('sys_job_status', 'sys_yes_no')
 const tableList = ref([])
@@ -238,41 +255,59 @@ function onRunItem(row: any) {
 
 // 重置
 function onResetSearch() {
+  pagination.page = 1
+  doRefresh()
 }
 
 onMounted(doRefresh)
 </script>
 
-<style lang="scss" scoped>
-.avatar-container {
-  position: relative;
-  width: 30px;
-  height: 30px;
-  margin: 0 auto;
-  vertical-align: middle;
-
-  .avatar {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-  }
-
-  .avatar-vip {
-    border: 2px solid #cece1e;
-  }
-
-  .vip {
-    position: absolute;
-    top: 0;
-    right: -9px;
-    width: 15px;
-    transform: rotate(60deg);
-  }
+<style scoped lang="scss">
+.job-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--shell-gap);
 }
 
-.gender-container {
-  .gender-icon {
-    width: 20px;
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--shell-surface);
+  border-radius: var(--shell-radius-lg);
+  padding: 20px;
+  box-shadow: var(--shell-shadow);
+}
+
+.page-header h2 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.header-subtitle {
+  margin: 0;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--shell-muted-text-color);
+}
+
+.header-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.table-panel {
+  border-radius: var(--shell-radius-lg);
+  background: var(--shell-surface);
+  box-shadow: var(--shell-shadow);
+}
+
+@media (max-width: 768px) {
+  .page-header {
+    flex-direction: column;
+    gap: 12px;
   }
 }
 </style>

@@ -1,7 +1,9 @@
 <template>
+  <div>
+    <n-scrollbar class="setting-shell">
+
   <n-drawer v-model:show="opened" width="420" placement="right" :auto-focus="false">
-    <n-drawer-content closable body-content-style="padding:0">
-      <n-scrollbar class="setting-shell">
+    <n-drawer-content closable body-content-style="padding:20px">
         <header class="setting-shell__header">
           <div>
             <p class="setting-shell__title">{{ appConfig.projectName }}</p>
@@ -164,9 +166,12 @@
           <n-button tertiary @click="resetToDefault">恢复默认</n-button>
           <n-button type="primary" @click="closeDrawer">关闭</n-button>
         </footer>
-      </n-scrollbar>
     </n-drawer-content>
+
   </n-drawer>
+  </n-scrollbar>
+
+  </div>
 </template>
 
 <script lang="ts" setup name="SystemSetting">

@@ -1,6 +1,5 @@
 <template>
   <div class="dict-type">
-    <!-- 搜索区域 -->
     <TableSearch @search="handleSearch" @reset="handleReset">
       <n-form ref="searchFormRef" :model="searchForm" inline>
         <n-grid :cols="24" :x-gap="24">
@@ -22,33 +21,32 @@
       </n-form>
     </TableSearch>
 
-    <!-- 表格区域 -->
-    <TableMain
-      :columns="columns"
-      :data="tableData"
-      :loading="loading"
-      :pagination="pagination"
-      row-key="dictId"
-    >
+    <n-card class="table-panel" :bordered="false">
       <template #header>
-        <n-button-group>
+        <n-space>
           <n-button type="primary" @click="handleAdd" v-auth="['sys:dict:add']">
             <template #icon>
               <n-icon><AddOutline /></n-icon>
             </template>
             新增字典
           </n-button>
-          <n-button type="success" @click="handleRefresh">
+          <n-button tertiary @click="handleRefresh" :loading="loading">
             <template #icon>
               <n-icon><RefreshOutline /></n-icon>
             </template>
             刷新
           </n-button>
-        </n-button-group>
+        </n-space>
       </template>
-    </TableMain>
+      <TableMain
+        :columns="columns"
+        :data="tableData"
+        :loading="loading"
+        :pagination="pagination"
+        row-key="dictId"
+      />
+    </n-card>
 
-    <!-- 编辑对话框 -->
     <n-modal
       v-model:show="showModal"
       :title="modalTitle"

@@ -70,24 +70,23 @@ const handleCollapse = () => {
 
 <style scoped lang="scss">
 .table-search-wrapper {
-  margin-bottom: 16px;
+  margin-bottom: var(--shell-gap);
+}
 
-  .search-card {
-    :deep(.n-card__content) {
-      padding: 0;
-    }
+.search-card {
+  border-radius: var(--shell-radius-lg);
+  box-shadow: var(--shell-shadow);
+}
 
-    .search-title {
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--text-color);
-    }
+.search-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--shell-text-color);
+}
 
-    .search-form-container {
-      padding: 16px;
-      background-color: var(--card-color);
-      border-radius: 0 0 3px 3px;
-    }
-  }
+.search-form-container {
+  padding: 16px;
+  background-color: var(--shell-surface);
+  border-radius: 0 0 var(--shell-radius-base) var(--shell-radius-base);
 }
 </style>
