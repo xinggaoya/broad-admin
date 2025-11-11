@@ -62,6 +62,7 @@ import {
 import { useAppConfigStore } from '@/store/modules/app-config'
 import { useDebounceFn } from '@vueuse/core'
 import PopoverMessage from '@/components/common/PopoverMessage.vue'
+import SearchContent from './SearchContent.vue'
 
 const searchContentRef = ref<SearchContentType>()
 const settingRef = ref()

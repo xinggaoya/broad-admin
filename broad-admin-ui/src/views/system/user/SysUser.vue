@@ -220,7 +220,12 @@ import {
   NPopconfirm,
   type DataTableColumns
 } from 'naive-ui'
-import { SearchOutline, ChevronUpOutline, ChevronDownOutline } from '@vicons/ionicons5'
+import {
+  SearchOutline,
+  ChevronUpOutline,
+  ChevronDownOutline,
+  RefreshOutline
+} from '@vicons/ionicons5'
 import { getUserPage, getUserRole, addUser, updateUser, delUser } from '@/api/system/user'
 import { getRolePage } from '@/api/system/role'
 import { getDeptPage } from '@/api/system/dept'

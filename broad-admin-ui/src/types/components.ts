@@ -66,3 +66,6 @@ export type ModalDialogType = InstanceType<
 
 export type SvgIconType = InstanceType<typeof import('../components/svg-icon/SvgIcon.vue').default>
 
+export type SearchContentType = InstanceType<
+  typeof import('../components/ActionItems/SearchContent.vue').default
+>

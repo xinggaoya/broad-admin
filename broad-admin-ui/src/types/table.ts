@@ -8,6 +8,13 @@ export interface TableConfig {
   maxHeight?: number
 }
 
+export interface TableToolbarConfig {
+  refresh?: boolean
+  density?: boolean
+  column?: boolean
+  fullscreen?: boolean
+}
+
 export interface ColumnState {
   key: string | number
   title: string
@@ -98,11 +105,14 @@ export interface TableMainProps {
   cascade?: boolean
   allowCheckingNotLoaded?: boolean
   rowKey?: string | ((row: any) => string | number)
+  configKey?: string
   scrollX?: number | string
   childrenKey?: string
   indent?: number
   expandable?: boolean
   defaultExpandAll?: boolean
+  stickyToolbar?: boolean
+  toolbarConfig?: TableToolbarConfig
   // 搜索相关配置
   searchConfig?: SearchConfig
   searchForm?: SearchFormConfig
@@ -117,9 +127,30 @@ export interface TableMainEmits {
   (e: 'update:sorter', sorter: TableSorter): void
   (e: 'update:columns', columns: DataTableColumns): void
   (e: 'update:expanded-row-keys', keys: Array<string | number>): void
+  (e: 'update:filters', filters: Record<string, any>): void
+  (e: 'filters-change', filters: Record<string, any>): void
   // 搜索相关事件
   (e: 'update:search-model', model: Record<string, any>): void
   (e: 'search', params: Record<string, any>): void
+  (e: 'refresh', params: Record<string, any>): void
   (e: 'reset'): void
   (e: 'update:search-collapse', value: boolean): void
+}
+
+export interface TableMainExpose {
+  clearChecked: () => void
+  clearFilters: () => void
+  clearSorter: () => void
+  scrollTo: (options: { left?: number; top?: number; behavior?: 'smooth' | 'auto' }) => void
+  resetConfig: () => void
+  saveConfig: () => void
+  resetColumns: () => void
+  saveColumns: () => void
+  search: (params?: Record<string, any>) => void
+  resetSearch: () => void
+  getSearchData: () => Record<string, any>
+  validateSearch: () => Promise<void> | undefined
+  toggleFullscreen: () => void
+  getTableRef: () => any
+  getSearchFormRef: () => any
 }

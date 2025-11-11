@@ -74,5 +74,4 @@ const handleBack = () => {
   text-transform: uppercase;
   color: var(--shell-muted-text-color);
 }
-}
 </style>

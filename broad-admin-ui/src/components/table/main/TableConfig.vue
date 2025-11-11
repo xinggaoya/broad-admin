@@ -109,12 +109,13 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch, reactive } from 'vue'
+import { watch, reactive, computed } from 'vue'
 import { Settings as SettingsIcon } from '@vicons/ionicons5'
 import type { TableConfig } from '@/types/table'
 
 interface Props {
   config: TableConfig
+  configKey?: string
 }
 
 interface Emits {
@@ -149,6 +150,12 @@ const sizeOptions = [
   { label: '宽松', value: 'large' }
 ]
 
+// 计算本地存储键
+const storageKey = computed(() => {
+  const suffix = props.configKey?.trim() || 'default'
+  return `table-config:${suffix}`
+})
+
 // 监听props变化，同步到本地状态
 watch(
   () => props.config,
@@ -180,7 +187,7 @@ const onReset = () => {
 // 保存配置（可以扩展为保存到localStorage）
 const onSave = () => {
   try {
-    localStorage.setItem('table-config', JSON.stringify(localConfig))
+    localStorage.setItem(storageKey.value, JSON.stringify(localConfig))
     // 这里可以添加成功提示
   } catch (error) {
     console.warn('保存表格配置失败:', error)
@@ -195,7 +202,7 @@ const onApply = () => {
 // 组件挂载时尝试加载保存的配置
 const loadSavedConfig = () => {
   try {
-    const saved = localStorage.getItem('table-config')
+    const saved = localStorage.getItem(storageKey.value)
     if (saved) {
       const savedConfig = JSON.parse(saved)
       Object.assign(localConfig, savedConfig)

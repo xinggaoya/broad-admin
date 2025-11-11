@@ -4,7 +4,6 @@ import { h, ref } from 'vue'
 import type { RouteRecordRaw } from 'vue-router'
 import type { OriginRoute, SplitTab } from '../types'
 import type { MenuOption, NIcon } from 'naive-ui'
-import { asyncRoutes } from '@/router/routes/async'
 import { LAYOUT } from '../keys'
 import SvgIcon from '@/components/svg-icon/SvgIcon.vue'
 
@@ -32,60 +31,73 @@ export function getFilePath(it: OriginRoute) {
   return '/src/views' + it.localFilePath + '.vue'
 }
 
-export function findRootPathRoute(routes: RouteRecordRaw[]) {
-  for (let index = 0; index < routes.length; index++) {
-    const route = routes[index]
-    const rootRoute = route.children?.find((it) => it.meta && it.meta.isRootPath)
-    if (rootRoute) {
-      return rootRoute.path
-    }
-  }
-  return routes && routes.length > 0 && routes[0].children && routes[0].children.length > 0
-    ? routes[0].children![0].path
-    : '/'
-}
-
-export function filterRoutesFromLocalRoutes(
-  route: OriginRoute,
-  localRoutes: Array<RouteRecordRaw>,
-  path = '/'
-) {
-  const filterRoute = localRoutes.find((it) => {
-    return resolve(path, it.path) === route.menuUrl
-  })
-  if (filterRoute) {
-    filterRoute.meta = {
-      title: route.menuName,
-      affix: route.affix == Boolean.true,
-      cacheable: route.cacheable == Boolean.true,
-      icon: route.icon || 'menu',
-      iconPrefix: route.iconPrefix || 'iconfont',
-      badge: route.badge,
-      hidden: route.hidden == Boolean.true,
-      isRootPath: !!route.isRootPath,
-      isSingle: !!route.isSingle,
-      ...filterRoute.meta
-    }
-    const parentPath = resolve(path, filterRoute.path)
-    if (
-      Array.isArray(route.children) &&
-      route.children.length > 0 &&
-      Array.isArray(filterRoute.children) &&
-      filterRoute.children.length > 0
-    ) {
-      const tempChildren: RouteRecordRaw[] = []
-      route.children.forEach((it) => {
-        const childFilterRoute = filterRoutesFromLocalRoutes(it, filterRoute.children!, parentPath)
-        childFilterRoute && tempChildren.push(childFilterRoute)
-      })
-      filterRoute.children = tempChildren
-    }
-  }
-  return filterRoute
-}
-
 export function isMenu(it: OriginRoute) {
   return it.menuType === 1
+}
+
+function normalizeRoutePath(menuUrl?: string) {
+  if (!menuUrl) {
+    return '/'
+  }
+  return menuUrl.startsWith('/') ? menuUrl : `/${menuUrl}`
+}
+
+function resolveRoutePath(menuUrl: string | undefined, parentAbsolutePath = '', level = 0) {
+  const normalizedPath = normalizeRoutePath(menuUrl)
+  const sanitizedParent = parentAbsolutePath.replace(/\/+$/, '')
+
+  let absolutePath = normalizedPath
+  if (level > 0 && sanitizedParent) {
+    if (!normalizedPath.startsWith(`${sanitizedParent}/`) && normalizedPath !== sanitizedParent) {
+      const relative = normalizedPath.replace(/^\//, '')
+      absolutePath = `${sanitizedParent}/${relative}`.replace(/\/+/g, '/')
+    }
+  }
+
+  if (level === 0 || !sanitizedParent) {
+    return {
+      absolutePath,
+      routePath: absolutePath
+    }
+  }
+
+  let relativePath = absolutePath
+  if (absolutePath.startsWith(`${sanitizedParent}/`)) {
+    relativePath = absolutePath.slice(sanitizedParent.length + 1)
+  } else {
+    relativePath = absolutePath.replace(/^\//, '')
+  }
+
+  if (!relativePath) {
+    const segments = absolutePath.split('/').filter((segment) => !!segment)
+    relativePath = segments[segments.length - 1] || ''
+  }
+
+  return {
+    absolutePath,
+    routePath: relativePath
+  }
+}
+
+function resolveRouteName(route: OriginRoute) {
+  if (route.routeName) {
+    return route.routeName
+  }
+  const resolvedPath = route.localFilePath || route.menuUrl || ''
+  return getNameByUrl(resolvedPath)
+}
+
+function resolveRouteComponent(route: OriginRoute, isDirectory: boolean) {
+  if (isDirectory || route.iframeUrl) {
+    return LAYOUT
+  }
+  try {
+    const component = getComponent(route)
+    return component || LAYOUT
+  } catch (error) {
+    console.warn(`[router] 组件解析失败: ${route.localFilePath}`, error)
+    return LAYOUT
+  }
 }
 
 // 获取路由名称
@@ -101,38 +113,61 @@ export function getNameByUrl(menuUrl: string) {
  * 递归创建路由
  * @param res
  */
-export function generatorRoutes(res: Array<OriginRoute>) {
+function ensureUniqueRouteName(
+  rawName: string | undefined,
+  path: string,
+  nameUsage: Record<string, number>
+) {
+  const fallbackKey = path.replace(/[:/]+/g, '-') || 'route'
+  const baseName = rawName && rawName.length > 0 ? rawName : toHump(fallbackKey)
+  const normalizedName =
+    baseName && baseName.length > 0 ? baseName : `Route${Object.keys(nameUsage).length + 1}`
+  nameUsage[normalizedName] = (nameUsage[normalizedName] || 0) + 1
+  return nameUsage[normalizedName] === 1 ? normalizedName : `${normalizedName}_${nameUsage[normalizedName]}`
+}
+
+export function generatorRoutes(
+  res: Array<OriginRoute>,
+  nameUsage: Record<string, number> = {},
+  parentAbsolutePath = '',
+  level = 0
+) {
   const tempRoutes: Array<RouteRecordRaw> = []
 
-  res.forEach((it) => {
-    const isMenuFlag = isMenu(it)
-    const localRoute = !isMenuFlag ? filterRoutesFromLocalRoutes(it, asyncRoutes) : null
-    if (localRoute) {
-      tempRoutes.push(localRoute as RouteRecordRaw)
-    } else if (it.menuUrl) {
-      const route: RouteRecordRaw = {
-        path: it.menuUrl,
-        name: getNameByUrl(it.localFilePath || ''),
-        component: !isMenuFlag || it.iframeUrl ? LAYOUT : getComponent(it),
-        children: [],
-        meta: {
-          hidden: it.hidden == Boolean.true,
-          title: it.menuName,
-          affix: it.affix == Boolean.true,
-          cacheable: it.cacheable == Boolean.true,
-          icon: it.icon || 'menu',
-          iconPrefix: it.iconPrefix || 'iconfont',
-          badge: it.badge,
-          isRootPath: !!it.isRootPath,
-          isSingle: !!it.isSingle,
-          iframeUrl: it.iframeUrl || undefined
-        }
-      }
-      if (it.children) {
-        route.children = generatorRoutes(it.children)
-      }
-      tempRoutes.push(route)
+  res?.forEach((it) => {
+    if (!it) {
+      return
     }
+    const menuType = typeof it.menuType === 'number' ? it.menuType : Number(it.menuType || 1)
+    if (menuType === 2) {
+      // 仅按钮权限，无需生成菜单
+      return
+    }
+    const isDirectory = menuType !== 1
+    const { absolutePath, routePath } = resolveRoutePath(it.menuUrl, parentAbsolutePath, level)
+    const routeName = ensureUniqueRouteName(resolveRouteName(it), absolutePath, nameUsage)
+    const route: RouteRecordRaw = {
+      path: level === 0 ? routePath : routePath || '',
+      name: routeName,
+      component: resolveRouteComponent(it, isDirectory),
+      children: [],
+      meta: {
+        hidden: it.hidden == Boolean.true,
+        title: it.menuName,
+        affix: it.affix == Boolean.true,
+        cacheable: it.cacheable == Boolean.true,
+        icon: it.icon || 'menu',
+        iconPrefix: it.iconPrefix || 'iconfont',
+        badge: it.badge,
+        isRootPath: !!it.isRootPath,
+        isSingle: !!it.isSingle,
+        iframeUrl: it.iframeUrl || undefined
+      }
+    }
+    if (Array.isArray(it.children) && it.children.length > 0) {
+      route.children = generatorRoutes(it.children, nameUsage, absolutePath, level + 1)
+    }
+    tempRoutes.push(route)
   })
   return tempRoutes
 }

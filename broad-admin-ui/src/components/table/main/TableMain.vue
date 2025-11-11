@@ -1,5 +1,5 @@
 <template>
-  <div class="table-main-wrapper">
+  <div class="table-main-wrapper" :class="{ fullscreen: isFullscreen }">
     <!-- 搜索区域 -->
     <n-card v-if="searchConfig?.show !== false && searchForm" size="small" class="search-card">
       <template #header>
@@ -39,114 +39,164 @@
     </n-card>
 
     <!-- 表格主体 -->
-    <n-card class="table-main-container">
-      <!-- 表格头部 -->
-      <template #header>
-        <div class="table-header">
-          <div class="header-left">
-            <slot name="header" />
+    <div class="table-card-shell" ref="fullscreenContainerRef">
+      <n-card class="table-main-container" :bordered="false">
+        <!-- 表格头部 -->
+        <template #header>
+          <div class="table-header">
+            <div class="header-left">
+              <slot name="header" />
+            </div>
+            <div class="header-right">
+              <slot name="header-extra" />
+              <div
+                v-if="toolbarVisible || $slots['toolbar-extra']"
+                class="table-toolbar"
+                :class="{ sticky: stickyToolbar }"
+              >
+                <n-space align="center" :wrap="false">
+                  <slot v-if="$slots['toolbar-extra']" name="toolbar-extra" />
+                  <div v-if="toolbarVisible" class="toolbar-system">
+                    <!-- 刷新按钮 -->
+                    <n-tooltip v-if="mergedToolbarConfig.refresh" trigger="hover" placement="top">
+                      <template #trigger>
+                        <n-button
+                          type="tertiary"
+                          size="small"
+                          circle
+                          :loading="loading"
+                          @click="handleRefresh"
+                        >
+                          <template #icon>
+                            <n-icon>
+                              <RefreshIcon />
+                            </n-icon>
+                          </template>
+                        </n-button>
+                      </template>
+                      刷新数据
+                    </n-tooltip>
+
+                    <!-- 密度设置 -->
+                    <n-popover
+                      v-if="mergedToolbarConfig.density"
+                      trigger="click"
+                      placement="bottom-end"
+                      :show-arrow="false"
+                    >
+                      <template #trigger>
+                        <n-tooltip trigger="hover" placement="top">
+                          <template #trigger>
+                            <n-button strong circle type="tertiary" size="small">
+                              <template #icon>
+                                <n-icon>
+                                  <DensityIcon />
+                                </n-icon>
+                              </template>
+                            </n-button>
+                          </template>
+                          行高设置
+                        </n-tooltip>
+                      </template>
+                      <n-space vertical size="small" class="density-selector">
+                        <n-button
+                          v-for="item in densityOptions"
+                          :key="item.key"
+                          quaternary
+                          size="small"
+                          :type="tableConfig.size === item.key ? 'primary' : 'default'"
+                          @click="handleDensitySelect(item.key)"
+                        >
+                          {{ item.label }}
+                        </n-button>
+                      </n-space>
+                    </n-popover>
+
+                    <TableConfigPanel
+                      v-if="mergedToolbarConfig.density"
+                      ref="configPanelRef"
+                      :config="tableConfig"
+                      :config-key="configKey"
+                      @update="updateConfig"
+                    />
+
+                    <!-- 列设置 -->
+                    <SortableTable
+                      v-if="mergedToolbarConfig.column"
+                      ref="sortableTableRef"
+                      :columns="internalColumns"
+                      @update:columns="handleColumnsChange"
+                    />
+
+                    <!-- 全屏按钮 -->
+                    <n-tooltip
+                      v-if="mergedToolbarConfig.fullscreen"
+                      trigger="hover"
+                      placement="top"
+                    >
+                      <template #trigger>
+                        <n-button type="tertiary" size="small" circle @click="toggleFullscreen">
+                          <template #icon>
+                            <n-icon>
+                              <FullscreenIcon v-if="!isFullscreen" />
+                              <FullscreenExitIcon v-else />
+                            </n-icon>
+                          </template>
+                        </n-button>
+                      </template>
+                      {{ isFullscreen ? '退出全屏' : '全屏显示' }}
+                    </n-tooltip>
+                  </div>
+                </n-space>
+              </div>
+            </div>
           </div>
-          <div class="header-right">
-            <slot name="header-extra" />
-          </div>
-        </div>
-      </template>
+        </template>
 
-      <!-- 表格工具栏 -->
-      <template #header-extra>
-        <div class="table-toolbar">
-          <n-space>
-            <!-- 刷新按钮 -->
-            <n-tooltip trigger="hover" placement="top">
-              <template #trigger>
-                <n-button
-                  type="tertiary"
-                  size="small"
-                  circle
-                  :loading="loading"
-                  @click="handleRefresh"
-                >
-                  <template #icon>
-                    <n-icon>
-                      <RefreshIcon />
-                    </n-icon>
-                  </template>
-                </n-button>
-              </template>
-              刷新数据
-            </n-tooltip>
-
-            <!-- 密度设置 -->
-            <TableConfigPanel ref="configPanelRef" :config="tableConfig" @update="updateConfig" />
-
-            <!-- 列设置 -->
-            <SortableTable
-              ref="sortableTableRef"
-              :columns="internalColumns"
-              @update:columns="handleColumnsChange"
+        <!-- 表格内容 -->
+        <template #default>
+          <div class="table-content" :class="{ fullscreen: isFullscreen }">
+            <n-data-table
+              ref="tableRef"
+              :data="data"
+              :bordered="tableConfig.border"
+              :loading="loading"
+              :striped="tableConfig.striped"
+              :remote="remote"
+              :columns="displayColumns"
+              :row-key="getRowKey"
+              :pagination="paginationConfig"
+              :allow-checking-not-loaded="allowCheckingNotLoaded"
+              :cascade="cascade"
+              :scroll-x="scrollX"
+              :size="tableConfig.size"
+              :single-line="tableConfig.singleLine"
+              :max-height="computedMaxHeight"
+              :children-key="childrenKey"
+              :indent="indent"
+              :expandable="expandable"
+              :default-expand-all="defaultExpandAll"
+              :virtual-scroll="virtualScroll"
+              :flex-height="flexHeight"
+              @load="onLoad"
+              @update:checked-row-keys="handleCheckedRowKeysChange"
+              @update:page="handlePageChange"
+              @update:page-size="handlePageSizeChange"
+              @update:sorter="handleSorterChange"
+              @update:expanded-row-keys="handleExpandedRowKeysChange"
+              @update:filters="handleFiltersChange"
             />
+          </div>
+        </template>
 
-            <!-- 全屏按钮 -->
-            <n-tooltip trigger="hover" placement="top">
-              <template #trigger>
-                <n-button type="tertiary" size="small" circle @click="toggleFullscreen">
-                  <template #icon>
-                    <n-icon>
-                      <FullscreenIcon v-if="!isFullscreen" />
-                      <FullscreenExitIcon v-else />
-                    </n-icon>
-                  </template>
-                </n-button>
-              </template>
-              {{ isFullscreen ? '退出全屏' : '全屏显示' }}
-            </n-tooltip>
-          </n-space>
-        </div>
-      </template>
-
-      <!-- 表格内容 -->
-      <template #default>
-        <div class="table-content" :class="{ fullscreen: isFullscreen }">
-          <n-data-table
-            ref="tableRef"
-            :data="data"
-            :bordered="tableConfig.border"
-            :loading="loading"
-            :striped="tableConfig.striped"
-            :remote="remote"
-            :columns="displayColumns"
-            :row-key="getRowKey"
-            :pagination="paginationConfig"
-            :allow-checking-not-loaded="allowCheckingNotLoaded"
-            :cascade="cascade"
-            :scroll-x="scrollX"
-            :size="tableConfig.size"
-            :single-line="tableConfig.singleLine"
-            :max-height="computedMaxHeight"
-            :children-key="childrenKey"
-            :indent="indent"
-            :expandable="expandable"
-            :default-expand-all="defaultExpandAll"
-            :virtual-scroll="virtualScroll"
-            :flex-height="flexHeight"
-            @load="onLoad"
-            @update:checked-row-keys="handleCheckedRowKeysChange"
-            @update:page="handlePageChange"
-            @update:page-size="handlePageSizeChange"
-            @update:sorter="handleSorterChange"
-            @update:expanded-row-keys="handleExpandedRowKeysChange"
-            @update:filters="handleFiltersChange"
-          />
-        </div>
-      </template>
-
-      <!-- 表格底部 -->
-      <template #footer v-if="$slots.footer">
-        <div class="table-footer">
-          <slot name="footer" />
-        </div>
-      </template>
-    </n-card>
+        <!-- 表格底部 -->
+        <template #footer v-if="$slots.footer">
+          <div class="table-footer">
+            <slot name="footer" />
+          </div>
+        </template>
+      </n-card>
+    </div>
   </div>
 </template>
 
@@ -158,9 +208,15 @@ import {
   Expand as FullscreenIcon,
   Contract as FullscreenExitIcon,
   ChevronUp as ArrowUpIcon,
-  ChevronDown as ArrowDownIcon
+  ChevronDown as ArrowDownIcon,
+  Resize as DensityIcon
 } from '@vicons/ionicons5'
-import type { TableConfig, TableMainProps, TableMainEmits } from '@/types/table'
+import type {
+  TableConfig,
+  TableMainProps,
+  TableMainEmits,
+  TableToolbarConfig
+} from '@/types/table'
 import SortableTable from './SortableTable.vue'
 import TableConfigPanel from './TableConfig.vue'
 import SearchForm from '../search/SearchForm.vue'
@@ -178,12 +234,15 @@ const props = withDefaults(defineProps<TableMainProps>(), {
   cascade: true,
   allowCheckingNotLoaded: false,
   rowKey: '',
+  configKey: undefined,
   scrollX: undefined,
   childrenKey: 'children',
   indent: 16,
   expandable: true,
   defaultExpandAll: false,
-  searchModel: () => ({})
+  searchModel: () => ({}),
+  stickyToolbar: false,
+  toolbarConfig: () => ({})
 })
 
 // Emits 定义
@@ -196,6 +255,9 @@ const internalColumns = ref<DataTableColumns>([])
 const searchFormRef = ref()
 const internalSearchModel = ref<Record<string, any>>({})
 const searchCollapse = ref(props.searchConfig?.defaultCollapse !== false)
+const fallbackRowKeySymbol = Symbol('table-row-key')
+let fallbackRowKeySequence = 0
+let rowKeyWarningLogged = false
 
 // 初始化搜索模型
 const initSearchModel = () => {
@@ -259,11 +321,14 @@ watch(
 const tableRef = ref()
 const configPanelRef = ref()
 const sortableTableRef = ref()
+const fullscreenContainerRef = ref<HTMLElement | null>(null)
 
 // 响应式状态
 const isFullscreen = ref(false)
 const virtualScroll = ref(false)
 const flexHeight = ref(false)
+const hasWindow = typeof window !== 'undefined'
+const stickyToolbar = computed(() => props.stickyToolbar)
 
 // 表格配置
 const tableConfig = ref<TableConfig>({
@@ -274,25 +339,70 @@ const tableConfig = ref<TableConfig>({
   maxHeight: undefined
 })
 
+const mergedToolbarConfig = computed<TableToolbarConfig>(() => ({
+  refresh: true,
+  density: true,
+  column: true,
+  fullscreen: true,
+  ...props.toolbarConfig
+}))
+
+const toolbarVisible = computed(() =>
+  Object.values(mergedToolbarConfig.value).some((item) => item !== false)
+)
+
+const densityOptions = [
+  { label: '紧凑', key: 'small' as const },
+  { label: '默认', key: 'medium' as const },
+  { label: '宽松', key: 'large' as const }
+]
+
 // 计算属性
 const getRowKey = computed(() => {
   if (typeof props.rowKey === 'function') {
     return props.rowKey
   }
 
+  const rowKeyField = typeof props.rowKey === 'string' ? props.rowKey : undefined
+
   return (rowData: any) => {
-    if (props.rowKey && typeof props.rowKey === 'string') {
-      return rowData[props.rowKey]
+    if (!rowData) {
+      return undefined
     }
 
-    // 自动推断 rowKey
+    if (rowKeyField && rowData[rowKeyField] !== undefined) {
+      return rowData[rowKeyField]
+    }
+
     const firstColumn = props.columns[0] as DataTableBaseColumn
-    if (firstColumn?.key) {
+    if (firstColumn?.key && rowData[firstColumn.key] !== undefined) {
       return rowData[firstColumn.key]
     }
 
-    // 默认使用 id 字段
-    return rowData.id || rowData.key || Math.random()
+    const fallbackKey =
+      rowData.id ??
+      rowData.key ??
+      rowData.uid ??
+      rowData.uuid ??
+      rowData._id ??
+      rowData.primaryKey ??
+      rowData.code
+
+    if (fallbackKey !== undefined && fallbackKey !== null) {
+      return fallbackKey
+    }
+
+    if (!rowData[fallbackRowKeySymbol]) {
+      rowData[fallbackRowKeySymbol] = `table-row-${fallbackRowKeySequence++}`
+      if (!rowKeyWarningLogged) {
+        console.warn(
+          'TableMain: rowKey 未配置，请通过 rowKey 或 columns 第一列指定稳定主键，当前已使用内部 fallbackKey'
+        )
+        rowKeyWarningLogged = true
+      }
+    }
+
+    return rowData[fallbackRowKeySymbol]
   }
 })
 
@@ -331,16 +441,24 @@ const computedMaxHeight = computed(() => {
   }
 
   if (isFullscreen.value) {
-    return window.innerHeight - 200
+    return typeof window !== 'undefined' ? window.innerHeight - 200 : undefined
   }
 
   // 自动计算高度
   return undefined
 })
 
+const resolveSearchParams = () => {
+  const formData = searchFormRef.value?.getFormData?.()
+  if (formData && typeof formData === 'object') {
+    return { ...formData }
+  }
+  return { ...internalSearchModel.value }
+}
+
 // 搜索相关方法
-const handleSearch = () => {
-  const searchParams = searchFormRef.value?.getFormData() || internalSearchModel.value
+const handleSearch = (params?: Record<string, any>) => {
+  const searchParams = params ?? resolveSearchParams()
   emit('search', searchParams)
 
   // 如果配置了重置页码，则重置到第一页
@@ -412,48 +530,96 @@ const handleExpandedRowKeysChange = (keys: Array<string | number>) => {
 }
 
 const handleFiltersChange = (filters: any) => {
-  // 可以添加过滤器变化的处理逻辑
-  console.log('Filters changed:', filters)
+  const payload = filters && typeof filters === 'object' ? { ...filters } : filters
+  emit('update:filters', payload)
+  emit('filters-change', payload)
 }
 
 const handleRefresh = () => {
   // 触发数据刷新
   emit('update:page', 1)
+  const searchParams = resolveSearchParams()
+  emit('refresh', searchParams)
+  handleSearch(searchParams)
+}
+
+const handleDensitySelect = (size: string | number) => {
+  if (size === 'small' || size === 'medium' || size === 'large') {
+    tableConfig.value.size = size
+  }
 }
 
 // 全屏切换
 const toggleFullscreen = () => {
-  isFullscreen.value = !isFullscreen.value
+  const target = fullscreenContainerRef.value
+  if (!target) {
+    return
+  }
 
-  if (isFullscreen.value) {
-    document.documentElement.requestFullscreen?.()
-  } else {
+  if (!isFullscreen.value) {
+    target.requestFullscreen?.()
+  } else if (document.fullscreenElement) {
     document.exitFullscreen?.()
   }
 }
 
 // 监听全屏状态变化
 const handleFullscreenChange = () => {
-  isFullscreen.value = !!document.fullscreenElement
+  const target = fullscreenContainerRef.value
+  isFullscreen.value = target ? document.fullscreenElement === target : false
 }
 
 // 自动调整表格配置
-const autoAdjustTable = () => {
-  nextTick(() => {
-    // 根据数据量自动启用虚拟滚动
-    if (props.data.length > 1000) {
-      virtualScroll.value = true
-    }
+let resizeRaf: number | null = null
 
-    // 根据容器高度自动调整
-    const container = tableRef.value?.$el
-    if (container) {
-      const rect = container.getBoundingClientRect()
-      if (rect.height > window.innerHeight * 0.8) {
-        flexHeight.value = true
-      }
+const runAutoAdjust = () => {
+  const needsVirtual = props.data.length > 1000
+  if (virtualScroll.value !== needsVirtual) {
+    virtualScroll.value = needsVirtual
+  }
+
+  if (!hasWindow) {
+    if (flexHeight.value) {
+      flexHeight.value = false
     }
+    return
+  }
+
+  const container = tableRef.value?.$el as HTMLElement | undefined
+  if (!container) {
+    if (flexHeight.value) {
+      flexHeight.value = false
+    }
+    return
+  }
+  const rect = container.getBoundingClientRect()
+  const nextFlexHeight = rect.height > window.innerHeight * 0.8
+  if (flexHeight.value !== nextFlexHeight) {
+    flexHeight.value = nextFlexHeight
+  }
+}
+
+const autoAdjustTable = () => {
+  if (!hasWindow) {
+    if (flexHeight.value) {
+      flexHeight.value = false
+    }
+    return
+  }
+  if (resizeRaf !== null) {
+    cancelAnimationFrame(resizeRaf)
+  }
+  resizeRaf = requestAnimationFrame(() => {
+    runAutoAdjust()
+    resizeRaf = null
   })
+}
+
+const handleWindowResize = () => {
+  if (!hasWindow) {
+    return
+  }
+  autoAdjustTable()
 }
 
 // 监听数据变化
@@ -470,6 +636,10 @@ onMounted(() => {
   // 监听全屏事件
   document.addEventListener('fullscreenchange', handleFullscreenChange)
 
+  if (hasWindow) {
+    window.addEventListener('resize', handleWindowResize)
+  }
+
   // 加载保存的配置
   configPanelRef.value?.loadSavedConfig?.()
 
@@ -481,7 +651,13 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
+  if (resizeRaf !== null) {
+    cancelAnimationFrame(resizeRaf)
+  }
   document.removeEventListener('fullscreenchange', handleFullscreenChange)
+  if (hasWindow) {
+    window.removeEventListener('resize', handleWindowResize)
+  }
 })
 
 // 暴露方法给父组件
@@ -520,6 +696,10 @@ defineExpose({
   flex-direction: column;
   gap: 16px;
 
+  .table-card-shell {
+    width: 100%;
+  }
+
   .search-card {
     :deep(.n-card__content) {
       padding: 0;
@@ -556,13 +736,35 @@ defineExpose({
       .header-right {
         flex-shrink: 0;
         margin: 0 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
       }
     }
 
     .table-toolbar {
+      width: 100%;
       display: flex;
-      align-items: center;
-      gap: 8px;
+      justify-content: flex-end;
+
+      &.sticky {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        background: var(--card-color);
+        padding-top: 8px;
+        margin-top: -8px;
+      }
+
+      .toolbar-system {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        .density-selector {
+          min-width: 120px;
+        }
+      }
     }
 
     .table-content {
@@ -616,12 +818,14 @@ defineExpose({
 }
 
 // 全屏时的样式调整
-:global(.table-main-wrapper.fullscreen) {
+.table-main-wrapper.fullscreen {
   .table-main-container {
-    .n-card__content {
-      height: calc(100vh - 120px);
-      overflow: auto;
-    }
+    box-shadow: none;
+  }
+
+  .table-content {
+    height: calc(100vh - 160px);
+    overflow: auto;
   }
 }
 </style>

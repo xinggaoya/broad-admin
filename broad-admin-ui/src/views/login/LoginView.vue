@@ -1,36 +1,46 @@
 <template>
-  <div class="login-container" :class="{ dark: isDarkMode }">
-    <!-- 背景动画效果 -->
-    <div class="login-background">
-      <div class="circles">
-        <div v-for="i in 10" :key="i" class="circle"></div>
+  <section class="login-shell" :class="{ dark: isDarkMode }">
+    <div class="login-hero">
+      <div class="hero-content">
+        <p class="hero-eyebrow">Broad Admin · Digital Workspace</p>
+        <h1>更轻盈的管理体验，从这里开始。</h1>
+        <p class="hero-desc">
+          使用统一设计语言与实时权限体系，快速构建企业业务中台。多端联动、实时审计，助力团队高效协作。
+        </p>
+        <div class="hero-metrics">
+          <div class="metric">
+            <strong>120+</strong>
+            <span>预置组件</span>
+          </div>
+          <div class="metric">
+            <strong>2.2.x</strong>
+            <span>持续迭代</span>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- 登录卡片 -->
-    <n-card class="login-card" :bordered="false">
-      <!-- 主题切换 -->
-      <div class="theme-switch">
-        <n-switch @update-value="darkModeSwitchEvent">
-          <template #checked-icon>
-            <n-icon><SunnyOutline /></n-icon>
-          </template>
-          <template #unchecked-icon>
-            <n-icon><MoonOutline /></n-icon>
-          </template>
-        </n-switch>
-      </div>
-
-      <!-- 登录表单区域 -->
-      <div class="login-content">
-        <!-- Logo和标题 -->
-        <div class="login-header">
-          <img src="@/assets/logo.png" alt="logo" class="logo" />
-          <h1 class="title">{{ title }}</h1>
-          <p class="subtitle">欢迎回来! 请登录您的账号</p>
+    <div class="login-panel">
+      <n-card class="login-card" :bordered="false">
+        <div class="theme-switch">
+          <n-switch @update-value="darkModeSwitchEvent">
+            <template #checked-icon>
+              <n-icon><SunnyOutline /></n-icon>
+            </template>
+            <template #unchecked-icon>
+              <n-icon><MoonOutline /></n-icon>
+            </template>
+          </n-switch>
         </div>
 
-        <!-- 登录表单 -->
+        <div class="login-header">
+          <img src="@/assets/logo.png" alt="logo" class="logo" />
+          <div>
+            <h2>{{ title }}</h2>
+            <p>欢迎登录，继续高效的数字办公之旅</p>
+          </div>
+        </div>
+
         <n-form
           ref="formRef"
           :model="loginForm"
@@ -38,7 +48,6 @@
           label-placement="left"
           class="login-form"
         >
-          <!-- 用户名输入框 -->
           <n-form-item path="userName">
             <n-input v-model:value="loginForm.userName" placeholder="请输入用户名" :maxlength="20">
               <template #prefix>
@@ -47,7 +56,6 @@
             </n-input>
           </n-form-item>
 
-          <!-- 密码输入框 -->
           <n-form-item path="password">
             <n-input
               v-model:value="loginForm.password"
@@ -62,7 +70,6 @@
             </n-input>
           </n-form-item>
 
-          <!-- 验证码 -->
           <n-form-item path="codeValue">
             <n-input-group>
               <n-input
@@ -83,37 +90,37 @@
             </n-input-group>
           </n-form-item>
 
-          <!-- 记住密码选项 -->
-          <div class="login-options">
-            <n-checkbox v-model:checked="rememberMe">记住我</n-checkbox>
-            <n-button text type="primary" @click="handleForgotPassword"> 忘记密码? </n-button>
+          <div class="form-extra">
+            <n-checkbox v-model:checked="rememberMe">记住当前设备</n-checkbox>
+            <n-button text type="primary" @click="handleForgotPassword">忘记密码？</n-button>
           </div>
 
-          <!-- 登录按钮 -->
           <n-button
             type="primary"
             block
+            round
             :loading="loading"
             :disabled="loading"
             @click="handleLogin"
           >
-            {{ loading ? '登录中...' : '登录' }}
+            {{ loading ? '登录中...' : '进入系统' }}
           </n-button>
 
-          <!-- 注册链接 -->
-          <div class="register-link">
-            <span>还没有账号?</span>
-            <n-button text type="primary" @click="handleRegister"> 立即注册 </n-button>
+          <div class="divider">
+            <span>其它方式</span>
+          </div>
+          <div class="quick-links">
+            <n-button tertiary block round @click="handleRegister">注册账号</n-button>
+            <n-button tertiary block round @click="handleForgotPassword">获取演示账号</n-button>
           </div>
         </n-form>
-      </div>
 
-      <!-- 页脚版权信息 -->
-      <div class="login-footer">
-        <p>Copyright © 2022-{{ new Date().getFullYear() }} XingGao All Rights Reserved.</p>
-      </div>
-    </n-card>
-  </div>
+        <footer class="login-footer">
+          <p>Copyright © 2022-{{ new Date().getFullYear() }} XingGao.</p>
+        </footer>
+      </n-card>
+    </div>
+  </section>
 </template>
 
 <script lang="ts" setup>
@@ -205,7 +212,8 @@ const handleLogin = () => {
       await userStore.saveUser(data.userInfo as UserState)
 
       // 保存路由信息到 permissionStore
-      await permissionStore.saveRoutes(data.routes)
+      permissionStore.saveRoutes(data.routes || [])
+      await permissionStore.initPermissionRoute()
 
       // 登录成功后跳转
       await router.replace({
@@ -241,243 +249,161 @@ getCaptcha()
 </script>
 
 <style lang="scss" scoped>
-.login-container {
-  width: 100vw;
-  height: 100vh;
+.login-shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  background: linear-gradient(135deg, #eef2ff, #ffffff);
+
+  &.dark {
+    background: linear-gradient(135deg, #0f172a, #1e1f2c);
+  }
+}
+
+.login-hero {
+  padding: 64px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f0f2f5;
-  position: relative;
-  overflow: hidden;
-  transition: all 0.3s ease;
 
-  &.dark {
-    background: #101014;
-  }
-}
+  .hero-content {
+    max-width: 420px;
 
-.login-background {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  z-index: 1;
-
-  .circles {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-  }
-
-  .circle {
-    position: absolute;
-    display: block;
-    list-style: none;
-    width: 20px;
-    height: 20px;
-    background: rgba(0, 0, 0, 0.05);
-    animation: animate 25s linear infinite;
-    bottom: -150px;
-    border-radius: 50%;
-
-    .dark & {
-      background: rgba(255, 255, 255, 0.05);
+    .hero-eyebrow {
+      font-size: 12px;
+      color: #94a3b8;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
     }
 
-    // 使用固定值替代 random() 函数，避免 Sass 弃用警告
-    &:nth-child(1) {
-      left: 10%;
-      width: 40px;
-      height: 40px;
-      animation-delay: 0s;
-      animation-duration: 15s;
+    h1 {
+      font-size: 36px;
+      margin-bottom: 12px;
+      color: #0f172a;
     }
-    &:nth-child(2) {
-      left: 20%;
-      width: 60px;
-      height: 60px;
-      animation-delay: 1s;
-      animation-duration: 18s;
+
+    .hero-desc {
+      color: #475569;
+      line-height: 1.6;
+      margin-bottom: 32px;
     }
-    &:nth-child(3) {
-      left: 35%;
-      width: 30px;
-      height: 30px;
-      animation-delay: 2s;
-      animation-duration: 20s;
-    }
-    &:nth-child(4) {
-      left: 50%;
-      width: 80px;
-      height: 80px;
-      animation-delay: 3s;
-      animation-duration: 22s;
-    }
-    &:nth-child(5) {
-      left: 65%;
-      width: 45px;
-      height: 45px;
-      animation-delay: 4s;
-      animation-duration: 16s;
-    }
-    &:nth-child(6) {
-      left: 75%;
-      width: 35px;
-      height: 35px;
-      animation-delay: 1.5s;
-      animation-duration: 19s;
-    }
-    &:nth-child(7) {
-      left: 85%;
-      width: 70px;
-      height: 70px;
-      animation-delay: 2.5s;
-      animation-duration: 24s;
-    }
-    &:nth-child(8) {
-      left: 5%;
-      width: 55px;
-      height: 55px;
-      animation-delay: 3.5s;
-      animation-duration: 17s;
-    }
-    &:nth-child(9) {
-      left: 90%;
-      width: 25px;
-      height: 25px;
-      animation-delay: 0.5s;
-      animation-duration: 21s;
-    }
-    &:nth-child(10) {
-      left: 25%;
-      width: 65px;
-      height: 65px;
-      animation-delay: 4.5s;
-      animation-duration: 23s;
+
+    .hero-metrics {
+      display: flex;
+      gap: 32px;
+
+      .metric {
+        strong {
+          display: block;
+          font-size: 32px;
+        }
+
+        span {
+          color: #64748b;
+        }
+      }
     }
   }
 }
 
-@keyframes animate {
-  0% {
-    transform: translateY(0) rotate(0deg);
-    opacity: 1;
-    border-radius: 0;
-  }
-  100% {
-    transform: translateY(-1000px) rotate(720deg);
-    opacity: 0;
-    border-radius: 50%;
-  }
+.login-panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
 }
 
 .login-card {
-  position: relative;
-  z-index: 2;
   width: 420px;
-  backdrop-filter: blur(10px);
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-
-  .dark & {
-    background: rgba(24, 24, 28, 0.95);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-  }
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.08);
+  position: relative;
 }
 
 .theme-switch {
   position: absolute;
-  top: 20px;
-  right: 20px;
-}
-
-.login-content {
-  padding: 20px 40px;
+  top: 16px;
+  right: 16px;
 }
 
 .login-header {
-  text-align: center;
-  margin-bottom: 30px;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 24px;
 
   .logo {
-    width: 64px;
-    height: 64px;
-    margin-bottom: 16px;
+    width: 48px;
+    height: 48px;
   }
 
-  .title {
-    font-size: 24px;
-    font-weight: 600;
-    color: #000000;
-    margin-bottom: 8px;
+  h2 {
+    margin: 0;
   }
 
-  .subtitle {
-    font-size: 14px;
-    color: #666666;
-  }
-
-  .dark & {
-    .title {
-      color: #ffffff;
-    }
-    .subtitle {
-      color: #999999;
-    }
+  p {
+    margin: 4px 0 0;
+    color: var(--text-color-3);
   }
 }
 
 .login-form {
-  :deep(.n-input) {
-    .n-input__prefix {
-      margin-right: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  .captcha-img {
+    width: 120px;
+    height: 40px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+
+  .form-extra {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+  }
+
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--text-color-3);
+    font-size: 12px;
+
+    &::before,
+    &::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--divider-color);
     }
   }
-}
 
-.login-options {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 24px 0;
-}
-
-.captcha-img {
-  width: 100px;
-  height: 32px;
-  margin-left: 12px;
-  cursor: pointer;
-  border-radius: 4px;
-}
-
-.register-link {
-  margin-top: 16px;
-  text-align: center;
-  font-size: 14px;
-  color: #666666;
-
-  .dark & {
-    color: #999999;
-  }
-
-  span {
-    margin-right: 4px;
+  .quick-links {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
   }
 }
 
 .login-footer {
   text-align: center;
-  padding: 16px;
-  color: #666666;
+  margin-top: 16px;
   font-size: 12px;
+  color: var(--text-color-3);
+}
 
-  .dark & {
-    color: #999999;
+@media (max-width: 900px) {
+  .login-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .login-hero {
+    display: none;
   }
 }
 </style>

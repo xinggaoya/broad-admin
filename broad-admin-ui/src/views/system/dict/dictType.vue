@@ -1,51 +1,58 @@
 <template>
-  <div class="dict-type">
-    <TableSearch @search="handleSearch" @reset="handleReset">
-      <n-form ref="searchFormRef" :model="searchForm" inline>
-        <n-grid :cols="24" :x-gap="24">
-          <n-form-item-gi :span="6" label="字典名称">
-            <n-input v-model:value="searchForm.dictName" placeholder="请输入字典名称" clearable />
-          </n-form-item-gi>
-          <n-form-item-gi :span="6" label="字典类型">
-            <n-input v-model:value="searchForm.dictType" placeholder="请输入字典类型" clearable />
-          </n-form-item-gi>
-          <n-form-item-gi :span="6" label="状态">
-            <n-select
-              v-model:value="searchForm.status"
-              :options="sys_normal_disable"
-              placeholder="请选择状态"
-              clearable
-            />
-          </n-form-item-gi>
-        </n-grid>
-      </n-form>
-    </TableSearch>
+  <section class="dict-type-page">
+    <header class="page-header">
+      <div>
+        <p class="header-subtitle">系统管理</p>
+        <h2>字典管理</h2>
+        <p class="header-desc">维护全局通用的字典配置，支撑前后端统一的枚举展示。</p>
+      </div>
+      <div class="header-actions">
+        <n-button tertiary round size="small" :loading="loading" @click="handleRefresh">
+          <template #icon>
+            <n-icon><RefreshOutline /></n-icon>
+          </template>
+          刷新
+        </n-button>
+        <n-button type="primary" round @click="handleAdd" v-auth="['sys:dict:add']">
+          <template #icon>
+            <n-icon><AddOutline /></n-icon>
+          </template>
+          新增字典
+        </n-button>
+      </div>
+    </header>
 
-    <n-card class="table-panel" :bordered="false">
+    <TableMain
+      :columns="columns"
+      :data="tableData"
+      :loading="loading"
+      :pagination="pagination"
+      row-key="dictId"
+      sticky-toolbar
+      :search-config="searchConfig"
+      :search-form="searchFormConfig"
+      v-model:search-model="searchModel"
+      @search="handleSearch"
+      @reset="handleReset"
+      @refresh="handleRefresh"
+    >
       <template #header>
+        <div class="table-header">
+          <h3>字典类型列表</h3>
+          <p>支持快速检索字典名称、类型与启用状态。</p>
+        </div>
+      </template>
+      <template #header-extra>
         <n-space>
-          <n-button type="primary" @click="handleAdd" v-auth="['sys:dict:add']">
+          <n-button type="primary" round size="small" @click="handleAdd" v-auth="['sys:dict:add']">
             <template #icon>
               <n-icon><AddOutline /></n-icon>
             </template>
-            新增字典
-          </n-button>
-          <n-button tertiary @click="handleRefresh" :loading="loading">
-            <template #icon>
-              <n-icon><RefreshOutline /></n-icon>
-            </template>
-            刷新
+            新增
           </n-button>
         </n-space>
       </template>
-      <TableMain
-        :columns="columns"
-        :data="tableData"
-        :loading="loading"
-        :pagination="pagination"
-        row-key="dictId"
-      />
-    </n-card>
+    </TableMain>
 
     <n-modal
       v-model:show="showModal"
@@ -63,6 +70,7 @@
           label-width="100"
           require-mark-placement="right-hanging"
         >
+          <n-divider title-placement="left">基础信息</n-divider>
           <n-grid :cols="24" :x-gap="24">
             <n-form-item-gi :span="24" label="字典名称" path="dictName">
               <n-input v-model:value="formData.dictName" placeholder="请输入字典名称" />
@@ -74,7 +82,11 @@
                 placeholder="请输入字典类型"
               />
             </n-form-item-gi>
-            <n-form-item-gi :span="24" label="字典备注" path="remark">
+          </n-grid>
+
+          <n-divider title-placement="left">扩展描述</n-divider>
+          <n-grid :cols="24" :x-gap="24">
+            <n-form-item-gi :span="24" label="备注" path="remark">
               <n-input
                 v-model:value="formData.remark"
                 type="textarea"
@@ -100,28 +112,25 @@
       <template #footer>
         <n-space justify="end">
           <n-button @click="showModal = false">取消</n-button>
-          <n-button
-            type="primary"
-            :loading="submitting"
-            :disabled="submitting"
-            @click="handleSubmit"
-          >
+          <n-button type="primary" :loading="submitting" :disabled="submitting" @click="handleSubmit">
             确定
           </n-button>
         </n-space>
       </template>
     </n-modal>
-  </div>
+  </section>
 </template>
 
 <script lang="ts" setup>
-import { h, ref, reactive, onMounted } from 'vue'
+import { h, ref, reactive, onMounted, computed } from 'vue'
 import { useMessage, useDialog, NButton, NPopconfirm, NSpace, NTag } from 'naive-ui'
 import { AddOutline, RefreshOutline } from '@vicons/ionicons5'
 import type { FormInst } from 'naive-ui'
 import { usePagination } from '@/hooks/useTable'
 import { useDict } from '@/utils/useDict'
 import { getDictTypePage, addDictType, updateDictType, detectDictType } from '@/api/system/dictType'
+import TableMain from '@/components/table/main/TableMain.vue'
+import type { SearchFormConfig } from '@/types/table'
 
 // 组件通信
 const emit = defineEmits(['select-dict'])
@@ -130,7 +139,6 @@ const emit = defineEmits(['select-dict'])
 const message = useMessage()
 const dialog = useDialog()
 const formRef = ref<FormInst | null>(null)
-const searchFormRef = ref<FormInst | null>(null)
 
 // 字典数据
 const { sys_normal_disable } = useDict('sys_normal_disable')
@@ -143,12 +151,6 @@ const modalTitle = ref('')
 const tableData = ref<any[]>([])
 
 // 表单数据
-const searchForm = ref({
-  dictName: '',
-  dictType: '',
-  status: null
-})
-
 const formData = ref({
   dictId: null,
   dictName: '',
@@ -156,6 +158,45 @@ const formData = ref({
   remark: '',
   status: '0'
 })
+
+const searchModel = ref({
+  dictName: '',
+  dictType: '',
+  status: null as string | null
+})
+
+const searchConfig = {
+  title: '筛选条件',
+  defaultCollapse: true
+}
+
+const searchFormConfig = computed<SearchFormConfig>(() => ({
+  cols: 24,
+  xGap: 16,
+  items: [
+    {
+      key: 'dictName',
+      label: '字典名称',
+      type: 'input',
+      placeholder: '请输入字典名称',
+      span: 6
+    },
+    {
+      key: 'dictType',
+      label: '字典类型',
+      type: 'input',
+      placeholder: '请输入字典类型',
+      span: 6
+    },
+    {
+      key: 'status',
+      label: '状态',
+      type: 'select',
+      options: sys_normal_disable.value,
+      span: 6
+    }
+  ]
+}))
 
 // 表单校验规则
 const rules = {
@@ -261,25 +302,11 @@ const pagination = usePagination(() => loadTableData())
 const loadTableData = async () => {
   loading.value = true
   try {
-    const params = {
-      page: pagination.page,
-      pageSize: pagination.pageSize,
-      ...Object.entries(searchForm.value).reduce((acc, [key, value]) => {
-        if (
-          value !== null &&
-          value !== undefined &&
-          (typeof value === 'string' ? value.trim() !== '' : value !== '')
-        ) {
-          acc[key] = typeof value === 'string' ? value.trim() : value
-        }
-        return acc
-      }, {})
-    }
-
+    const params = pagination.getPageInfo(searchModel.value)
     const res = await getDictTypePage(params)
     if (res.code === 200) {
       tableData.value = res.rows || []
-      pagination.itemCount = res.total || 0
+      pagination.setTotalSize(res.total || 0)
     } else {
       message.error(res.message || '获取字典类型列表失败')
     }
@@ -292,19 +319,20 @@ const loadTableData = async () => {
 }
 
 // 搜索和重置
-const handleSearch = () => {
+const handleSearch = (params: Record<string, any>) => {
+  searchModel.value = { ...searchModel.value, ...params }
   pagination.page = 1
   loadTableData()
 }
 
 const handleReset = () => {
-  searchFormRef.value?.restoreValidation()
-  searchForm.value = {
+  searchModel.value = {
     dictName: '',
     dictType: '',
     status: null
   }
-  handleSearch()
+  pagination.page = 1
+  loadTableData()
 }
 
 // 刷新
@@ -394,38 +422,48 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-.dict-type {
-  :deep(.n-data-table-wrapper) {
-    border-radius: 8px;
-  }
+.dict-type-page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 
-  :deep(.n-button) {
-    padding: 0 16px;
-  }
-
-  :deep(.n-tag) {
-    padding: 0 12px;
-  }
-
-  :deep(.n-card) {
-    border-radius: 8px;
-    margin-bottom: 16px;
-  }
-
-  :deep(.n-space) {
-    margin-bottom: 16px;
-  }
-
-  .table-actions {
+  .page-header {
     display: flex;
-    align-items: center;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 24px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #f5f7ff, #ffffff);
+    border: 1px solid rgba(82, 106, 255, 0.12);
 
-    .n-button {
-      margin-right: 8px;
+    .header-subtitle {
+      font-size: 13px;
+      color: var(--text-color-3);
+      margin-bottom: 4px;
+    }
 
-      &:last-child {
-        margin-right: 0;
-      }
+    .header-desc {
+      margin-top: 4px;
+      color: var(--text-color-3);
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 12px;
+    }
+  }
+
+  .table-header {
+    h3 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    p {
+      margin: 4px 0 0;
+      color: var(--text-color-3);
+      font-size: 13px;
     }
   }
 }

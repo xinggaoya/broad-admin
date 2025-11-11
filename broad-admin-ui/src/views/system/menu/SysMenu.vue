@@ -1,181 +1,202 @@
 <template>
-  <div class="menu-page">
-    <!-- 顶部操作区 -->
-    <div class="menu-page-header">
-      <n-card class="action-card">
-        <n-grid :cols="24" :x-gap="16">
-          <n-grid-item :span="16">
-            <n-space>
-              <n-button type="primary" @click="handleAdd">
-                <template #icon>
-                  <n-icon><AddOutline /></n-icon>
-                </template>
-                新增菜单
-              </n-button>
-              <n-button @click="loadTableData" :loading="tableData.loading">
-                <template #icon>
-                  <n-icon><RefreshOutline /></n-icon>
-                </template>
-                刷新
-              </n-button>
-            </n-space>
-          </n-grid-item>
-          <n-grid-item :span="8">
-            <div class="search-box">
-              <n-input
-                v-model:value="searchText"
-                placeholder="搜索菜单名称"
-                clearable
-                @keydown.enter="onSearch"
-              >
-                <template #prefix>
-                  <n-icon><SearchOutline /></n-icon>
-                </template>
-                <template #suffix>
-                  <n-button tertiary circle type="primary" @click="onSearch">
-                    <template #icon>
-                      <n-icon><Search /></n-icon>
-                    </template>
-                  </n-button>
-                </template>
-              </n-input>
-            </div>
-          </n-grid-item>
-        </n-grid>
-      </n-card>
+  <section class="sys-menu-page">
+    <header class="page-header">
+      <div>
+        <p class="header-subtitle">系统管理</p>
+        <h2>菜单管理</h2>
+        <p class="header-desc">维护系统导航与权限入口，快速定位任意菜单。</p>
+      </div>
+      <div class="header-actions">
+        <n-input
+          v-model:value="searchText"
+          placeholder="搜索菜单名称"
+          clearable
+          @keydown.enter="onSearch"
+        >
+          <template #prefix>
+            <n-icon><SearchOutline /></n-icon>
+          </template>
+          <template #suffix>
+            <n-button text type="primary" size="small" @click="onSearch">搜索</n-button>
+          </template>
+        </n-input>
+        <n-button tertiary round size="small" :loading="tableData.loading" @click="loadTableData">
+          <template #icon>
+            <n-icon><RefreshOutline /></n-icon>
+          </template>
+          刷新
+        </n-button>
+        <n-button type="primary" round @click="handleAdd">
+          <template #icon>
+            <n-icon><AddOutline /></n-icon>
+          </template>
+          新增菜单
+        </n-button>
+      </div>
+    </header>
+
+    <div class="summary-cards">
+      <div class="summary-card">
+        <span>目录</span>
+        <strong>{{ menuSummary.dir }}</strong>
+      </div>
+      <div class="summary-card">
+        <span>菜单</span>
+        <strong>{{ menuSummary.menu }}</strong>
+      </div>
+      <div class="summary-card">
+        <span>按钮</span>
+        <strong>{{ menuSummary.button }}</strong>
+      </div>
     </div>
 
-    <!-- 主体内容区 -->
-    <div class="menu-page-content">
-      <n-card class="content-card">
-        <n-grid :cols="24" :x-gap="16">
-          <!-- 左侧菜单树 -->
-          <n-grid-item :span="7">
-            <n-card title="菜单层级" size="small" class="tree-card">
-              <n-spin :show="tableData.loading">
-                <n-tree
-                  block-line
-                  :data="menuTreeData"
-                  :selected-keys="selectedKeys"
-                  :expanded-keys="expandedKeys"
-                  selectable
-                  @update:selected-keys="handleSelectMenu"
-                  @update:expanded-keys="handleExpandMenu"
-                >
-                  <template #default="{ option }">
-                    <div class="tree-node-label">
-                      <div class="tree-node-icon">
-                        <n-icon v-if="option.menuType !== 2">
-                          <SvgIcon
-                            :prefix="option.iconPrefix || 'iconfont'"
-                            :name="option.icon || 'menu'"
-                          />
-                        </n-icon>
-                        <n-icon v-else>
-                          <KeyOutline />
-                        </n-icon>
-                      </div>
-                      <span>{{ option.label }}</span>
-                      <n-tag
-                        size="small"
-                        class="type-tag"
-                        :type="getMenuTypeTagType(option.menuType)"
-                      >
-                        {{ getMenuTypeLabel(option.menuType) }}
-                      </n-tag>
-                    </div>
-                  </template>
-                </n-tree>
-                <n-empty v-if="menuTreeData.length === 0" description="暂无菜单数据" />
-              </n-spin>
-            </n-card>
-          </n-grid-item>
-
-          <!-- 右侧详情与编辑 -->
-          <n-grid-item :span="17">
-            <div v-if="selectedMenu">
-              <n-card title="菜单详情" size="small" class="detail-card">
-                <template #header-extra>
-                  <n-space>
-                    <n-button secondary strong @click="handleEdit(selectedMenu)">
-                      <template #icon>
-                        <n-icon><PencilOutline /></n-icon>
-                      </template>
-                      编辑
-                    </n-button>
-                    <n-popconfirm @positive-click="handleDelete(selectedMenu)">
-                      <template #trigger>
-                        <n-button secondary strong type="error">
-                          <template #icon>
-                            <n-icon><TrashOutline /></n-icon>
-                          </template>
-                          删除
-                        </n-button>
-                      </template>
-                      确定要删除此菜单吗？
-                    </n-popconfirm>
-                  </n-space>
-                </template>
-
-                <n-descriptions bordered :column="2" class="info-descriptions">
-                  <n-descriptions-item label="菜单名称">
-                    <n-ellipsis>{{ selectedMenu.menuName }}</n-ellipsis>
-                  </n-descriptions-item>
-                  <n-descriptions-item label="菜单类型">
-                    <n-tag :type="getMenuTypeTagType(selectedMenu.menuType)">
-                      {{ getMenuTypeLabel(selectedMenu.menuType) }}
-                    </n-tag>
-                  </n-descriptions-item>
-                  <n-descriptions-item label="菜单图标" v-if="selectedMenu.menuType !== 2">
-                    <n-space align="center">
-                      <SvgIcon
-                        v-if="selectedMenu.icon"
-                        :prefix="selectedMenu.iconPrefix || 'iconfont'"
-                        :name="selectedMenu.icon"
-                      />
-                      <span v-if="selectedMenu.icon">{{ selectedMenu.icon }}</span>
-                      <span v-else>无</span>
-                    </n-space>
-                  </n-descriptions-item>
-                  <n-descriptions-item label="显示排序">
-                    {{ selectedMenu.orderNum }}
-                  </n-descriptions-item>
-                  <n-descriptions-item label="权限标识" :span="selectedMenu.menuType !== 2 ? 1 : 2">
-                    <n-ellipsis>{{ selectedMenu.perme || '无' }}</n-ellipsis>
-                  </n-descriptions-item>
-                  <n-descriptions-item v-if="selectedMenu.menuType !== 2" label="路由地址">
-                    <n-ellipsis>{{ selectedMenu.menuUrl || '无' }}</n-ellipsis>
-                  </n-descriptions-item>
-                  <n-descriptions-item v-if="selectedMenu.menuType === 1" label="组件路径">
-                    <n-ellipsis>{{ selectedMenu.localFilePath || '无' }}</n-ellipsis>
-                  </n-descriptions-item>
-                  <n-descriptions-item
-                    v-if="selectedMenu.menuType !== 2"
-                    label="状态设置"
-                    :span="2"
-                  >
-                    <n-space>
-                      <n-tag :type="selectedMenu.hidden ? 'warning' : 'success'">
-                        {{ selectedMenu.hidden ? '隐藏' : '显示' }}
-                      </n-tag>
-                      <n-tag :type="selectedMenu.cacheable ? 'info' : 'default'">
-                        {{ selectedMenu.cacheable ? '缓存' : '不缓存' }}
-                      </n-tag>
-                      <n-tag :type="selectedMenu.affix ? 'error' : 'default'">
-                        {{ selectedMenu.affix ? '固定' : '不固定' }}
-                      </n-tag>
-                    </n-space>
-                  </n-descriptions-item>
-                  <n-descriptions-item label="备注" :span="2">
-                    {{ selectedMenu.remark || '无' }}
-                  </n-descriptions-item>
-                </n-descriptions>
-              </n-card>
+    <div class="menu-layout">
+      <aside class="menu-tree-panel">
+        <n-card size="small" :bordered="false">
+          <template #header>
+            <div class="card-header">
+              <div>
+                <p class="header-label">结构视图</p>
+                <h3>菜单树</h3>
+              </div>
+              <n-button text size="small" @click="toggleTreeExpand">
+                {{ expandAllTree ? '收起全部' : '展开全部' }}
+              </n-button>
             </div>
-            <n-empty v-else description="请选择左侧菜单项查看详情" />
-          </n-grid-item>
-        </n-grid>
-      </n-card>
+          </template>
+          <div class="tree-actions">
+            <n-input v-model:value="treePattern" size="small" placeholder="过滤节点" clearable>
+              <template #prefix>
+                <n-icon><SearchOutline /></n-icon>
+              </template>
+            </n-input>
+          </div>
+          <n-spin :show="tableData.loading">
+            <n-tree
+              block-line
+              :pattern="treePattern"
+              :data="menuTreeData"
+              :selected-keys="selectedKeys"
+              :expanded-keys="expandedKeys"
+              selectable
+              @update:selected-keys="handleSelectMenu"
+              @update:expanded-keys="handleExpandMenu"
+            >
+              <template #default="{ option }">
+                <div class="tree-node-label">
+                  <div class="tree-node-icon">
+                    <n-icon v-if="option.menuType !== 2">
+                      <SvgIcon
+                        :prefix="option.iconPrefix || 'iconfont'"
+                        :name="option.icon || 'menu'"
+                      />
+                    </n-icon>
+                    <n-icon v-else>
+                      <KeyOutline />
+                    </n-icon>
+                  </div>
+                  <span>{{ option.label }}</span>
+                  <n-tag
+                    size="small"
+                    class="type-tag"
+                    :type="getMenuTypeTagType(option.menuType)"
+                  >
+                    {{ getMenuTypeLabel(option.menuType) }}
+                  </n-tag>
+                </div>
+              </template>
+            </n-tree>
+            <n-empty v-if="menuTreeData.length === 0" description="暂无菜单数据" />
+          </n-spin>
+        </n-card>
+      </aside>
+
+      <main class="menu-detail-panel">
+        <n-card class="detail-card" :bordered="false">
+          <template #header>
+            <div class="detail-header">
+              <div>
+                <p class="header-label">菜单详情</p>
+                <h3>{{ selectedMenu?.menuName || '请选择左侧菜单节点' }}</h3>
+                <p v-if="selectedMenu" class="detail-path">
+                  {{ selectedMenu.menuUrl || '未配置路径' }}
+                </p>
+              </div>
+              <n-space v-if="selectedMenu">
+                <n-button secondary strong @click="handleEdit(selectedMenu)">
+                  <template #icon>
+                    <n-icon><PencilOutline /></n-icon>
+                  </template>
+                  编辑
+                </n-button>
+                <n-popconfirm @positive-click="handleDelete(selectedMenu)">
+                  <template #trigger>
+                    <n-button secondary strong type="error">
+                      <template #icon>
+                        <n-icon><TrashOutline /></n-icon>
+                      </template>
+                      删除
+                    </n-button>
+                  </template>
+                  确定要删除此菜单吗？
+                </n-popconfirm>
+              </n-space>
+            </div>
+          </template>
+          <div v-if="selectedMenu">
+            <n-descriptions bordered :column="2" class="info-descriptions">
+              <n-descriptions-item label="菜单名称">
+                <n-ellipsis>{{ selectedMenu.menuName }}</n-ellipsis>
+              </n-descriptions-item>
+              <n-descriptions-item label="菜单类型">
+                <n-tag :type="getMenuTypeTagType(selectedMenu.menuType)">
+                  {{ getMenuTypeLabel(selectedMenu.menuType) }}
+                </n-tag>
+              </n-descriptions-item>
+              <n-descriptions-item label="菜单图标" v-if="selectedMenu.menuType !== 2">
+                <n-space align="center">
+                  <SvgIcon
+                    v-if="selectedMenu.icon"
+                    :prefix="selectedMenu.iconPrefix || 'iconfont'"
+                    :name="selectedMenu.icon"
+                  />
+                  <span v-if="selectedMenu.icon">{{ selectedMenu.icon }}</span>
+                  <span v-else>无</span>
+                </n-space>
+              </n-descriptions-item>
+              <n-descriptions-item label="显示排序">
+                {{ selectedMenu.orderNum }}
+              </n-descriptions-item>
+              <n-descriptions-item label="权限标识" :span="selectedMenu.menuType !== 2 ? 1 : 2">
+                <n-ellipsis>{{ selectedMenu.perme || '无' }}</n-ellipsis>
+              </n-descriptions-item>
+              <n-descriptions-item v-if="selectedMenu.menuType !== 2" label="路由地址">
+                <n-ellipsis>{{ selectedMenu.menuUrl || '无' }}</n-ellipsis>
+              </n-descriptions-item>
+              <n-descriptions-item v-if="selectedMenu.menuType === 1" label="组件路径">
+                <n-ellipsis>{{ selectedMenu.localFilePath || '无' }}</n-ellipsis>
+              </n-descriptions-item>
+              <n-descriptions-item v-if="selectedMenu.menuType !== 2" label="状态设置" :span="2">
+                <n-space>
+                  <n-tag :type="selectedMenu.hidden ? 'warning' : 'success'">
+                    {{ selectedMenu.hidden ? '隐藏' : '显示' }}
+                  </n-tag>
+                  <n-tag :type="selectedMenu.cacheable ? 'info' : 'default'">
+                    {{ selectedMenu.cacheable ? '缓存' : '不缓存' }}
+                  </n-tag>
+                  <n-tag :type="selectedMenu.affix ? 'error' : 'default'">
+                    {{ selectedMenu.affix ? '固定' : '不固定' }}
+                  </n-tag>
+                </n-space>
+              </n-descriptions-item>
+              <n-descriptions-item label="备注" :span="2">
+                {{ selectedMenu.remark || '无' }}
+              </n-descriptions-item>
+            </n-descriptions>
+          </div>
+          <n-empty v-else description="请选择左侧菜单项查看详情" />
+        </n-card>
+      </main>
     </div>
 
     <!-- 表单弹窗 -->
@@ -368,12 +389,12 @@
         </n-space>
       </template>
     </n-modal>
-  </div>
+  </section>
 </template>
 
 <script lang="ts" setup>
-import { h, onMounted, reactive, ref, computed, watch } from 'vue'
-import type { DataTableColumns, FormInst, TreeOption } from 'naive-ui'
+import { onMounted, reactive, ref, computed } from 'vue'
+import type { FormInst, TreeOption } from 'naive-ui'
 import {
   NButton,
   NIcon,
@@ -389,7 +410,6 @@ import {
   AddOutline,
   RefreshOutline,
   SearchOutline,
-  Search,
   PencilOutline,
   TrashOutline,
   FolderOpenOutline,
@@ -405,7 +425,6 @@ import {
   updateMenus
 } from '@/api/system/menu'
 import type { MenuData } from './types'
-import TableMain from '@/components/table/main/TableMain.vue'
 import IconSelect from '@/components/common/IconSelect.vue'
 import SvgIcon from '@/components/svg-icon/SvgIcon.vue'
 
@@ -419,6 +438,30 @@ const tableData = reactive({
   loading: false
 })
 
+const menuSummary = computed(() => {
+  const summary = {
+    dir: 0,
+    menu: 0,
+    button: 0
+  }
+  const traverse = (list: MenuData[]) => {
+    list.forEach((item) => {
+      if (item.menuType === 0) {
+        summary.dir += 1
+      } else if (item.menuType === 1) {
+        summary.menu += 1
+      } else {
+        summary.button += 1
+      }
+      if (item.children?.length) {
+        traverse(item.children)
+      }
+    })
+  }
+  traverse(tableData.list || [])
+  return summary
+})
+
 // 搜索相关
 const searchText = ref('')
 const onSearch = () => {
@@ -430,6 +473,8 @@ const menuTreeData = ref<any[]>([])
 const selectedKeys = ref<string[]>([])
 const expandedKeys = ref<string[]>([])
 const selectedMenu = ref<MenuData | null>(null)
+const treePattern = ref('')
+const expandAllTree = ref(true)
 
 // 表单相关
 const formRef = ref<FormInst | null>(null)
@@ -503,6 +548,35 @@ const handleSelectMenu = (keys: string[]) => {
 // 展开菜单
 const handleExpandMenu = (keys: string[]) => {
   expandedKeys.value = keys
+  const allKeys = getAllTreeKeys()
+  expandAllTree.value = keys.length > 0 && keys.length >= allKeys.length
+}
+
+const getAllTreeKeys = () => {
+  const keys: string[] = []
+  const traverse = (nodes: any[]) => {
+    nodes.forEach((node) => {
+      keys.push(String(node.key))
+      if (node.children?.length) {
+        traverse(node.children)
+      }
+    })
+  }
+  traverse(menuTreeData.value || [])
+  return keys
+}
+
+const syncExpandedKeys = () => {
+  if (expandAllTree.value) {
+    expandedKeys.value = getAllTreeKeys()
+  } else {
+    expandedKeys.value = []
+  }
+}
+
+const toggleTreeExpand = () => {
+  expandAllTree.value = !expandAllTree.value
+  syncExpandedKeys()
 }
 
 // 根据ID查找菜单
@@ -610,8 +684,8 @@ const loadTableData = async (keyword = '') => {
         }
       }
 
-      // 默认展开所有节点
-      expandAllNodes()
+      // 默认同步展开状态
+      syncExpandedKeys()
     }
   } catch (error) {
     console.error('加载菜单数据失败:', error)
@@ -741,12 +815,6 @@ const handleSubmit = async () => {
   }
 }
 
-// 修改展开所有节点的函数，默认不展开任何节点
-const expandAllNodes = () => {
-  // 返回空数组，表示不展开任何节点
-  expandedKeys.value = []
-}
-
 // 初始化
 onMounted(() => {
   loadTableData()
@@ -759,96 +827,169 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-.menu-page {
+.sys-menu-page {
   display: flex;
   flex-direction: column;
-  height: 100%;
-  box-sizing: border-box;
+  gap: 16px;
 
-  &-header {
-    margin-bottom: 16px;
+  .page-header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 24px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #f5f7ff, #ffffff);
+    border: 1px solid rgba(82, 106, 255, 0.12);
 
-    .action-card {
-      background-color: var(--card-color);
-      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
-      border-radius: 8px;
+    .header-subtitle {
+      font-size: 13px;
+      color: var(--text-color-3);
+      margin-bottom: 4px;
+    }
 
-      .search-box {
-        display: flex;
-        justify-content: flex-end;
+    h2 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    .header-desc {
+      margin-top: 4px;
+      color: var(--text-color-2);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+  }
+
+  .summary-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+
+    .summary-card {
+      padding: 16px;
+      border-radius: 12px;
+      background: var(--card-color);
+      border: 1px solid var(--divider-color);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+
+      span {
+        font-size: 12px;
+        color: var(--text-color-3);
+      }
+
+      strong {
+        font-size: 20px;
       }
     }
   }
 
-  &-content {
-    flex: 1;
-    overflow: hidden;
+  .menu-layout {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 16px;
+    align-items: stretch;
+  }
+
+  .menu-tree-panel,
+  .menu-detail-panel {
+    width: 100%;
+  }
+
+  .card-header {
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
 
-    .content-card {
-      height: 100%;
+    .header-label {
+      font-size: 12px;
+      color: var(--text-color-3);
+      margin-bottom: 4px;
+    }
+
+    h3 {
+      margin: 0;
+      font-size: 18px;
+    }
+  }
+
+  .tree-actions {
+    margin-bottom: 12px;
+  }
+
+  .tree-node-label {
+    display: flex;
+    align-items: center;
+    padding: 4px 0;
+
+    .tree-node-icon {
+      margin-right: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-color-3);
+    }
+
+    .type-tag {
+      margin-left: 8px;
+      padding: 0 8px;
+      font-size: 12px;
+    }
+  }
+
+  .detail-card {
+    height: 100%;
+
+    .detail-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+
+      .header-label {
+        font-size: 12px;
+        color: var(--text-color-3);
+        margin-bottom: 4px;
+      }
+
+      h3 {
+        margin: 0;
+        font-size: 20px;
+      }
+
+      .detail-path {
+        margin-top: 6px;
+        color: var(--text-color-3);
+        font-size: 13px;
+      }
+    }
+  }
+
+  .info-descriptions {
+    margin-top: 12px;
+
+    :deep(.n-descriptions-table-header) {
       background-color: var(--card-color);
-      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
-      border-radius: 8px;
+    }
+  }
+}
 
-      :deep(.n-card-header) {
-        padding: 12px 20px;
-      }
-
-      :deep(.n-card__content) {
-        height: calc(100% - 52px);
-
-        .n-grid {
-          height: 100%;
-        }
-      }
+@media (max-width: 1200px) {
+  .sys-menu-page {
+    .menu-layout {
+      grid-template-columns: 1fr;
     }
 
-    .tree-card {
-      height: 100%;
-      overflow: auto;
-
-      :deep(.n-card__content) {
-        padding: 8px;
-        height: calc(100% - 45px);
-        overflow: auto;
-      }
-
-      .tree-node-label {
-        display: flex;
-        align-items: center;
-        padding: 4px 0;
-
-        .tree-node-icon {
-          margin-right: 6px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: var(--text-color-3);
-        }
-
-        .type-tag {
-          margin-left: 8px;
-          padding: 0 8px;
-          font-size: 12px;
-        }
-      }
-    }
-
-    .detail-card {
-      height: 100%;
-
-      :deep(.n-card__content) {
-        padding: 16px;
-        overflow: auto;
-      }
-
-      .info-descriptions {
-        :deep(.n-descriptions-table-header) {
-          background-color: var(--card-color);
-        }
-      }
+    .header-actions {
+      width: 100%;
+      flex-direction: column;
+      align-items: flex-start;
     }
   }
 }

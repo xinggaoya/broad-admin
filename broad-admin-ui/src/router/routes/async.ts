@@ -1,35 +1,40 @@
+import type { RouteRecordRaw } from 'vue-router'
 import { LAYOUT } from '@/store/keys'
 
-export const asyncRoutes = [
+/**
+ * 默认异步路由：保障登录后至少有一个仪表盘入口
+ */
+export const asyncRoutes: RouteRecordRaw[] = [
   {
     path: '/',
+    name: 'Root',
     component: LAYOUT,
-    name: 'Index',
+    redirect: '/dashboard',
     meta: {
-      title: 'Dashboard',
+      title: '仪表盘',
       iconPrefix: 'iconfont',
       icon: 'dashboard'
     },
     children: [
       {
-        path: '/',
-        name: 'Home',
+        path: 'dashboard',
+        name: 'Dashboard',
         component: () => import('@/views/index/main.vue'),
         meta: {
           title: '主控台',
           affix: true,
           cacheable: true,
           iconPrefix: 'iconfont',
-          icon: 'menu'
+          icon: 'menu',
+          isRootPath: true
         }
       },
       {
-        path: '/work',
-        name: 'Work',
+        path: 'workbench',
+        name: 'Workbench',
         component: () => import('@/views/index/work-place.vue'),
         meta: {
           title: '工作台',
-          affix: true,
           iconPrefix: 'iconfont',
           icon: 'menu'
         }

@@ -2,13 +2,7 @@ import type { RouteRecordRaw } from 'vue-router'
 import { defineStore } from 'pinia'
 import router from '@/router'
 import pinia from '@/store/pinia'
-import {
-  findAffixedRoutes,
-  findPermission,
-  findRootPathRoute,
-  generatorRoutes,
-  mapTwoLevelRouter
-} from '../help'
+import { findAffixedRoutes, findPermission, generatorRoutes, mapTwoLevelRouter } from '../help'
 import { getRoutes } from '@/api/common'
 import { asyncRoutes } from '@/router/routes/async'
 import useVisitedRouteStore from '@/store/modules/visited-routes'
@@ -26,6 +20,9 @@ export const usePermissionStore: StoreDefinition = defineStore('permission-route
   const permissionRoutes = ref<RouteRecordRaw[]>([])
   const permission = ref<string[]>([])
   const localRoutes = ref<any[]>([])
+  const addedRouteNames = ref<string[]>([])
+
+  const NOT_FOUND_ROUTE_NAME = 'RouteNotFound'
 
   // 计算属性
   const getPermissionSideBar = computed(() => {
@@ -41,7 +38,7 @@ export const usePermissionStore: StoreDefinition = defineStore('permission-route
   })
 
   // Actions
-  const saveRoutes = (routes: any[]) => {
+  const saveRoutes = (routes: any[] = []) => {
     localRoutes.value = routes
     localStorage.setItem('permission-routes', JSON.stringify(routes))
   }
@@ -49,57 +46,71 @@ export const usePermissionStore: StoreDefinition = defineStore('permission-route
   const loadLocalRoutes = () => {
     const savedRoutes = localStorage.getItem('permission-routes')
     if (savedRoutes) {
-      localRoutes.value = JSON.parse(savedRoutes)
-      return true
+      try {
+        localRoutes.value = JSON.parse(savedRoutes)
+        return true
+      } catch (error) {
+        console.warn('[permission] 解析本地路由失败，自动清空。', error)
+        localRoutes.value = []
+        localStorage.removeItem('permission-routes')
+      }
     }
     return false
   }
 
-  const getRoutesAction = async () => {
-    // 优先从本地加载路由信息
-    if (loadLocalRoutes() && localRoutes.value.length > 0) {
-      const tempRoutes = generatorRoutes(localRoutes.value || [])
-      permission.value = findPermission(localRoutes.value || [])
-      // 写入默认路由
-      tempRoutes.unshift(...asyncRoutes)
-      return tempRoutes
-    }
-
-    // 如果本地没有路由信息，从后端获取
-    const res: any = await getRoutes()
-    const tempRoutes = generatorRoutes(res.data || [])
-    permission.value = findPermission(res.data || [])
-    // 写入默认路由
-    tempRoutes.unshift(...asyncRoutes)
-    return tempRoutes
-  }
-
-  const initPermissionRoute = async () => {
-    // 加载路由
-    const tempRoutes = await getRoutesAction()
-    const mapRoutes = mapTwoLevelRouter(tempRoutes)
-    mapRoutes.forEach((it: any) => {
-      router.addRoute(it)
-    })
-    const rootPath = findRootPathRoute(tempRoutes)
-    // 配置 `/` 路由的默认跳转地址
-    if (rootPath && rootPath !== '/') {
+  const mountNotFoundRoute = () => {
+    if (!router.hasRoute(NOT_FOUND_ROUTE_NAME)) {
       router.addRoute({
-        path: '/',
-        redirect: rootPath,
+        path: '/:pathMatch(.*)*',
+        name: NOT_FOUND_ROUTE_NAME,
+        redirect: '/404',
         meta: {
           hidden: true
         }
       })
     }
-    // 这个路由一定要放在最后
-    router.addRoute({
-      path: '/:pathMatch(.*)*',
-      redirect: '/404',
-      meta: {
-        hidden: true
+  }
+
+  const unmountRuntimeRoutes = () => {
+    addedRouteNames.value.forEach((name) => {
+      if (name && router.hasRoute(name)) {
+        router.removeRoute(name)
       }
     })
+    addedRouteNames.value = []
+    if (router.hasRoute(NOT_FOUND_ROUTE_NAME)) {
+      router.removeRoute(NOT_FOUND_ROUTE_NAME)
+    }
+  }
+
+  const getRoutesAction = async () => {
+    let remoteRoutes: any[] = []
+    // 优先从本地加载路由信息
+    if (loadLocalRoutes() && localRoutes.value.length > 0) {
+      remoteRoutes = localRoutes.value
+    } else {
+      // 如果本地没有路由信息，从后端获取
+      const res: any = await getRoutes()
+      remoteRoutes = res.data || []
+      saveRoutes(remoteRoutes)
+    }
+
+    const dynamicRoutes = generatorRoutes(remoteRoutes || [])
+    permission.value = findPermission(remoteRoutes || [])
+    return [...asyncRoutes, ...dynamicRoutes]
+  }
+
+  const initPermissionRoute = async () => {
+    unmountRuntimeRoutes()
+    // 加载路由
+    const tempRoutes = await getRoutesAction()
+    const mapRoutes = mapTwoLevelRouter(tempRoutes)
+    addedRouteNames.value = []
+    mapRoutes.forEach((it: any) => {
+      router.addRoute(it)
+      it.name && addedRouteNames.value.push(it.name as string)
+    })
+    mountNotFoundRoute()
     permissionRoutes.value = [...tempRoutes]
 
     // 加载路由 affix
@@ -113,10 +124,7 @@ export const usePermissionStore: StoreDefinition = defineStore('permission-route
   }
 
   const reset = () => {
-    permissionRoutes.value = []
-    permission.value = []
-    localRoutes.value = []
-    localStorage.removeItem('permission-routes')
+    clearPermissionRoute()
   }
 
   const hasPermissionExists = (permissions: Array<string> | string) => {
@@ -125,6 +133,7 @@ export const usePermissionStore: StoreDefinition = defineStore('permission-route
   }
 
   const clearPermissionRoute = () => {
+    unmountRuntimeRoutes()
     permissionRoutes.value = []
     permission.value = []
     localRoutes.value = []
