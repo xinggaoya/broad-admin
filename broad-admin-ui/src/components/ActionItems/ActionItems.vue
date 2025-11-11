@@ -30,11 +30,17 @@
         <ExpandIcon />
       </n-icon>
     </span>
-    <span class="action-item" @click="onShowSetting">
+    <button
+      class="action-item action-item--button"
+      type="button"
+      aria-label="打开系统设置"
+      data-testid="action-open-settings"
+      @click="onShowSetting"
+    >
       <n-icon size="18">
         <SettingIcon />
       </n-icon>
-    </span>
+    </button>
     <SearchContent ref="searchContentRef" />
     <Setting ref="settingRef" />
   </div>
@@ -102,11 +108,19 @@ function onShowSetting() {
     min-width: 40px;
     display: flex;
     align-items: center;
+    justify-content: center;
 
     &:hover {
       cursor: pointer;
       color: var(--primary-color-hover);
     }
+  }
+
+  .action-item--button {
+    border: none;
+    background: transparent;
+    padding: 0;
+    color: inherit;
   }
 
   .badge-action-item {

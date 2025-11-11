@@ -1,9 +1,9 @@
 import { defineStore } from 'pinia'
 import defaultSetting from '@/setting'
-import { DeviceType, LayoutMode, PageAnim, SideTheme, ThemeMode } from '../types'
+import { CornerStyle, DeviceType, LayoutDensity, PageAnim, SideTheme, ThemeMode } from '../types'
 import { useChangeMenuWidth } from '@/hooks/useMenuWidth'
 import { calculateHoverActiveColors } from '@/utils/ColorUtils'
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 
 // 初始化菜单宽度
 useChangeMenuWidth(defaultSetting.sideWidth)
@@ -15,7 +15,6 @@ export const useAppConfigStore = defineStore(
     const theme = ref<ThemeMode>(defaultSetting.theme)
     const sideTheme = ref<SideTheme>(defaultSetting.sideTheme)
     const themeColor = ref(defaultSetting.themeColor)
-    const layoutMode = ref<LayoutMode>(defaultSetting.layoutMode)
     const sideWidth = ref(defaultSetting.sideWidth)
     const deviceType = ref<DeviceType>(defaultSetting.deviceType)
     const pageAnim = ref<PageAnim>(defaultSetting.pageAnim)
@@ -24,9 +23,8 @@ export const useAppConfigStore = defineStore(
     const isAccordion = ref(defaultSetting.isAccordion)
     const actionBar = ref(defaultSetting.actionBar)
     const projectName = ref(defaultSetting.projectName)
-
-    // 计算属性
-    const getLayoutMode = computed(() => layoutMode.value)
+    const layoutDensity = ref<LayoutDensity>(defaultSetting.layoutDensity)
+    const cornerStyle = ref<CornerStyle>(defaultSetting.cornerStyle)
 
     // Actions
     const changeTheme = (newTheme: ThemeMode) => {
@@ -43,10 +41,6 @@ export const useAppConfigStore = defineStore(
 
     const changeThemeToggle = (bool: boolean) => {
       changeTheme(bool ? ThemeMode.DARK : ThemeMode.LIGHT)
-    }
-
-    const changeLayoutMode = (mode: LayoutMode) => {
-      layoutMode.value = mode
     }
 
     const changeDevice = (newDeviceType: DeviceType) => {
@@ -77,6 +71,14 @@ export const useAppConfigStore = defineStore(
       r.style.setProperty('--menu-width', newSideWidth + 'px')
     }
 
+    const changeLayoutDensity = (density: LayoutDensity) => {
+      layoutDensity.value = density
+    }
+
+    const changeCornerStyle = (style: CornerStyle) => {
+      cornerStyle.value = style
+    }
+
     const toggleCollapse = (newIsCollapse: boolean) => {
       isCollapse.value = newIsCollapse
     }
@@ -85,7 +87,6 @@ export const useAppConfigStore = defineStore(
       theme.value = defaultSetting.theme
       sideTheme.value = defaultSetting.sideTheme
       themeColor.value = defaultSetting.themeColor
-      layoutMode.value = defaultSetting.layoutMode
       sideWidth.value = defaultSetting.sideWidth
       deviceType.value = defaultSetting.deviceType
       pageAnim.value = defaultSetting.pageAnim
@@ -94,6 +95,8 @@ export const useAppConfigStore = defineStore(
       isAccordion.value = defaultSetting.isAccordion
       actionBar.value = defaultSetting.actionBar
       projectName.value = defaultSetting.projectName
+      layoutDensity.value = defaultSetting.layoutDensity
+      cornerStyle.value = defaultSetting.cornerStyle
 
       // 更新主题相关设置
       changeTheme(defaultSetting.theme)
@@ -106,7 +109,6 @@ export const useAppConfigStore = defineStore(
       theme,
       sideTheme,
       themeColor,
-      layoutMode,
       sideWidth,
       deviceType,
       pageAnim,
@@ -115,17 +117,18 @@ export const useAppConfigStore = defineStore(
       isAccordion,
       actionBar,
       projectName,
-      // 计算属性
-      getLayoutMode,
+      layoutDensity,
+      cornerStyle,
       // Actions
       changeTheme,
       changeThemeToggle,
-      changeLayoutMode,
       changeDevice,
       changeSideBarTheme,
       changePageAnim,
       changePrimaryColor,
       changeSideWith,
+      changeLayoutDensity,
+      changeCornerStyle,
       toggleCollapse,
       resetState
     }

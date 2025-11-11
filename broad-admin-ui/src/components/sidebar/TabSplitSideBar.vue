@@ -2,8 +2,7 @@
   <n-card
     :bordered="false"
     class="vaw-tab-split-side-bar-wrapper"
-    :content-style="{ padding: 0 }"
-    style="border-radius: 0px"
+    :content-style="{ padding: 0, height: '100%' }"
     :class="[
       !appConfig.isCollapse ? 'open-status' : 'close-status',
       appConfig.sideTheme === 'image' ? 'sidebar-bg-img' : ''
@@ -160,135 +159,82 @@ const bgColor = computed(() => {
 }
 
 .open-status {
-  width: $menuWidth;
-  box-shadow: 2px 5px 10px rgba(0, 0, 0, 0.12);
-  transition: all $transitionTime;
+  box-shadow: var(--shell-shadow);
+  transition: box-shadow $transitionTime;
 }
 
 .close-status {
-  width: $minMenuWidth;
   box-shadow: none;
-  transition: all $transitionTime;
+  transition: box-shadow $transitionTime;
 }
 
 .vaw-tab-split-side-bar-wrapper {
-  position: fixed;
-  top: 0;
-  left: 0;
-  overflow: hidden;
-  height: 100vh;
+  height: 100%;
   box-sizing: border-box;
-  z-index: 999;
+  overflow: hidden;
+  border-radius: var(--shell-radius-lg);
+  background-color: var(--shell-surface);
+  display: flex;
 
-  .tab-split-tab-wrapper {
-    position: relative;
-    top: 0;
-    left: 0;
-    width: $tabSplitMenuWidth;
-    min-width: $tabSplitMenuWidth;
-    max-width: $tabSplitMenuWidth;
-    overflow: hidden;
-    height: 100vh;
-    box-sizing: border-box;
-
-    .tab-split-logo-wrapper {
-      max-width: $tabSplitMenuWidth;
-      min-width: $tabSplitMenuWidth;
-    }
-
-    .tab-split-content-wrapper {
-      position: relative;
-      height: 100%;
-      @mixin after {
-        content: '';
-        position: absolute;
-        left: 5px;
-        top: 5px;
-        right: 5px;
-        bottom: 5px;
-        border-radius: 3px;
-        z-index: -1;
-      }
-
-      .label-item-wrapper {
-        position: relative;
-        min-height: $logoHeight * 1.2;
-        padding: 10px 0;
-        display: flex;
-        flex-direction: column;
-        overflow: hidden;
-        align-items: center;
-        justify-content: center;
-        box-sizing: border-box;
-        color: var(--text-color);
-        z-index: 1;
-
-        & > i {
-          font-size: 16px;
-        }
-
-        & > span {
-          font-size: 12px;
-          line-height: 14px;
-          margin-top: 5px;
-        }
-
-        &:hover {
-          cursor: pointer;
-        }
-
-        &::after {
-          @include after;
-        }
-
-        & svg {
-          width: 26px;
-          height: 26px;
-        }
-      }
-
-      .label-item-wrapper:hover::after {
-        background-color: var(--primary-color);
-      }
-
-      .vaw-tab-split-item-is-active {
-        color: var(--select-text-color);
-      }
-
-      .vaw-tab-split-item-is-active::after {
-        background-color: var(--primary-color);
-        @include after;
-      }
-    }
-  }
-
-  .tab-split-menu-wrapper {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: $tabSplitMenuWidth;
-    overflow-x: hidden;
-  }
-
-  .vaw-menu-wrapper {
-    overflow-x: hidden;
-    color: white;
+  :deep(.n-card__content) {
+    height: 100%;
+    display: flex;
   }
 }
 
-.is-mobile {
-  .open-status {
-    width: $menuWidth;
-    transform: translateX(0);
-    transition: transform $transitionTime;
+.tab-split-tab-wrapper {
+  width: $tabSplitMenuWidth;
+  min-width: $tabSplitMenuWidth;
+  max-width: $tabSplitMenuWidth;
+  height: 100%;
+  padding: 16px 10px;
+  box-sizing: border-box;
+}
+
+.tab-split-content-wrapper {
+  padding-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  color: var(--shell-text-color);
+
+  .label-item-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+    border-radius: 12px;
+    padding: 12px 4px;
+    transition: all 0.2s ease;
   }
 
-  .close-status {
-    width: $menuWidth;
-    transform: translateX(-$menuWidth);
-    transition: transform $transitionTime;
-    box-shadow: none;
+  .label-item-wrapper span {
+    transform: scale(0.88);
+  }
+
+  .vaw-tab-split-item-is-active {
+    background-color: rgba(255, 255, 255, 0.18);
+    color: #fff;
+  }
+}
+
+.tab-split-menu-wrapper {
+  flex: 1;
+  height: 100%;
+  overflow: hidden;
+}
+
+.tab-split-menu-wrapper .tab-split-logo-wrapper {
+  padding: 12px;
+}
+
+.is-mobile {
+  .vaw-tab-split-side-bar-wrapper {
+    max-width: min(var(--shell-sidebar-width), 85vw);
   }
 }
 </style>

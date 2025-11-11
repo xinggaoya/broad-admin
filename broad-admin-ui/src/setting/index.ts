@@ -1,4 +1,4 @@
-import { DeviceType, LayoutMode, PageAnim, SideTheme, ThemeMode } from '@/store/types'
+import { CornerStyle, DeviceType, LayoutDensity, PageAnim, SideTheme, ThemeMode } from '@/store/types'
 import type { AppConfigState } from '@/store/types'
 
 export const projectName = import.meta.env.VITE_BASE_TITLE as string
@@ -13,13 +13,14 @@ const defaultSetting: AppConfigState = {
     primaryColorPressed: '#1E44B9',
     primaryColorSuppl: '#2B5CE7'
   },
-  layoutMode: LayoutMode.LTR,
   sideWidth: 220,
   deviceType: DeviceType.PC,
   pageAnim: PageAnim.FADE,
   isCollapse: false,
   isFixedNavBar: true,
   isAccordion: true,
+  layoutDensity: LayoutDensity.COZY,
+  cornerStyle: CornerStyle.SOFT,
   actionBar: {
     isShowSearch: true,
     isShowMessage: true,

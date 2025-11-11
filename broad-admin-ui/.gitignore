@@ -7,3 +7,6 @@ dist-ssr
 /pnpm-lock.yaml
 /auto-imports.d.ts
 /components.d.ts
+playwright-report
+test-results
+.playwright

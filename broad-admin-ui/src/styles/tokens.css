@@ -1,0 +1,62 @@
+:root {
+  --color-primary: #2b5ce7;
+  --color-primary-hover: #4776f0;
+  --color-primary-pressed: #1e44b9;
+  --color-primary-suppl: #2b5ce7;
+  --shell-text-color: #0f172a;
+  --shell-muted-text-color: #475569;
+  --shell-page-bg: #f4f6fb;
+  --shell-surface: #ffffff;
+  --shell-card: #ffffff;
+  --shell-border-color: rgba(15, 23, 42, 0.08);
+  --shell-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
+  --shell-overlay-color: rgba(15, 23, 42, 0.35);
+  --shell-radius-base: 12px;
+  --shell-radius-lg: 20px;
+  --shell-radius-xl: 28px;
+  --shell-header-height: 56px;
+  --shell-footer-height: 48px;
+  --shell-content-padding: 24px;
+  --shell-gap: 20px;
+  --shell-transition-duration: 220ms;
+  --shell-transition-ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --shell-scrollbar-size: 6px;
+  --menu-width: 220px;
+  --shell-sidebar-width: 220px;
+  --shell-sidebar-collapsed-width: 72px;
+  --sidebar-surface: linear-gradient(156deg, #ffffff 0%, #f8fafc 100%);
+  --sidebar-text-color: #0f172a;
+  --sidebar-muted-color: rgba(71, 85, 105, 0.75);
+  --sidebar-border-color: rgba(15, 23, 42, 0.08);
+  --sidebar-shadow: 0 15px 35px rgba(15, 23, 42, 0.15);
+  --sidebar-surface-pattern: none;
+  --sidebar-surface-glow: rgba(43, 92, 231, 0.25);
+}
+
+:root.dark {
+  --shell-text-color: #f8fafc;
+  --shell-muted-text-color: #94a3b8;
+  --shell-page-bg: #0f172a;
+  --shell-surface: #111827;
+  --shell-card: #1f2937;
+  --shell-border-color: rgba(148, 163, 184, 0.24);
+  --shell-shadow: 0 20px 50px rgba(0, 0, 0, 0.55);
+  --shell-overlay-color: rgba(15, 23, 42, 0.65);
+}
+
+body[data-side-theme='dark'] {
+  --sidebar-surface: linear-gradient(156deg, #0f172a 0%, #1e293b 100%);
+  --sidebar-text-color: #f8fafc;
+  --sidebar-muted-color: rgba(248, 250, 252, 0.65);
+  --sidebar-border-color: rgba(148, 163, 184, 0.32);
+  --sidebar-shadow: 0 25px 60px rgba(15, 23, 42, 0.35);
+}
+
+body[data-side-theme='image'] {
+  --sidebar-surface: linear-gradient(156deg, rgba(15, 23, 42, 0.85) 0%, rgba(15, 23, 42, 0.65) 100%);
+  --sidebar-text-color: #f8fafc;
+  --sidebar-muted-color: rgba(226, 232, 240, 0.8);
+  --sidebar-border-color: rgba(148, 163, 184, 0.32);
+  --sidebar-shadow: 0 25px 60px rgba(15, 23, 42, 0.5);
+  --sidebar-surface-pattern: none;
+}

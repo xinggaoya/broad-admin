@@ -1,11 +1,16 @@
 <template>
-  <span
-    :class="[appConfig.isCollapse ? 'fold-close-status' : 'fold-open-status']"
-    class="fold-wrapper iconfont"
-    @click="toggleFold"
-  >
-    <SvgIcon name="expand" />
-  </span>
+<button
+  :class="[appConfig.isCollapse ? 'fold-close-status' : 'fold-open-status']"
+  class="fold-wrapper iconfont"
+  type="button"
+  aria-label="切换侧边栏"
+  aria-controls="shell-sidebar"
+  :aria-expanded="(!appConfig.isCollapse).toString()"
+  data-testid="shell-toggle-sidebar"
+  @click="toggleFold"
+>
+  <SvgIcon name="expand" />
+</button>
 </template>
 
 <script lang="ts" setup>
@@ -35,6 +40,9 @@ function toggleFold() {
   padding: 0 10px;
   font-size: 22px;
   transition: transform $transitionTime;
+  border: none;
+  background: transparent;
+  color: inherit;
 }
 
 .fold-wrapper:hover {

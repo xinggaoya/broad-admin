@@ -2,12 +2,8 @@
   <n-card
     class="vaw-side-bar-wrapper"
     :bordered="false"
-    :style="{ borderRadius: '0px', marginTop: appConfig.layoutMode === 'ttb' ? '48px' : 0 }"
-    :content-style="{ padding: 0 }"
-    :class="[
-      !appConfig.isCollapse ? 'open-status' : 'close-status',
-      appConfig.sideTheme === 'image' ? 'sidebar-bg-img' : ''
-    ]"
+    :content-style="{ padding: 0, height: '100%' }"
+    :class="sidebarClasses"
   >
     <transition name="logo">
       <LogoView v-if="showLogo" />
@@ -18,6 +14,7 @@
 </template>
 
 <script lang="ts" setup>
+import { computed } from 'vue'
 import { useAppConfigStore } from '@/store/modules/app-config'
 import { usePermissionStore } from '@/store/modules/permission'
 import LogoView from '../logo/LogoView.vue'
@@ -32,54 +29,67 @@ defineProps({
 
 const appConfig = useAppConfigStore()
 const permissionStore = usePermissionStore()
+
+const sidebarClasses = computed(() => [
+  !appConfig.isCollapse ? 'open-status' : 'close-status',
+  `sidebar-theme--${appConfig.sideTheme}`
+])
 </script>
 
 <style scoped lang="scss">
-.sidebar-bg-img {
-  background-image: url('../../assets/bg_img.webp') !important;
-  background-size: cover;
+.sidebar-theme--dark,
+.sidebar-theme--white,
+.sidebar-theme--image {
+  background: var(--sidebar-surface);
+  color: var(--sidebar-text-color);
+  border: 1px solid var(--sidebar-border-color);
+  box-shadow: var(--sidebar-shadow);
 }
 
 .open-status {
-  width: $menuWidth;
-  box-shadow: 2px 5px 10px rgba(0, 0, 0, 0.12);
-  transition: all $transitionTime;
+  box-shadow: var(--sidebar-shadow, var(--shell-shadow));
+  transition: box-shadow $transitionTime;
 }
 
 .close-status {
-  width: $minMenuWidth;
   box-shadow: none;
-  transition: all $transitionTime;
+  transition: box-shadow $transitionTime;
 }
 
 .vaw-side-bar-wrapper {
-  position: fixed;
-  top: 0;
-  left: 0;
-  overflow-x: hidden;
   height: 100%;
   box-sizing: border-box;
-  z-index: 999;
+  overflow: hidden;
+  border-radius: var(--shell-radius-lg);
+  background-color: transparent;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  isolation: isolate;
 
-  .vaw-menu-wrapper {
-    overflow-x: hidden;
-    color: white;
+  :deep(.n-card__content) {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    z-index: 1;
   }
 }
 
-.is-mobile {
-  .open-status {
-    width: $menuWidth;
-    transform: translateX(0);
-    transition: transform $transitionTime;
-  }
+.sidebar-theme--image::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: var(--sidebar-surface-pattern);
+  background-size: cover;
+  background-position: center;
+  opacity: 0.35;
+  z-index: 0;
+}
 
-  .close-status {
-    width: $menuWidth;
-    $negativeMenuWidth: calc(#{$menuWidth} * -1);
-    transform: translateX($negativeMenuWidth);
-    transition: transform $transitionTime;
-    box-shadow: none;
+.is-mobile {
+  .vaw-side-bar-wrapper {
+    max-width: min(var(--shell-sidebar-width), 80vw);
   }
 }
 </style>

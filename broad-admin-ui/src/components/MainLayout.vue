@@ -1,48 +1,33 @@
 <template>
-  <div
-    class="vaw-main-layout-container scrollbar"
-    :class="[
-      layoutMode === 'ttb'
-        ? 'main-layout-ttb-status'
-        : !appConfig.isCollapse
-          ? 'main-layout-open-status'
-          : 'main-layout-close-status',
-      appConfig.isFixedNavBar ? 'main-layout_fixed-nav-bar' : 'main-layout'
-    ]"
-  >
-    <section
-      :class="[
-        layoutMode === 'ttb'
-          ? 'nav-bar-ttb-status'
-          : !appConfig.isCollapse
-            ? 'nav-bar-open-status'
-            : 'nav-bar-close-status',
-        appConfig.isFixedNavBar ? 'fixed-nav-bar' : '',
-        !showNavBar ? 'tab-bar-top' : ''
-      ]"
-    >
+  <section class="shell-main" :class="{ 'shell-main--dark': isDarkTheme }">
+    <div class="shell-main__nav" :class="[{ 'is-fixed': appConfig.isFixedNavBar, 'no-nav': !showNavBar }]">
       <NavBar v-if="showNavBar" />
       <TabBar />
-    </section>
-    <div class="main-base-style scrollbar" :class="[mainClass]">
-      <section class="main-section">
+    </div>
+
+    <div class="shell-main__content" ref="contentRef">
+      <section class="shell-main__page">
         <Main />
       </section>
-      <section class="footer-wrapper">
-        <FooterView v-if="appConfig.actionBar.isShowFooter" />
-      </section>
-      <n-back-top :listen-to="listenTo1" />
+      <footer v-if="appConfig.actionBar.isShowFooter" class="shell-main__footer">
+        <FooterView />
+      </footer>
     </div>
-    <n-back-top :listen-to="listenTo2" />
-  </div>
+
+    <n-back-top :listen-to="contentRef" />
+  </section>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
+import { computed, ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useLoadingBar } from 'naive-ui'
 import { useAppConfigStore } from '@/store/modules/app-config'
 import { ThemeMode } from '@/store/types'
-import { useLoadingBar } from 'naive-ui'
-import { computed, onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
+import NavBar from '@/components/navbar/NavBar.vue'
+import TabBar from '@/components/tabbar/TabBar.vue'
+import Main from '@/components/Main.vue'
+import FooterView from '@/components/footer/FooterView.vue'
 
 defineProps({
   showNavBar: {
@@ -52,159 +37,105 @@ defineProps({
 })
 
 const appConfig = useAppConfigStore()
-const listenTo1 = ref<HTMLElement | null>(null)
-const listenTo2 = ref<HTMLElement | null>(null)
-const mainClass = computed(() => {
-  return appConfig.theme === ThemeMode.DARK ? 'main-base-dark-theme' : 'main-base-light-theme'
-})
-const layoutMode = computed(() => {
-  return appConfig.getLayoutMode
-})
+const contentRef = ref<HTMLElement | null>(null)
+const isDarkTheme = computed(() => appConfig.theme === ThemeMode.DARK)
 const router = useRouter()
 const loadingBar = useLoadingBar()
+
 router.beforeEach(() => {
   loadingBar?.start()
 })
+
 router.afterEach(() => {
   loadingBar?.finish()
 })
-onMounted(() => {
-  listenTo1.value = document.querySelector('.main-base-style')
-  listenTo2.value = document.querySelector('.vaw-main-layout-container')
-})
 </script>
 
-<style lang="scss" scoped>
-.scrollbar::-webkit-scrollbar {
-  width: 0;
+<style scoped lang="scss">
+.shell-main {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--shell-gap);
+  min-height: calc(100vh - (var(--shell-content-padding) * 2));
+  color: var(--shell-text-color);
+  transition: color 0.3s ease;
 }
 
-.main-layout-ttb-status {
-  margin-left: 0;
+.shell-main__nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: transparent;
 }
 
-.main-layout-open-status {
-  margin-left: $menuWidth;
+.shell-main__nav.is-fixed {
+  position: sticky;
+  top: clamp(8px, var(--shell-content-padding), 32px);
+  z-index: 5;
+  background: var(--shell-surface);
+  border-radius: var(--shell-radius-base);
+  box-shadow: var(--shell-shadow);
+  padding: 12px;
 }
 
-.main-layout-close-status {
-  margin-left: $minMenuWidth;
-}
-
-.nav-bar-open-status.fixed-nav-bar {
-  width: calc(100% - #{$menuWidth});
-  background-color: var(--body-color);
-  box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
-}
-
-.nav-bar-close-status.fixed-nav-bar {
-  width: calc(100% - #{$minMenuWidth});
-  background-color: var(--body-color);
-  box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
-}
-
-.nav-bar-ttb-status {
-  width: 100%;
-  background-color: var(--body-color);
-  box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
-}
-
-.main-layout {
+.shell-main__nav.no-nav {
   padding-top: 0;
-  overflow-y: auto;
 }
 
-.main-layout_fixed-nav-bar {
-  padding-top: $logoHeight + $tabHeight;
-  height: 100vh;
+.shell-main__content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: var(--shell-surface);
+  border-radius: var(--shell-radius-lg);
+  box-shadow: var(--shell-shadow);
+  padding: 20px;
   overflow: hidden;
-
-  .main-base-style {
-    height: calc(100vh - #{$logoHeight} - #{$tabHeight});
-    overflow-y: auto;
-    position: relative;
-  }
 }
 
-.vaw-main-layout-container {
-  height: 100vh;
-  box-sizing: border-box;
-  transition: margin-left $transitionTime;
-
-  .main-base-style {
-    height: 100%;
-    box-sizing: border-box;
-    padding: 16px;
-    position: relative;
-  }
-
-  .main-base-light-theme {
-    background-color: #f0f2f5;
-  }
-
-  .main-base-dark-theme {
-    background-color: #333333;
-  }
-
-  .main-section {
-    min-height: calc(100% - #{$footerHeight});
-    overflow-x: hidden;
-    padding-bottom: $footerHeight;
-  }
-
-  .fixed-nav-bar {
-    position: fixed;
-    top: 0;
-    transition: width $transitionTime;
-    z-index: 99;
-  }
-
-  .tab-bar-top {
-    padding-top: $logoHeight;
-  }
+.shell-main__content::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
 }
 
-.footer-wrapper {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background-color: var(--body-color);
-  z-index: 98;
-  margin-top: 0;
-  box-shadow: 0 -1px 4px rgba(0, 21, 41, 0.08);
+.shell-main__content::-webkit-scrollbar-thumb {
+  background-color: rgba(100, 116, 139, 0.35);
+  border-radius: 4px;
 }
 
-.is-mobile {
-  .main-layout-open-status,
-  .main-layout-close-status {
-    margin-left: 0;
-    transition: none;
-  }
-
-  .nav-bar-open-status,
-  .nav-bar-close-status {
-    width: 100%;
-  }
-
-  .footer-wrapper {
-    left: 0;
-  }
+.shell-main__page {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  background: var(--shell-page-bg);
+  border-radius: calc(var(--shell-radius-lg) - 8px);
+  padding: 16px;
 }
 
-.scrollbar {
-  &::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+.shell-main__page::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.shell-main__page::-webkit-scrollbar-thumb {
+  background-color: rgba(15, 23, 42, 0.25);
+  border-radius: 3px;
+}
+
+.shell-main__footer {
+  margin-top: 20px;
+  padding-top: 12px;
+  border-top: 1px solid var(--shell-border-color);
+}
+
+@media (max-width: 768px) {
+  .shell-main__content {
+    padding: 12px;
   }
 
-  &::-webkit-scrollbar-thumb {
-    background-color: rgba(0, 0, 0, 0.2);
-    border-radius: 3px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background-color: transparent;
+  .shell-main__page {
+    padding: 12px;
   }
 }
 </style>

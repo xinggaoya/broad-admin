@@ -13,12 +13,6 @@ export enum SideTheme {
   IMAGE = 'image'
 }
 
-export enum LayoutMode {
-  LTR = 'ltr',
-  TTB = 'ttb',
-  LCR = 'lcr'
-}
-
 export enum DeviceType {
   PC = 'pc',
   PAD = 'pad',
@@ -30,6 +24,18 @@ export enum PageAnim {
   OPACITY = 'opacity',
   DOWN = 'down',
   SCALE = 'scale'
+}
+
+export enum LayoutDensity {
+  COMFORTABLE = 'comfortable',
+  COZY = 'cozy',
+  COMPACT = 'compact'
+}
+
+export enum CornerStyle {
+  SOFT = 'soft',
+  ROUND = 'round',
+  SHARP = 'sharp'
 }
 
 export interface ThemeColor {
@@ -52,7 +58,6 @@ export interface AppConfigState {
   theme: ThemeMode
   sideTheme: SideTheme
   themeColor: ThemeColor
-  layoutMode: LayoutMode
   sideWidth: number
   deviceType: DeviceType
   pageAnim: PageAnim
@@ -60,6 +65,8 @@ export interface AppConfigState {
   isFixedNavBar: boolean
   isAccordion: boolean
   actionBar: ActionBar
+  layoutDensity: LayoutDensity
+  cornerStyle: CornerStyle
 }
 
 export interface UserState {

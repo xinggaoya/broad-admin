@@ -1,401 +1,356 @@
 <template>
-  <div class="vaw-tab-bar-container">
-    <n-flex align="center">
-      <n-icon
-        class="arrow-wrapper"
-        :class="{ 'arrow-wrapper__disabled': leftArrowDisabled }"
-        @click="leftArrowClick"
-      >
+  <div class="tab-strip" role="tablist" aria-label="页面标签" data-testid="tab-strip">
+    <button
+      class="tab-strip__arrow"
+      type="button"
+      :disabled="!canScrollPrev"
+      aria-label="向左滚动标签"
+      @click="scrollBy(-160)"
+    >
+      <n-icon size="18">
         <ChevronBack />
       </n-icon>
-      <n-scrollbar ref="scrollbarRef" x-scrollable :size="0" style="flex: 1">
-        <n-button-group style="top: 3px">
-          <n-button
-            v-for="item in visitedRoutes"
-            :key="item.path"
-            :type="currentTab === item.path ? 'primary' : 'default'"
-            class="tab-item"
-            strong
-            secondary
-            :data="item.path"
-            @click.self="itemClick(item)"
-            @contextmenu="onContextMenu(item, $event)"
-          >
-            <span
-              style="font-size: 12px; margin-top: 2px"
-              class="text-item"
-              @click.self="itemClick(item)"
-            >
-              {{ item.meta ? item.meta.title : item.name }}
-            </span>
-            <n-icon v-if="!item.meta?.affix" class="icon-item" @click="removeTab(item)">
-              <Close />
-            </n-icon>
-          </n-button>
-        </n-button-group>
-      </n-scrollbar>
-      <n-flex align="center">
-        <n-icon
-          class="arrow-wrapper"
-          :class="{ 'arrow-wrapper__disabled': rightArrowDisabled }"
-          style="transform: rotate(180deg)"
-          @click="rightArrowClick"
+    </button>
+
+    <div
+      ref="scrollAreaRef"
+      class="tab-strip__viewport"
+      @wheel.prevent="handleWheel"
+      @scroll.passive="updateScrollAbility"
+    >
+      <div class="tab-strip__list">
+        <button
+          v-for="item in visitedRoutes"
+          :key="item.path"
+          class="tab-pill"
+          :class="{
+            'is-active': currentTab === item.path,
+            'is-affix': item.meta?.affix
+          }"
+          type="button"
+          role="tab"
+          :aria-selected="(currentTab === item.path).toString()"
+          :data-path="item.path"
+          @click="itemClick(item)"
+          @contextmenu.prevent="openContextMenu(item, $event)"
         >
-          <ChevronBack />
-        </n-icon>
-        <n-dropdown :options="contextMenuOptions" placement="left-start" @select="onDropDownSelect">
-          <n-icon class="arrow-wrapper" @click="rightArrowClick">
-            <Menu />
-          </n-icon>
-        </n-dropdown>
-      </n-flex>
-    </n-flex>
-    <ul v-show="showContextMenu" class="contex-menu-wrapper" :style="contextMenuStyle">
-      <li>
-        <n-button :underline="false" text @click="refreshRoute">
-          <template #icon>
-            <n-icon>
-              <Refresh />
-            </n-icon>
-          </template>
-          刷新页面
-        </n-button>
-      </li>
-      <li>
-        <n-button :disabled="showLeftMenu" text @click="closeLeft">
-          <template #icon>
-            <n-icon>
-              <ArrowBack />
-            </n-icon>
-          </template>
-          关闭左侧
-        </n-button>
-      </li>
-      <li>
-        <n-button :disabled="showRightMenu" text @click="closeRight">
-          <template #icon>
-            <n-icon>
-              <ArrowForward />
-            </n-icon>
-          </template>
-          关闭右侧
-        </n-button>
-      </li>
-      <li>
-        <n-button icon="el-icon-close" text @click="closeAll">
-          <template #icon>
-            <n-icon>
+          <span class="tab-pill__text">{{ item.meta?.title || item.name }}</span>
+          <button
+            v-if="!item.meta?.affix"
+            class="tab-pill__close"
+            type="button"
+            aria-label="关闭标签"
+            @click.stop="removeTab(item)"
+          >
+            <n-icon size="14">
               <Close />
             </n-icon>
-          </template>
-          关闭所有
-        </n-button>
-      </li>
-    </ul>
+          </button>
+        </button>
+      </div>
+    </div>
+
+    <button
+      class="tab-strip__arrow"
+      type="button"
+      :disabled="!canScrollNext"
+      aria-label="向右滚动标签"
+      @click="scrollBy(160)"
+    >
+      <n-icon size="18">
+        <ChevronForward />
+      </n-icon>
+    </button>
+
+    <n-dropdown
+      trigger="click"
+      :options="dropdownOptions"
+      placement="bottom-end"
+      @select="handleDropdownSelect"
+    >
+      <button class="tab-strip__more" type="button" aria-label="更多标签操作">
+        <n-icon size="18">
+          <Menu />
+        </n-icon>
+      </button>
+    </n-dropdown>
+
+    <n-dropdown
+      trigger="manual"
+      :x="contextMenu.x"
+      :y="contextMenu.y"
+      :show="contextMenu.visible"
+      placement="bottom-start"
+      :options="contextMenuOptions"
+      @select="handleContextSelect"
+      @clickoutside="contextMenu.visible = false"
+    />
   </div>
 </template>
 
 <script lang="ts" setup>
-import { computed, getCurrentInstance, h, ref, watch } from 'vue'
-import { NIcon, NScrollbar } from 'naive-ui'
-import { Close, ChevronBack, Refresh, ArrowBack, ArrowForward, Menu } from '@vicons/ionicons5'
+import { computed, nextTick, reactive, ref, watch, h } from 'vue'
+import { NDropdown, NIcon } from 'naive-ui'
+import {
+  Close,
+  ChevronBack,
+  ChevronForward,
+  Refresh,
+  ArrowBack,
+  ArrowForward,
+  Menu
+} from '@vicons/ionicons5'
 import useVisitedRouteStore from '@/store/modules/visited-routes'
-import type { RouteLocationRaw, RouteRecordRaw } from 'vue-router'
+import type { RouteRecordRaw } from 'vue-router'
 import { useRoute, useRouter } from 'vue-router'
+import { useResizeObserver } from '@vueuse/core'
 
-let { proxy } = getCurrentInstance()
+defineOptions({ name: 'TabBar' })
 
-defineOptions({
-  name: 'TabBar'
-})
 const router = useRouter()
 const route = useRoute()
-const currentTab = ref(route.fullPath)
-const contextMenuStyle = ref({ left: '0', top: '0' })
-const showContextMenu = ref(false)
-const scrollbarRef = ref()
-const selectRoute = ref<RouteRecordRaw>()
-const showLeftMenu = ref(true)
-const showRightMenu = ref(true)
-const rightArrowDisabled = ref(false)
-const leftArrowDisabled = ref(false)
-
-const contextMenuOptions = ref([
-  {
-    label: '刷新页面',
-    key: 'refresh',
-    icon() {
-      return h(NIcon, null, {
-        default: () => h(Refresh)
-      })
-    }
-  },
-  {
-    label: '关闭所有',
-    key: 'close',
-    icon() {
-      return h(NIcon, null, {
-        default: () => h(Close)
-      })
-    }
-  }
-])
-
 const visitedRouteStore = useVisitedRouteStore()
 
-const visitedRoutes = computed(() => {
-  return visitedRouteStore.getVisitedRoutes
+const visitedRoutes = computed(() => visitedRouteStore.getVisitedRoutes)
+const currentTab = ref(route.fullPath)
+const scrollAreaRef = ref<HTMLDivElement | null>(null)
+const canScrollPrev = ref(false)
+const canScrollNext = ref(false)
+
+const dropdownOptions = [
+  { label: '刷新页面', key: 'refresh', icon: hIcon(Refresh) },
+  { label: '关闭所有', key: 'close-all', icon: hIcon(Close) }
+]
+
+const contextMenuOptions = [
+  { label: '刷新', key: 'refresh' },
+  { label: '关闭左侧', key: 'close-left', icon: hIcon(ArrowBack) },
+  { label: '关闭右侧', key: 'close-right', icon: hIcon(ArrowForward) },
+  { label: '关闭所有', key: 'close-all', icon: hIcon(Close) }
+]
+
+const contextMenu = reactive({
+  visible: false,
+  x: 0,
+  y: 0,
+  target: null as RouteRecordRaw | null
 })
 
-watch(route, (val) => {
-  currentTab.value = val.fullPath || ''
-  setTimeout(() => {
-    const scrollbar = scrollbarRef.value as InstanceType<typeof NScrollbar>
-    const el = document.querySelector(`[data="${currentTab.value}"]`) as HTMLElement
-    el &&
-      scrollbar.scrollTo(
-        {
-          left: el.offsetLeft,
-          debounce: true,
-          behavior: 'smooth'
-        } as any,
-        0
-      )
-  }, 0)
-})
-
-watch(showContextMenu, (val) => {
-  if (val) {
-    document.body.addEventListener('click', closeMenu)
-  } else {
-    document.body.removeEventListener('click', closeMenu)
+watch(
+  () => route.fullPath,
+  (val) => {
+    currentTab.value = val
+    nextTick(() => scrollActiveIntoView())
   }
-})
+)
 
-function itemClick(item: { path: any }) {
-  handleTabClick(item.path || item.path || '/')
+useResizeObserver(scrollAreaRef, () => updateScrollAbility())
+
+function hIcon(component: any) {
+  return () =>
+    h(
+      NIcon,
+      { size: 16 },
+      {
+        default: () => h(component)
+      }
+    )
 }
 
-function handleTabClick(path: RouteLocationRaw) {
-  router.push(path)
+function itemClick(item: RouteRecordRaw) {
+  router.push(item.path || '/')
 }
 
-function isAffix(route: { meta: { affix: any } }) {
-  return route.meta && route.meta.affix
-}
-
-function onContextMenu(item: any, e: { preventDefault?: any; clientX?: any }) {
-  const { clientX } = e
-  const { x } = proxy.$el.getBoundingClientRect()
-  e.preventDefault()
-  selectRoute.value = item
-  if (selectRoute.value) {
-    showLeftMenu.value = isLeftLast(item.path || '/')
-    showRightMenu.value = isRightLast(item.path || '/')
-    const screenWidth = document.body.clientWidth
-    contextMenuStyle.value.left =
-      (clientX + 130 > screenWidth ? clientX - 130 - x - 15 : clientX - x + 15) + 'px'
-    contextMenuStyle.value.top = '25px'
-    showContextMenu.value = true
-  }
-}
-
-function removeTab(item: RouteRecordRaw) {
-  visitedRouteStore.removeVisitedRoute(item).then((lastPath) => {
-    router.push(lastPath)
+function removeTab(routeItem: RouteRecordRaw) {
+  visitedRouteStore.removeVisitedRoute(routeItem).then((path) => {
+    if (routeItem.path === route.fullPath) {
+      router.push(path)
+    }
   })
 }
 
-function isLeftLast(tempRoute: string) {
-  return visitedRouteStore.getVisitedRoutes.findIndex((it) => it.path === tempRoute) === 0
+function scrollBy(distance: number) {
+  const el = scrollAreaRef.value
+  if (!el) return
+  el.scrollBy({ left: distance, behavior: 'smooth' })
+  requestAnimationFrame(updateScrollAbility)
 }
 
-function isRightLast(tempRoute: string) {
-  return (
-    visitedRouteStore.getVisitedRoutes.findIndex((it) => it.path === tempRoute) ===
-    visitedRouteStore.getVisitedRoutes.length - 1
-  )
+function handleWheel(event: WheelEvent) {
+  const el = scrollAreaRef.value
+  if (!el) return
+  el.scrollBy({ left: event.deltaY > 0 ? 80 : -80 })
+  updateScrollAbility()
 }
 
-function onDropDownSelect(key: any) {
-  switch (key) {
+function scrollActiveIntoView() {
+  const el = scrollAreaRef.value
+  if (!el) return
+  const selector = `.tab-pill[data-path="${escapeSelector(currentTab.value)}"]`
+  const target = el.querySelector<HTMLButtonElement>(selector)
+  if (target) {
+    target.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })
+  }
+}
+
+function updateScrollAbility() {
+  const el = scrollAreaRef.value
+  if (!el) return
+  const { scrollLeft, scrollWidth, clientWidth } = el
+  canScrollPrev.value = scrollLeft > 2
+  canScrollNext.value = scrollLeft + clientWidth < scrollWidth - 2
+}
+
+function openContextMenu(item: RouteRecordRaw, event: MouseEvent) {
+  contextMenu.target = item
+  contextMenu.x = event.clientX
+  contextMenu.y = event.clientY
+  contextMenu.visible = true
+}
+
+function handleContextSelect(key: string) {
+  contextMenu.visible = false
+  handleTabAction(key, contextMenu.target)
+}
+
+function handleDropdownSelect(key: string) {
+  handleTabAction(key, visitedRoutes.value.find((it) => it.path === currentTab.value) || null)
+}
+
+function handleTabAction(action: string, target: RouteRecordRaw | null) {
+  switch (action) {
     case 'refresh':
-      refreshRoute()
+      router.replace({ path: '/redirect' + route.fullPath })
       break
-    case 'close':
-      closeAll()
+    case 'close-left':
+      target &&
+        visitedRouteStore.closeLeftVisitedView(target).then(() => {
+          ensureActiveRoute()
+        })
+      break
+    case 'close-right':
+      target &&
+        visitedRouteStore.closeRightVisitedView(target).then(() => {
+          ensureActiveRoute()
+        })
+      break
+    case 'close-all':
+      visitedRouteStore.closeAllVisitedView().then(() => {
+        router.push(visitedRouteStore.findLastRoutePath())
+      })
       break
   }
 }
 
-function refreshRoute() {
-  router.replace({ path: '/redirect' + route.path })
-}
-
-function closeLeft() {
-  if (!selectRoute.value) return
-  visitedRouteStore.closeLeftVisitedView(selectRoute.value).then(() => {
-    if (route.fullPath !== selectRoute.value.path) {
-      router.push(visitedRouteStore.findLastRoutePath())
-    }
-  })
-}
-
-function closeRight() {
-  if (!selectRoute.value) return
-  visitedRouteStore.closeRightVisitedView(selectRoute.value).then(() => {
-    if (route.path !== selectRoute.value.path) {
-      router.push(visitedRouteStore.findLastRoutePath())
-    }
-  })
-}
-
-function closeAll() {
-  visitedRouteStore.closeAllVisitedView().then(() => {
+function ensureActiveRoute() {
+  const exists = visitedRoutes.value.some((it) => it.path === route.fullPath)
+  if (!exists) {
     router.push(visitedRouteStore.findLastRoutePath())
-  })
+  }
 }
 
-function closeMenu() {
-  showContextMenu.value = false
-}
-
-function leftArrowClick() {
-  const scrollbar = scrollbarRef.value
-  const scrollX = scrollbar.$el?.scrollLeft || 0
-  scrollbar.scrollTo(
-    {
-      left: Math.max(0, scrollX - 200),
-      debounce: true,
-      behavior: 'smooth'
-    },
-    0
-  )
-  isDisabledArrow()
-}
-
-function rightArrowClick() {
-  const scrollbar = scrollbarRef.value
-  const scrollX = scrollbar.$el?.scrollLeft || 0
-  scrollbar.scrollTo(
-    {
-      left: scrollX + 200,
-      debounce: false,
-      behavior: 'smooth'
-    },
-    0
-  )
-  isDisabledArrow()
-}
-
-function isDisabledArrow() {
-  setTimeout(() => {
-    const scrollbar = scrollbarRef.value
-    const { scrollLeft, scrollWidth, clientWidth } = scrollbar.$el
-    leftArrowDisabled.value = scrollLeft === 0
-    rightArrowDisabled.value = scrollLeft === scrollWidth - clientWidth
-  }, 100)
+function escapeSelector(value: string) {
+  if (typeof CSS !== 'undefined' && CSS.escape) {
+    return CSS.escape(value)
+  }
+  return value.replace(/([.*+?^${}()|[\]\\])/g, '\\$1')
 }
 </script>
 
-<style lang="scss" scoped>
-.vaw-tab-bar-container {
+<style scoped lang="scss">
+.tab-strip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  background: var(--tabbar-bg);
+  border-radius: var(--shell-radius-base);
+  box-shadow: var(--tabbar-pill-shadow);
   position: relative;
-  height: $tabHeight;
-  line-height: calc(#{$tabHeight} - 3px);
-  box-sizing: border-box;
+}
+
+.tab-strip__viewport {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+.tab-strip__list {
+  display: flex;
+  gap: 6px;
+  min-height: var(--tabbar-height);
+}
+
+.tab-strip__arrow,
+.tab-strip__more {
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  border: 1px solid var(--tabbar-border-color);
+  background: transparent;
+  color: var(--shell-text-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.tab-strip__arrow:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.tab-strip__arrow:not(:disabled):hover,
+.tab-strip__more:hover {
+  background: var(--tabbar-pill-bg);
+}
+
+.tab-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 14px;
+  height: var(--tabbar-height);
+  border-radius: calc(var(--shell-radius-base) + 6px);
+  background: var(--tabbar-pill-bg);
+  color: var(--tabbar-pill-text);
+  border: 1px solid transparent;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+  max-width: 220px;
+}
+
+.tab-pill.is-active {
+  background: var(--tabbar-pill-active-bg);
+  color: var(--tabbar-pill-active-text);
+  box-shadow: var(--tabbar-pill-shadow);
+}
+
+.tab-pill.is-affix::before {
+  content: '·';
+  font-size: 20px;
+  line-height: 1;
+}
+
+.tab-pill__text {
+  overflow: hidden;
   white-space: nowrap;
-  box-shadow: 10px 5px 10px rgb(0 0 0 / 10%);
+  text-overflow: ellipsis;
+  font-size: 13px;
+  font-weight: 500;
+}
 
-  .contex-menu-wrapper {
-    position: absolute;
-    width: 130px;
-    z-index: 999;
-    list-style: none;
-    box-shadow:
-      0 2px 4px rgba(0, 0, 0, 0.12),
-      0 0 6px rgba(0, 0, 0, 0.04);
-    background-color: var(--base-color);
-    padding-left: 10px;
+.tab-pill__close {
+  border: none;
+  background: transparent;
+  color: inherit;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
 
-    & > li {
-      width: 100%;
-      box-sizing: border-box;
-      display: flex;
-      align-items: center;
-      padding: 5px 0;
-    }
-
-    & > li:hover {
-      color: var(--primary-color);
-    }
-  }
-
-  .humburger-wrapper {
-    position: absolute;
-    top: 0;
-    left: 0;
-    overflow: hidden;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-  }
-
-  .tab-humburger-wrapper {
-    margin-left: 40px;
-    transition: margin-left $transitionTime;
-  }
-
-  .tab-no-humburger-wrapper {
-    margin-left: 0;
-    transition: margin-left $transitionTime;
-  }
-
-  .tab-item {
-    padding: 7px 10px;
-    cursor: pointer;
-
-    .icon-item {
-      margin-left: 0;
-      width: 0;
-      height: 0;
-      transition: all 0.2s ease-in-out;
-      overflow: hidden;
-    }
-
-    &:hover {
-      .icon-item {
-        display: inline;
-        width: 14px;
-        height: 14px;
-        margin-left: 5px;
-        font-size: 12px;
-        background-color: rgba(0, 0, 0, 0.12);
-        border-radius: 50%;
-        padding: 1px;
-        transition: all 0.2s ease-in-out;
-      }
-    }
-  }
-
-  .tab-item + .tab-item {
-    margin-left: 10px;
-  }
-
-  .arrow-wrapper {
-    cursor: pointer;
-    font-size: 20px;
-    margin: 0 8px;
-  }
-
-  .arrow-wrapper_line {
-    line-height: 40px;
-  }
-
-  .arrow-wrapper__disabled {
-    cursor: not-allowed;
-    color: #b9b9b9;
-  }
+.tab-pill__close:hover {
+  opacity: 1;
 }
 </style>
