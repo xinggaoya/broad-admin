@@ -1,81 +1,112 @@
 <template>
-  <div class="dashboard-container">
-    <!-- 数据概览卡片 -->
-    <n-grid :x-gap="16" :y-gap="16" :cols="24">
-      <n-grid-item :span="6" v-for="(item, index) in dataCards" :key="index">
-        <n-card class="data-card" :class="item.type">
-          <div class="card-content">
-            <div class="card-left">
-              <h3 class="card-title">{{ item.title }}</h3>
-              <div class="card-value">{{ item.value }}</div>
-              <div class="card-total">{{ item.total }}</div>
-              <div class="card-compare" v-if="item.compare">
-                <div>
-                  <n-icon><TrendingUpOutline /></n-icon>
-                  较昨日: {{ item.compare.day }}
-                </div>
-                <div>
-                  <n-icon><CalendarOutline /></n-icon>
-                  较上周: {{ item.compare.week }}
-                </div>
-              </div>
-              <n-progress
-                v-if="item.progress"
-                type="line"
-                :percentage="item.progress"
-                :color="
-                  item.type === 'success'
-                    ? '#18a058'
-                    : item.type === 'warning'
-                      ? '#f0a020'
-                      : '#2080f0'
-                "
-              />
-            </div>
-            <div class="card-right">
-              <n-icon :size="40" :class="item.type">
-                <component :is="item.icon" />
+  <section ref="dashboardRef" class="dashboard">
+    <div class="dashboard__stats">
+      <n-card
+        v-for="card in statCards"
+        :key="card.title"
+        class="stat-card"
+        :class="`stat-card--${card.intent}`"
+        :bordered="false"
+      >
+        <div class="stat-card__body">
+          <div>
+            <p class="stat-card__label">{{ card.title }}</p>
+            <p class="stat-card__value" aria-live="polite">{{ card.value }}</p>
+            <p class="stat-card__total">{{ card.total }}</p>
+            <ul class="stat-card__deltas">
+              <li v-for="delta in card.deltas" :key="delta.label" :class="`is-${delta.trend}`">
+                <n-icon size="16">
+                  <component :is="delta.trend === 'up' ? TrendingUpOutline : CalendarOutline" />
+                </n-icon>
+                {{ delta.label }}：{{ delta.value }}
+              </li>
+            </ul>
+          </div>
+          <div class="stat-card__meta">
+            <div class="stat-card__icon">
+              <n-icon size="36">
+                <component :is="card.icon" />
               </n-icon>
             </div>
+            <n-progress
+              v-if="card.progress !== undefined"
+              type="line"
+              :percentage="card.progress"
+              :show-indicator="false"
+              :stroke-width="8"
+            />
           </div>
-        </n-card>
-      </n-grid-item>
-    </n-grid>
+        </div>
+      </n-card>
+    </div>
 
-    <!-- 年度销售趋势 -->
-    <n-card class="chart-card" title="年度销售趋势" :class="{ 'is-dark': isDark }">
+    <n-card class="dashboard-panel dashboard-panel--highlight" :bordered="false">
+      <template #header>
+        <div class="panel-header">
+          <div>
+            <p class="panel-subtitle">FY2025</p>
+            <h3>年度销售趋势</h3>
+          </div>
+          <n-tag type="success" round>实时监控</n-tag>
+        </div>
+      </template>
       <FullYearSalesChart ref="fullYearSalesChart" />
     </n-card>
 
-    <!-- 数据分析图表 -->
-    <n-grid :x-gap="16" :y-gap="16" :cols="24" class="mt-4">
-      <n-grid-item :span="6">
-        <n-card class="chart-card" title="销售分析" :class="{ 'is-dark': isDark }">
-          <SalesChart ref="salesChart" />
-        </n-card>
-      </n-grid-item>
-      <n-grid-item :span="6">
-        <n-card class="chart-card" title="用户增长" :class="{ 'is-dark': isDark }">
-          <StudentChart ref="studentChart" />
-        </n-card>
-      </n-grid-item>
-      <n-grid-item :span="6">
-        <n-card class="chart-card" title="渠道分布" :class="{ 'is-dark': isDark }">
-          <EnrollmentChannelsChart ref="enrollmentChannelsChart" />
-        </n-card>
-      </n-grid-item>
-      <n-grid-item :span="6">
-        <n-card class="chart-card" title="部门分布" :class="{ 'is-dark': isDark }">
-          <DepartmentChart ref="departmentChart" />
-        </n-card>
-      </n-grid-item>
-    </n-grid>
-  </div>
+    <div class="dashboard__grid">
+      <n-card class="dashboard-panel" :bordered="false">
+        <template #header>
+          <div class="panel-header">
+            <div>
+              <p class="panel-subtitle">销售漏斗</p>
+              <h3>销售分析</h3>
+            </div>
+          </div>
+        </template>
+        <SalesChart ref="salesChart" />
+      </n-card>
+      <n-card class="dashboard-panel" :bordered="false">
+        <template #header>
+          <div class="panel-header">
+            <div>
+              <p class="panel-subtitle">新增 & 活跃</p>
+              <h3>用户增长</h3>
+            </div>
+          </div>
+        </template>
+        <StudentChart ref="studentChart" />
+      </n-card>
+      <n-card class="dashboard-panel" :bordered="false">
+        <template #header>
+          <div class="panel-header">
+            <div>
+              <p class="panel-subtitle">触达渠道</p>
+              <h3>渠道分布</h3>
+            </div>
+          </div>
+        </template>
+        <EnrollmentChannelsChart ref="enrollmentChannelsChart" />
+      </n-card>
+      <n-card class="dashboard-panel" :bordered="false">
+        <template #header>
+          <div class="panel-header">
+            <div>
+              <p class="panel-subtitle">组织画像</p>
+              <h3>部门分布</h3>
+            </div>
+          </div>
+        </template>
+        <DepartmentChart ref="departmentChart" />
+      </n-card>
+    </div>
+  </section>
 </template>
 
 <script lang="ts" setup name="DashboardMain">
-import { ref, computed, watch, onMounted } from 'vue'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
+import { useDebounceFn, useEventListener, useResizeObserver } from '@vueuse/core'
 import { useAppConfigStore } from '@/store/modules/app-config'
+import { ThemeMode } from '@/store/types'
 import {
   TrendingUpOutline,
   CalendarOutline,
@@ -84,227 +115,255 @@ import {
   WalletOutline,
   EyeOutline
 } from '@vicons/ionicons5'
-import OrderChart from './components/chart/OrderChart.vue'
 import SalesChart from './components/chart/SalesChart.vue'
 import StudentChart from './components/chart/StudentChart.vue'
 import EnrollmentChannelsChart from './components/chart/EnrollmentChannelsChart.vue'
 import FullYearSalesChart from './components/chart/FullYearSalesChart.vue'
 import DepartmentChart from './components/chart/DepartmentChart.vue'
 
-// 组件实例
+type StatIntent = 'primary' | 'success' | 'warning' | 'info'
+
 const appConfigStore = useAppConfigStore()
-const mOrderChart = ref<InstanceType<typeof OrderChart>>()
+const dashboardRef = ref<HTMLElement | null>(null)
+
 const salesChart = ref<InstanceType<typeof SalesChart>>()
 const enrollmentChannelsChart = ref<InstanceType<typeof EnrollmentChannelsChart>>()
 const studentChart = ref<InstanceType<typeof StudentChart>>()
 const fullYearSalesChart = ref<InstanceType<typeof FullYearSalesChart>>()
 const departmentChart = ref<InstanceType<typeof DepartmentChart>>()
 
-// 计算暗黑模式
-const isDark = computed(() => appConfigStore.theme === 'dark')
+const chartRefs = [
+  salesChart,
+  enrollmentChannelsChart,
+  studentChart,
+  fullYearSalesChart,
+  departmentChart
+]
 
-// 数据卡片配置
-const dataCards = [
+const isDark = computed(() => appConfigStore.theme === ThemeMode.DARK)
+
+const statCards: Array<{
+  title: string
+  value: string
+  total: string
+  intent: StatIntent
+  icon: any
+  progress?: number
+  deltas: Array<{ label: string; value: string; trend: 'up' | 'flat' | 'down' }>
+}> = [
   {
     title: '今日访问量',
     value: '1,234',
     total: '访问总量 100万+',
-    type: 'primary',
+    intent: 'primary',
     icon: EyeOutline,
-    compare: {
-      day: '+12%',
-      week: '+25%'
-    }
+    progress: 68,
+    deltas: [
+      { label: '较昨日', value: '+12%', trend: 'up' },
+      { label: '较上周', value: '+25%', trend: 'up' }
+    ]
   },
   {
     title: '新增用户',
     value: '678',
     total: '用户总量 20万+',
-    type: 'success',
+    intent: 'success',
     icon: PeopleOutline,
-    compare: {
-      day: '+8%',
-      week: '+15%'
-    }
+    progress: 52,
+    deltas: [
+      { label: '较昨日', value: '+8%', trend: 'up' },
+      { label: '较上周', value: '+15%', trend: 'up' }
+    ]
   },
   {
     title: '月度销售额',
     value: '￥123,456',
     total: '总销售额 1000万+',
-    type: 'warning',
+    intent: 'warning',
     icon: WalletOutline,
-    progress: 75
+    progress: 75,
+    deltas: [{ label: '目标完成度', value: '75%', trend: 'up' }]
   },
   {
     title: '订单统计',
     value: '892',
     total: '订单总量 5万+',
-    type: 'info',
+    intent: 'info',
     icon: CartOutline,
-    progress: 65
+    progress: 65,
+    deltas: [{ label: '同比', value: '+9%', trend: 'up' }]
   }
 ]
 
-// 图表自适应
-const updateCharts = () => {
-  setTimeout(() => {
-    mOrderChart.value?.updateChart()
-    salesChart.value?.updateChart()
-    enrollmentChannelsChart.value?.updateChart()
-    studentChart.value?.updateChart()
-    fullYearSalesChart.value?.updateChart()
-    departmentChart.value?.updateChart()
-  }, 200)
-}
+const scheduleChartRefresh = useDebounceFn(() => {
+  chartRefs.forEach((chart) => chart.value?.updateChart?.())
+}, 160)
 
-// 监听侧边栏折叠状态
 watch(
-  () => appConfigStore.isCollapse,
-  () => {
-    updateCharts()
-  }
+  () => [appConfigStore.isCollapse, appConfigStore.deviceType, isDark.value],
+  () => scheduleChartRefresh()
 )
 
-// 监听窗口大小变化
-onMounted(() => {
-  window.addEventListener('resize', updateCharts)
+useResizeObserver(dashboardRef, () => scheduleChartRefresh())
+const stopWindowResize = useEventListener(window, 'resize', scheduleChartRefresh)
+
+onBeforeUnmount(() => {
+  stopWindowResize()
 })
 </script>
 
-<style lang="scss" scoped>
-.dashboard-container {
-  background: var(--n-color);
-  min-height: 100%;
+<style scoped lang="scss">
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--shell-gap);
+}
 
-  .data-card {
-    transition: all 0.3s ease-in-out;
-    height: 180px;
-    overflow: hidden;
+.dashboard__stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--shell-gap);
+}
 
-    &:hover {
-      transform: translateY(-5px);
-    }
+.stat-card {
+  border-radius: var(--shell-radius-lg);
+  background: var(--shell-surface);
+  box-shadow: var(--shell-shadow);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 
-    .card-content {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      height: 100%;
-      padding: 4px 0;
-    }
-
-    .card-left {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      height: 100%;
-
-      .card-title {
-        font-size: 16px;
-        color: var(--n-text-color-2);
-        margin: 0 0 8px;
-      }
-
-      .card-value {
-        font-size: 24px;
-        font-weight: 600;
-        color: var(--n-text-color);
-        margin-bottom: 4px;
-      }
-
-      .card-total {
-        font-size: 14px;
-        color: var(--n-text-color-3);
-        margin-bottom: 8px;
-      }
-
-      .card-compare {
-        font-size: 13px;
-        color: var(--n-text-color-3);
-        margin-top: 4px;
-
-        div {
-          display: flex;
-          align-items: center;
-          margin-bottom: 2px;
-
-          .n-icon {
-            margin-right: 4px;
-          }
-        }
-      }
-    }
-
-    .card-right {
-      .n-icon {
-        padding: 12px;
-        border-radius: 12px;
-        background: rgba(0, 0, 0, 0.04);
-
-        &.primary {
-          color: #2080f0;
-        }
-        &.success {
-          color: #18a058;
-        }
-        &.warning {
-          color: #f0a020;
-        }
-        &.info {
-          color: #2080f0;
-        }
-      }
-    }
-
-    &.primary {
-      border-left: 4px solid #2080f0;
-    }
-    &.success {
-      border-left: 4px solid #18a058;
-    }
-    &.warning {
-      border-left: 4px solid #f0a020;
-    }
-    &.info {
-      border-left: 4px solid #2080f0;
-    }
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 45px rgba(15, 23, 42, 0.18);
   }
+}
 
-  .chart-card {
-    margin-top: 16px;
-    transition: all 0.3s ease-in-out;
+.stat-card__body {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
 
-    &:hover {
-      transform: translateY(-5px);
-    }
+.stat-card__label {
+  font-size: 14px;
+  color: var(--shell-muted-text-color);
+  margin-bottom: 4px;
+}
 
-    &.is-dark {
-      background: rgba(24, 24, 28, 0.9);
+.stat-card__value {
+  font-size: 30px;
+  font-weight: 600;
+  color: var(--shell-text-color);
+  margin: 0 0 4px;
+}
+
+.stat-card__total {
+  font-size: 13px;
+  color: var(--shell-muted-text-color);
+  margin-bottom: 8px;
+}
+
+.stat-card__deltas {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--shell-muted-text-color);
+
+    &.is-up {
+      color: #16a34a;
     }
   }
 }
 
-// 响应式布局
-@media screen and (max-width: 1400px) {
-  .dashboard-container {
-    .n-grid {
-      --n-cols: 12 !important;
+.stat-card__meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+  min-width: 90px;
+}
 
-      .n-grid-item {
-        --n-span: 6 !important;
-      }
-    }
+.stat-card__icon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--shell-radius-base);
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.stat-card--primary .stat-card__icon {
+  background: rgba(32, 128, 240, 0.18);
+  color: #2080f0;
+}
+.stat-card--success .stat-card__icon {
+  background: rgba(24, 160, 88, 0.18);
+  color: #18a058;
+}
+.stat-card--warning .stat-card__icon {
+  background: rgba(240, 160, 32, 0.18);
+  color: #f0a020;
+}
+.stat-card--info .stat-card__icon {
+  background: rgba(32, 128, 240, 0.12);
+  color: #2080f0;
+}
+
+.dashboard-panel {
+  border-radius: var(--shell-radius-lg);
+  background: var(--shell-surface);
+  box-shadow: var(--shell-shadow);
+}
+
+.dashboard-panel--highlight {
+  border: 1px solid var(--shell-border-color);
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--shell-text-color);
   }
 }
 
-@media screen and (max-width: 768px) {
-  .dashboard-container {
-    .n-grid {
-      .n-grid-item {
-        --n-span: 12 !important;
-      }
-    }
+.panel-subtitle {
+  margin: 0;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--shell-muted-text-color);
+}
+
+.dashboard__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--shell-gap);
+}
+
+@media (max-width: 768px) {
+  .stat-card__body {
+    flex-direction: column;
+  }
+
+  .stat-card__meta {
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
   }
 }
 </style>

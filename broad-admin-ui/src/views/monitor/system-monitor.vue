@@ -1,212 +1,188 @@
 <template>
-  <div class="system-monitor-container">
-    <n-grid :cols="24" :x-gap="16" :y-gap="16">
-      <!-- 操作按钮区 -->
-      <n-grid-item :span="24">
-        <div class="action-buttons">
-          <n-space>
-            <n-button
-              type="primary"
-              :color="autoRefresh ? '#18a058' : ''"
-              @click="toggleAutoRefresh"
-            >
-              <template #icon>
-                <n-icon>
-                  <RefreshCircleOutline />
-                </n-icon>
-              </template>
-              {{ autoRefresh ? '停止自动刷新' : '开始自动刷新' }}
-            </n-button>
-            <n-button v-if="!autoRefresh" @click="fetchMonitorData">
-              <template #icon>
-                <n-icon>
-                  <RefreshOutline />
-                </n-icon>
-              </template>
-              手动刷新
-            </n-button>
-            <n-text v-if="autoRefresh" depth="3">每2秒自动刷新一次</n-text>
-          </n-space>
+  <section class="monitor-page">
+    <header class="monitor-header">
+      <div>
+        <p class="header-subtitle">实时监控</p>
+        <h2>系统运行状况</h2>
+      </div>
+      <div class="header-actions">
+        <n-button tertiary round size="small" @click="fetchMonitorData" :disabled="autoRefresh">
+          <template #icon>
+            <n-icon><RefreshOutline /></n-icon>
+          </template>
+          手动刷新
+        </n-button>
+        <n-switch
+          :value="autoRefresh"
+          :round="false"
+          size="large"
+          @update:value="toggleAutoRefresh"
+        >
+          <template #checked>自动刷新</template>
+          <template #unchecked>自动刷新</template>
+        </n-switch>
+      </div>
+    </header>
+
+    <section class="monitor-grid">
+      <n-card class="panel" :bordered="false">
+        <template #header>
+          <div class="panel-header">
+            <div>
+              <p class="panel-subtitle">基础信息</p>
+              <h3>服务器信息</h3>
+            </div>
+          </div>
+        </template>
+        <n-descriptions :column="3" bordered>
+          <n-descriptions-item label="服务器名称">{{
+            serverInfo.computerName || '加载中...'
+          }}</n-descriptions-item>
+          <n-descriptions-item label="操作系统">{{
+            serverInfo.osName || '加载中...'
+          }}</n-descriptions-item>
+          <n-descriptions-item label="系统架构">{{
+            serverInfo.osArch || '加载中...'
+          }}</n-descriptions-item>
+          <n-descriptions-item label="IP 地址">{{
+            serverInfo.hostIp || '加载中...'
+          }}</n-descriptions-item>
+          <n-descriptions-item label="JDK 版本">{{
+            serverInfo.jdkVersion || '加载中...'
+          }}</n-descriptions-item>
+          <n-descriptions-item label="系统时区">{{
+            serverInfo.timeZone || '加载中...'
+          }}</n-descriptions-item>
+        </n-descriptions>
+      </n-card>
+
+      <n-card class="panel" :bordered="false">
+        <template #header>
+          <div class="panel-header">
+            <div>
+              <p class="panel-subtitle">资源占用</p>
+              <h3>CPU</h3>
+            </div>
+          </div>
+        </template>
+        <div class="gauge-wrapper">
+          <div ref="cpuGaugeRef" class="gauge-chart"></div>
+          <div class="gauge-stats">
+            <p class="gauge-title">CPU 使用率</p>
+            <p class="gauge-value">{{ cpu.usageRate }}%</p>
+            <ul>
+              <li>核心数：{{ cpu.cpuNum }}</li>
+              <li>用户：{{ cpu.used }}%</li>
+              <li>系统：{{ cpu.sys }}%</li>
+              <li>空闲：{{ cpu.free }}%</li>
+            </ul>
+          </div>
         </div>
-      </n-grid-item>
+      </n-card>
 
-      <!-- 服务器信息卡片 -->
-      <n-grid-item :span="24">
-        <n-card title="服务器信息" class="server-info-card">
-          <n-descriptions :column="3" bordered>
-            <n-descriptions-item label="服务器名称">{{
-              serverInfo.computerName || '加载中...'
-            }}</n-descriptions-item>
-            <n-descriptions-item label="操作系统">{{
-              serverInfo.osName || '加载中...'
-            }}</n-descriptions-item>
-            <n-descriptions-item label="系统架构">{{
-              serverInfo.osArch || '加载中...'
-            }}</n-descriptions-item>
-            <n-descriptions-item label="IP地址">{{
-              serverInfo.hostIp || '加载中...'
-            }}</n-descriptions-item>
-            <n-descriptions-item label="JDK版本">{{
-              serverInfo.jdkVersion || '加载中...'
-            }}</n-descriptions-item>
-            <n-descriptions-item label="系统时区">{{
-              serverInfo.timeZone || '加载中...'
-            }}</n-descriptions-item>
-          </n-descriptions>
-        </n-card>
-      </n-grid-item>
-
-      <!-- CPU信息卡片 -->
-      <n-grid-item :span="12">
-        <n-card title="CPU信息" class="resource-card">
-          <div class="gauge-container">
-            <div class="gauge-wrapper">
-              <div ref="cpuGaugeRef" class="gauge-chart"></div>
-              <div class="gauge-text">
-                <h4>CPU使用率</h4>
-                <p>{{ cpu.usageRate }}%</p>
-              </div>
+      <n-card class="panel" :bordered="false">
+        <template #header>
+          <div class="panel-header">
+            <div>
+              <p class="panel-subtitle">资源占用</p>
+              <h3>内存</h3>
             </div>
           </div>
-          <n-descriptions bordered>
-            <n-descriptions-item label="核心数">{{ cpu.cpuNum }}</n-descriptions-item>
-            <n-descriptions-item label="用户使用率">{{ cpu.used }}%</n-descriptions-item>
-            <n-descriptions-item label="系统使用率">{{ cpu.sys }}%</n-descriptions-item>
-            <n-descriptions-item label="当前空闲率">{{ cpu.free }}%</n-descriptions-item>
-          </n-descriptions>
-        </n-card>
-      </n-grid-item>
+        </template>
+        <div class="gauge-wrapper">
+          <div ref="memoryGaugeRef" class="gauge-chart"></div>
+          <div class="gauge-stats">
+            <p class="gauge-title">内存使用率</p>
+            <p class="gauge-value">{{ memory.usageRate }}%</p>
+            <ul>
+              <li>总计：{{ formatSize(memory.total) }}</li>
+              <li>已用：{{ formatSize(memory.used) }}</li>
+              <li>剩余：{{ formatSize(memory.free) }}</li>
+            </ul>
+          </div>
+        </div>
+      </n-card>
 
-      <!-- 内存信息卡片 -->
-      <n-grid-item :span="12">
-        <n-card title="内存信息" class="resource-card">
-          <div class="gauge-container">
-            <div class="gauge-wrapper">
-              <div ref="memoryGaugeRef" class="gauge-chart"></div>
-              <div class="gauge-text">
-                <h4>内存使用率</h4>
-                <p>{{ memory.usageRate }}%</p>
-              </div>
+      <n-card class="panel" :bordered="false">
+        <template #header>
+          <div class="panel-header">
+            <div>
+              <p class="panel-subtitle">资源占用</p>
+              <h3>JVM</h3>
             </div>
           </div>
-          <n-descriptions bordered>
-            <n-descriptions-item label="总内存">{{ formatSize(memory.total) }}</n-descriptions-item>
-            <n-descriptions-item label="已用内存">{{
-              formatSize(memory.used)
-            }}</n-descriptions-item>
-            <n-descriptions-item label="剩余内存">{{
-              formatSize(memory.free)
-            }}</n-descriptions-item>
-          </n-descriptions>
-        </n-card>
-      </n-grid-item>
+        </template>
+        <div class="gauge-wrapper">
+          <div ref="jvmGaugeRef" class="gauge-chart"></div>
+          <div class="gauge-stats">
+            <p class="gauge-title">JVM 使用率</p>
+            <p class="gauge-value">{{ jvm.usageRate }}%</p>
+            <ul>
+              <li>最大：{{ formatSize(jvm.max) }}</li>
+              <li>已用：{{ formatSize(jvm.used) }}</li>
+              <li>空闲：{{ formatSize(jvm.free) }}</li>
+              <li>运行：{{ jvm.runTime }}</li>
+            </ul>
+          </div>
+        </div>
+      </n-card>
 
-      <!-- 磁盘信息卡片 -->
-      <n-grid-item :span="12">
-        <n-card title="磁盘信息" class="resource-card">
-          <div v-if="disk.disks && disk.disks.length > 0">
-            <div v-for="(item, index) in disk.disks" :key="index" class="disk-item">
-              <div class="disk-info">
-                <span class="disk-name">{{ item.dirName }}</span>
-                <span class="disk-usage">{{ item.usage }}%</span>
-              </div>
-              <n-progress
-                type="line"
-                :percentage="item.usage"
-                :color="getDiskProgressColor(item.usage)"
-                :height="12"
-                :border-radius="6"
-              />
-              <div class="disk-detail">
-                <span>总容量: {{ formatSize(item.total) }}</span>
-                <span>已用: {{ formatSize(item.used) }}</span>
-                <span>可用: {{ formatSize(item.free) }}</span>
-              </div>
+      <n-card class="panel" :bordered="false">
+        <template #header>
+          <div class="panel-header">
+            <div>
+              <p class="panel-subtitle">磁盘阵列</p>
+              <h3>磁盘信息</h3>
             </div>
           </div>
-          <n-empty v-else description="暂无磁盘信息" />
-        </n-card>
-      </n-grid-item>
-
-      <!-- JVM信息卡片 -->
-      <n-grid-item :span="12">
-        <n-card title="JVM信息" class="resource-card">
-          <div class="gauge-container">
-            <div class="gauge-wrapper">
-              <div ref="jvmGaugeRef" class="gauge-chart"></div>
-              <div class="gauge-text">
-                <h4>JVM内存使用率</h4>
-                <p>{{ jvm.usageRate }}%</p>
-              </div>
+        </template>
+        <div v-if="disk.disks && disk.disks.length" class="disk-grid">
+          <div v-for="(item, index) in disk.disks" :key="index" class="disk-card">
+            <div class="disk-card__head">
+              <span>{{ item.dirName }}</span>
+              <strong>{{ item.usage }}%</strong>
             </div>
-          </div>
-          <n-descriptions bordered>
-            <n-descriptions-item label="JVM最大内存">{{ formatSize(jvm.max) }}</n-descriptions-item>
-            <n-descriptions-item label="JVM已用内存">{{
-              formatSize(jvm.used)
-            }}</n-descriptions-item>
-            <n-descriptions-item label="JVM空闲内存">{{
-              formatSize(jvm.free)
-            }}</n-descriptions-item>
-            <n-descriptions-item label="JVM版本">{{ jvm.version }}</n-descriptions-item>
-            <n-descriptions-item label="JVM开始时间">{{ jvm.startTime }}</n-descriptions-item>
-            <n-descriptions-item label="JVM运行时间">{{ jvm.runTime }}</n-descriptions-item>
-          </n-descriptions>
-        </n-card>
-      </n-grid-item>
-
-      <!-- 服务状态卡片 -->
-      <n-grid-item :span="24">
-        <n-card title="服务状态监控" class="services-card">
-          <n-spin :show="loadingServices">
-            <n-data-table
-              :columns="servicesColumns"
-              :data="servicesList"
-              :pagination="{ pageSize: 10 }"
-              :bordered="true"
+            <n-progress
+              type="line"
+              :percentage="item.usage"
+              :color="getDiskProgressColor(item.usage)"
+              :height="10"
+              :border-radius="6"
             />
-          </n-spin>
-        </n-card>
-      </n-grid-item>
-    </n-grid>
+            <div class="disk-card__meta">
+              <span>总: {{ formatSize(item.total) }}</span>
+              <span>已用: {{ formatSize(item.used) }}</span>
+              <span>可用: {{ formatSize(item.free) }}</span>
+            </div>
+          </div>
+        </div>
+        <n-empty v-else description="暂无磁盘信息" />
+      </n-card>
 
-    <!-- 自动刷新选项 -->
-    <div class="refresh-options">
-      <n-tooltip trigger="hover" placement="left">
-        <template #trigger>
-          <n-button
-            quaternary
-            circle
-            :type="autoRefresh ? 'primary' : undefined"
-            @click="toggleAutoRefresh"
-          >
-            <template #icon>
-              <n-icon>
-                <RefreshCircleOutline />
-              </n-icon>
-            </template>
-          </n-button>
+      <n-card class="panel panel--wide" :bordered="false">
+        <template #header>
+          <div class="panel-header">
+            <div>
+              <p class="panel-subtitle">可用性</p>
+              <h3>服务状态监控</h3>
+            </div>
+          </div>
         </template>
-        {{ autoRefresh ? '停止自动刷新' : '开始自动刷新' }}
-      </n-tooltip>
-      <n-tooltip v-if="!autoRefresh" trigger="hover" placement="left">
-        <template #trigger>
-          <n-button quaternary circle @click="fetchMonitorData">
-            <template #icon>
-              <n-icon>
-                <RefreshOutline />
-              </n-icon>
-            </template>
-          </n-button>
-        </template>
-        手动刷新
-      </n-tooltip>
-    </div>
-  </div>
+        <n-spin :show="loadingServices">
+          <n-data-table
+            :columns="servicesColumns"
+            :data="servicesList"
+            :pagination="{ pageSize: 10 }"
+            :bordered="false"
+          />
+        </n-spin>
+      </n-card>
+    </section>
+  </section>
 </template>
 
 <script lang="ts" setup name="SystemMonitorView">
-import { ref, reactive, onMounted, onBeforeUnmount, h } from 'vue'
+import { ref, reactive, onMounted, onBeforeUnmount, h, watch } from 'vue'
 import { useMessage, NTag } from 'naive-ui'
 import * as echarts from 'echarts/core'
 import { GaugeChart } from 'echarts/charts'
@@ -217,8 +193,9 @@ import {
   TitleComponent
 } from 'echarts/components'
 import { CanvasRenderer } from 'echarts/renderers'
-import { RefreshOutline, RefreshCircleOutline } from '@vicons/ionicons5'
+import { RefreshOutline } from '@vicons/ionicons5'
 import { getSystemInfo, getServiceStatus } from '@/api/monitor/system'
+import { useIntervalFn } from '@vueuse/core'
 
 // 注册必须的组件
 echarts.use([
@@ -287,8 +264,15 @@ const loadingServices = ref(false)
 
 // 自动刷新
 const autoRefresh = ref(true)
-let refreshTimer: any = null
-const refreshInterval = 5000 // 修改为5秒刷新一次
+const refreshInterval = 5000
+const { pause: pauseAutoRefresh, resume: resumeAutoRefresh } = useIntervalFn(
+  () => {
+    fetchMonitorData()
+    fetchServiceStatus()
+  },
+  refreshInterval,
+  { immediate: false }
+)
 
 // 图表引用
 const cpuGaugeRef = ref<HTMLElement | null>(null)
@@ -463,95 +447,71 @@ const getGaugeOption = (name: string, value: number, color: string) => {
     series: [
       {
         type: 'gauge',
-        radius: '100%',
+        radius: '90%',
         startAngle: 180,
         endAngle: 0,
         min: 0,
         max: 100,
-        splitNumber: 10,
+        progress: {
+          show: true,
+          width: 14,
+          itemStyle: {
+            color
+          }
+        },
         axisLine: {
           lineStyle: {
-            width: 8,
-            color: [
-              [0.3, '#67e0e3'],
-              [0.7, '#37a2da'],
-              [1, '#fd666d']
-            ]
+            width: 14,
+            color: [[1, 'rgba(148, 163, 184, 0.35)']]
           }
         },
         pointer: {
-          icon: 'path://M12.8,0.7l12,40.1H0.7L12.8,0.7z',
-          length: '12%',
-          width: 8,
-          offsetCenter: [0, '-60%'],
-          itemStyle: {
-            color: 'auto'
-          }
+          show: false
         },
         axisTick: {
-          length: 12,
-          lineStyle: {
-            color: 'auto',
-            width: 2
-          }
+          show: false
         },
         splitLine: {
-          length: 20,
-          lineStyle: {
-            color: 'auto',
-            width: 5
-          }
+          show: false
         },
         axisLabel: {
-          color: '#999',
-          fontSize: 12,
-          distance: -60,
-          formatter: function (value: number) {
-            if (value === 0 || value === 100) {
-              return value + '%'
-            }
-            return ''
-          }
-        },
-        title: {
           show: false
         },
         detail: {
           valueAnimation: true,
           formatter: '{value}%',
-          color: 'auto',
-          fontSize: 24,
-          fontWeight: 'bold',
-          offsetCenter: [0, '30%']
+          color: color,
+          fontSize: 28,
+          offsetCenter: [0, 0]
         },
-        data: [
-          {
-            value: value,
-            name: ''
-          }
-        ]
+        data: [{ value, name }]
       }
     ]
   }
 }
 
 // 切换自动刷新
-const toggleAutoRefresh = () => {
-  autoRefresh.value = !autoRefresh.value
-  if (autoRefresh.value) {
-    message.success('已开启自动刷新，每2秒刷新一次')
-    refreshTimer = setInterval(() => {
-      fetchMonitorData()
-      fetchServiceStatus()
-    }, refreshInterval)
-  } else {
-    message.info('已关闭自动刷新')
-    if (refreshTimer) {
-      clearInterval(refreshTimer)
-      refreshTimer = null
-    }
-  }
+const toggleAutoRefresh = (value?: boolean) => {
+  autoRefresh.value = typeof value === 'boolean' ? value : !autoRefresh.value
 }
+
+let refreshWatchInitialized = false
+watch(
+  () => autoRefresh.value,
+  (val) => {
+    if (val) {
+      resumeAutoRefresh()
+    } else {
+      pauseAutoRefresh()
+    }
+    if (refreshWatchInitialized) {
+      message[val ? 'success' : 'info'](val ? '已开启自动刷新' : '已关闭自动刷新')
+    } else {
+      refreshWatchInitialized = true
+    }
+  },
+  { immediate: true }
+)
 
 // 格式化容量大小
 const formatSize = (size: number) => {
@@ -578,142 +538,171 @@ onMounted(() => {
   setTimeout(() => {
     initGaugeCharts()
   }, 100)
-
-  // 自动开启定时刷新
-  refreshTimer = setInterval(() => {
-    fetchMonitorData()
-    fetchServiceStatus()
-  }, refreshInterval)
-
-  // 窗口大小变化时重新调整图表大小
   window.addEventListener('resize', handleResize)
 })
 
-// 组件卸载前清理
 onBeforeUnmount(() => {
-  if (refreshTimer) {
-    clearInterval(refreshTimer)
-    refreshTimer = null
-  }
-
+  pauseAutoRefresh()
   window.removeEventListener('resize', handleResize)
-
-  if (cpuGaugeChart) {
-    cpuGaugeChart.dispose()
-    cpuGaugeChart = null
-  }
-
-  if (memoryGaugeChart) {
-    memoryGaugeChart.dispose()
-    memoryGaugeChart = null
-  }
-
-  if (jvmGaugeChart) {
-    jvmGaugeChart.dispose()
-    jvmGaugeChart = null
-  }
+  cpuGaugeChart?.dispose()
+  memoryGaugeChart?.dispose()
+  jvmGaugeChart?.dispose()
 })
 
-// 调整图表大小
 const handleResize = () => {
   cpuGaugeChart?.resize()
   memoryGaugeChart?.resize()
   jvmGaugeChart?.resize()
 }
 </script>
+<style scoped lang="scss">
+.monitor-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--shell-gap);
+  padding-bottom: 24px;
+}
 
-<style lang="scss" scoped>
-.system-monitor-container {
-  padding: 16px;
-  background-color: var(--body-color);
-  min-height: 100%;
-  position: relative;
+.monitor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--shell-surface);
+  border-radius: var(--shell-radius-lg);
+  padding: 20px;
+  box-shadow: var(--shell-shadow);
+}
 
-  .action-buttons {
-    margin-bottom: 16px;
-    padding: 12px;
-    border-radius: 8px;
-    background-color: var(--card-color);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.monitor-header h2 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.header-subtitle {
+  margin: 0;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--shell-muted-text-color);
+}
+
+.monitor-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--shell-gap);
+}
+
+.panel {
+  border-radius: var(--shell-radius-lg);
+  background: var(--shell-surface);
+  box-shadow: var(--shell-shadow);
+}
+
+.panel--wide {
+  grid-column: 1 / -1;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.panel-subtitle {
+  margin: 0;
+  font-size: 12px;
+  color: var(--shell-muted-text-color);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.gauge-wrapper {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+}
+
+.gauge-chart {
+  width: 220px;
+  height: 160px;
+}
+
+.gauge-stats {
+  flex: 1;
+}
+
+.gauge-stats .gauge-title {
+  margin: 0;
+  font-size: 13px;
+  color: var(--shell-muted-text-color);
+}
+
+.gauge-stats .gauge-value {
+  margin: 4px 0 12px;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.gauge-stats ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  font-size: 13px;
+  color: var(--shell-muted-text-color);
+}
+
+.disk-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.disk-card {
+  border: 1px solid var(--shell-border-color);
+  border-radius: var(--shell-radius-base);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.disk-card__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+}
+
+.disk-card__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--shell-muted-text-color);
+}
+
+@media (max-width: 768px) {
+  .monitor-header {
+    flex-direction: column;
+    gap: 12px;
   }
 
-  .server-info-card,
-  .resource-card,
-  .services-card {
-    margin-bottom: 16px;
+  .gauge-wrapper {
+    flex-direction: column;
+    align-items: flex-start;
   }
 
-  .gauge-container {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 16px;
-
-    .gauge-wrapper {
-      position: relative;
-      width: 200px;
-      height: 150px;
-
-      .gauge-chart {
-        width: 100%;
-        height: 100%;
-      }
-
-      .gauge-text {
-        position: absolute;
-        top: 40%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        text-align: center;
-
-        h4 {
-          font-size: 14px;
-          margin: 0;
-          color: var(--text-color-2);
-        }
-
-        p {
-          font-size: 22px;
-          font-weight: bold;
-          margin: 0;
-          color: var(--text-color-1);
-        }
-      }
-    }
-  }
-
-  .disk-item {
-    margin-bottom: 16px;
-
-    &:last-child {
-      margin-bottom: 0;
-    }
-
-    .disk-info {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 5px;
-
-      .disk-name {
-        font-weight: 500;
-        color: var(--text-color-1);
-      }
-
-      .disk-usage {
-        font-weight: 600;
-      }
-    }
-
-    .disk-detail {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 8px;
-      font-size: 12px;
-      color: var(--text-color-3);
-    }
-  }
-
-  .refresh-options {
-    display: none; /* 隐藏原来的固钉按钮 */
+  .gauge-chart {
+    width: 100%;
   }
 }
 </style>

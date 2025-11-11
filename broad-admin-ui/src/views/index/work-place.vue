@@ -1,111 +1,107 @@
 <template>
-  <div class="workplace-container">
-    <!-- 用户信息卡片 -->
-    <n-card class="user-card" :bordered="false">
-      <div class="user-info">
-        <div class="user-avatar">
-          <n-avatar :src="avatar" :fallback-src="defaultAvatar" :size="80" round />
+  <section class="workplace">
+    <n-card class="workplace-hero" :bordered="false">
+      <div class="workplace-hero__primary">
+        <n-avatar :src="avatar" :fallback-src="defaultAvatar" :size="86" round />
+        <div class="workplace-hero__intro">
+          <p class="hero-greeting">{{ greeting }}，{{ displayName }}</p>
+          <h2 class="hero-title">今天也要保持高效</h2>
+          <div class="hero-meta">
+            <n-tag type="success" round size="small">{{ userRole }}</n-tag>
+            <span class="hero-meta__weather">
+              <n-icon size="16"><SunnyOutline /></n-icon>
+              {{ weatherInfo }}
+            </span>
+            <span class="hero-meta__date">{{ formattedDate }}</span>
+          </div>
         </div>
-        <div class="user-detail">
-          <h3 class="welcome">
-            {{ greeting }}，{{ userStore.nickName || userStore.userName }}
-            <n-tag type="success" class="role-tag">{{ userRole }}</n-tag>
-          </h3>
-          <p class="subtitle">
-            <n-icon><SunnyOutline /></n-icon>
-            {{ weatherInfo }}
-          </p>
-        </div>
-        <div class="user-stats">
-          <div class="stat-item">
-            <span class="label">项目数</span>
-            <span class="value">{{ projectCount }}</span>
-          </div>
-          <div class="stat-item">
-            <span class="label">待办项</span>
-            <span class="value">{{ todoCount }}/{{ totalTodos }}</span>
-          </div>
-          <div class="stat-item">
-            <span class="label">当前日期</span>
-            <span class="value">{{ formattedDate }}</span>
-          </div>
+      </div>
+      <div class="workplace-hero__stats">
+        <div v-for="stat in heroStats" :key="stat.label" class="hero-stat">
+          <p class="hero-stat__label">{{ stat.label }}</p>
+          <p class="hero-stat__value">{{ stat.value }}</p>
+          <small v-if="stat.helper">{{ stat.helper }}</small>
         </div>
       </div>
     </n-card>
 
-    <!-- 快捷操作区 -->
-    <div class="quick-actions">
-      <n-grid :cols="24" :x-gap="16" :y-gap="16">
-        <n-grid-item v-for="action in quickActions" :key="action.key" class="grid-item" :span="4">
-          <n-card
-            class="action-card"
-            :class="{ 'is-dark': isDark }"
-            @click="handleQuickAction(action)"
-          >
-            <div class="action-content">
-              <n-icon :size="32" :color="action.color">
-                <component :is="action.icon" />
-              </n-icon>
-              <span class="action-title">{{ action.title }}</span>
-            </div>
-          </n-card>
-        </n-grid-item>
-      </n-grid>
-    </div>
+    <section class="workplace-actions">
+      <header class="section-header">
+        <div>
+          <p class="section-subtitle">常用功能</p>
+          <h3>快捷操作</h3>
+        </div>
+      </header>
+      <div class="action-grid">
+        <button
+          v-for="action in quickActions"
+          :key="action.key"
+          class="action-pill"
+          type="button"
+          @click="handleQuickAction(action)"
+        >
+          <span class="action-pill__icon" :style="{ color: action.color }">
+            <n-icon size="22">
+              <component :is="action.icon" />
+            </n-icon>
+          </span>
+          <div>
+            <span class="action-pill__title">{{ action.title }}</span>
+            <small>{{ action.description }}</small>
+          </div>
+        </button>
+      </div>
+    </section>
 
-    <!-- 项目概览区 -->
-    <div class="project-overview">
-      <n-grid :cols="24" :x-gap="16">
-        <n-grid-item :span="14">
-          <n-card title="项目进度" class="project-card" :class="{ 'is-dark': isDark }">
-            <n-data-table
-              :columns="projectColumns"
-              :data="projectList"
-              :pagination="false"
-              :bordered="false"
-              :single-line="false"
-            >
-              <template #status="{ row }">
-                <n-tag :type="getStatusType(row.status)">
-                  {{ row.status }}
-                </n-tag>
-              </template>
-              <template #progress="{ row }">
-                <n-progress
-                  type="line"
-                  :percentage="row.progress"
-                  :color="getProgressColor(row.progress)"
-                  :height="6"
-                />
-              </template>
-            </n-data-table>
-          </n-card>
-        </n-grid-item>
-        <n-grid-item :span="10">
-          <n-card title="项目动态" class="activity-card" :class="{ 'is-dark': isDark }">
-            <n-timeline>
-              <n-timeline-item
-                v-for="activity in activityList"
-                :key="activity.id"
-                :type="activity.type"
-                :title="activity.title"
-                :content="activity.content"
-                :time="activity.time"
-              >
-                <template #icon>
-                  <n-avatar :src="activity.avatar" :round="true" :size="24" />
-                </template>
-              </n-timeline-item>
-            </n-timeline>
-          </n-card>
-        </n-grid-item>
-      </n-grid>
+    <div class="workplace-panels">
+      <n-card class="panel" :bordered="false">
+        <template #header>
+          <div class="panel-header">
+            <div>
+              <p class="panel-subtitle">项目进度</p>
+              <h3>项目概览</h3>
+            </div>
+            <n-tag type="info" round>共 {{ projectList.length }} 个</n-tag>
+          </div>
+        </template>
+        <n-data-table
+          :columns="projectColumns"
+          :data="projectList"
+          :pagination="false"
+          :bordered="false"
+          :single-line="false"
+        />
+      </n-card>
+      <n-card class="panel" :bordered="false">
+        <template #header>
+          <div class="panel-header">
+            <div>
+              <p class="panel-subtitle">实时动态</p>
+              <h3>项目活动</h3>
+            </div>
+          </div>
+        </template>
+        <n-timeline>
+          <n-timeline-item
+            v-for="activity in activityList"
+            :key="activity.id"
+            :type="activity.type"
+            :title="activity.title"
+            :content="activity.content"
+            :time="activity.time"
+          >
+            <template #icon>
+              <n-avatar :src="activity.avatar" round :size="24" />
+            </template>
+          </n-timeline-item>
+        </n-timeline>
+      </n-card>
     </div>
-  </div>
+  </section>
 </template>
 
 <script lang="ts" setup name="WorkplaceView">
-import { ref, computed, h } from 'vue'
+import { computed, h, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/store/modules/user'
 import { useAppConfigStore } from '@/store/modules/app-config'
@@ -123,14 +119,12 @@ import {
 } from '@vicons/ionicons5'
 import defaultAvatar from '@/assets/defaultProfilePicture.gif'
 
-// 组件实例
 const router = useRouter()
 const userStore = useUserStore()
 const appConfigStore = useAppConfigStore()
 
-// 计算属性
-const isDark = computed(() => appConfigStore.theme === 'dark')
 const avatar = computed(() => userStore.avatar)
+const displayName = computed(() => userStore.nickName || userStore.userName || '访客')
 const formattedDate = computed(() => format(new Date(), 'yyyy/MM/dd', { locale: zhCN }))
 const greeting = computed(() => {
   const hour = new Date().getHours()
@@ -143,64 +137,41 @@ const greeting = computed(() => {
   return '晚上好'
 })
 
-// 计算用户角色
 const userRole = computed(() => {
-  return '普通用户' // 这里可以根据实际的用户权限判断逻辑返回对应的角色名称
+  const role = userStore.roles?.[0] || '普通用户'
+  return role.toUpperCase()
 })
 
-// 统计数据
 const projectCount = ref(12)
 const todoCount = ref(3)
 const totalTodos = ref(20)
 const weatherInfo = ref('今日晴朗，适合出门散步~')
+const tasksProgress = computed(() =>
+  totalTodos.value === 0 ? 0 : Math.round((todoCount.value / totalTodos.value) * 100)
+)
 
-// 快捷操作配置
-const quickActions = [
-  {
-    key: 'home',
-    title: '首页概览',
-    icon: HomeOutline,
-    path: '/',
-    color: '#2080f0'
-  },
-  {
-    key: 'system',
-    title: '系统管理',
-    icon: SettingsOutline,
-    path: '/system/department',
-    color: '#18a058'
-  },
-  {
-    key: 'list',
-    title: '数据列表',
-    icon: ListOutline,
-    path: '/list/table-custom',
-    color: '#f0a020'
-  },
-  {
-    key: 'form',
-    title: '表单示例',
-    icon: DocumentTextOutline,
-    path: '/form/base-form-view',
-    color: '#d03050'
-  },
-  {
-    key: 'menu',
-    title: '多级菜单',
-    icon: LayersOutline,
-    path: '/next/menu2/menu-2-1/menu-2-1-1',
-    color: '#8f44ff'
-  },
-  {
-    key: 'more',
-    title: '更多功能',
-    icon: AppsOutline,
-    path: '/other/qrcode',
-    color: '#1890ff'
-  }
+const heroStats = computed(() => [
+  { label: '当前项目', value: `${projectCount.value}`, helper: '进行中' },
+  { label: '待办事项', value: `${todoCount.value}/${totalTodos.value}`, helper: `完成度 ${tasksProgress.value}%` },
+  { label: '系统主题', value: appConfigStore.theme === 'dark' ? '暗黑' : '明亮', helper: appConfigStore.deviceType.toUpperCase() }
+])
+
+const quickActions: Array<{
+  key: string
+  title: string
+  description: string
+  icon: any
+  path: string
+  color: string
+}> = [
+  { key: 'home', title: '首页概览', description: '数据监控中心', icon: HomeOutline, path: '/', color: '#2080f0' },
+  { key: 'system', title: '系统管理', description: '组织架构与权限', icon: SettingsOutline, path: '/system/department', color: '#18a058' },
+  { key: 'list', title: '数据列表', description: '高频数据维护', icon: ListOutline, path: '/list/table-custom', color: '#f0a020' },
+  { key: 'form', title: '表单示例', description: '录入与审批', icon: DocumentTextOutline, path: '/form/base-form-view', color: '#d03050' },
+  { key: 'menu', title: '多级菜单', description: '导航结构演示', icon: LayersOutline, path: '/next/menu2/menu-2-1/menu-2-1-1', color: '#8f44ff' },
+  { key: 'more', title: '更多功能', description: '探索更多组件', icon: AppsOutline, path: '/other/qrcode', color: '#1890ff' }
 ]
 
-// 项目列表配置
 const projectColumns = [
   { title: '项目名称', key: 'name' },
   { title: '开始时间', key: 'startTime' },
@@ -208,66 +179,33 @@ const projectColumns = [
   {
     title: '进度',
     key: 'progress',
-    render: (row: { progress: number }) => {
-      return h(NProgress, {
+    render: (row: { progress: number }) =>
+      h(NProgress, {
         type: 'line',
         percentage: row.progress,
         color: getProgressColor(row.progress),
         height: 6
       })
-    }
   },
   {
     title: '状态',
     key: 'status',
-    render: (row: { status: string }) => {
-      return h(
+    render: (row: { status: string }) =>
+      h(
         NTag,
-        {
-          type: getStatusType(row.status)
-        },
+        { type: getStatusType(row.status) },
         { default: () => row.status }
       )
-    }
   }
 ]
 
 const projectList = [
-  {
-    id: 1,
-    name: '后台管理系统',
-    startTime: '2024-01-01',
-    endTime: '2024-03-31',
-    progress: 85,
-    status: '进行中'
-  },
-  {
-    id: 2,
-    name: '移动端APP开发',
-    startTime: '2024-02-01',
-    endTime: '2024-05-31',
-    progress: 35,
-    status: '进行中'
-  },
-  {
-    id: 3,
-    name: '数据分析平台',
-    startTime: '2024-01-15',
-    endTime: '2024-02-28',
-    progress: 100,
-    status: '已完成'
-  },
-  {
-    id: 4,
-    name: '官网改版',
-    startTime: '2024-03-01',
-    endTime: '2024-04-15',
-    progress: 0,
-    status: '未开始'
-  }
+  { id: 1, name: '后台管理系统', startTime: '2024-01-01', endTime: '2024-03-31', progress: 85, status: '进行中' },
+  { id: 2, name: '移动端APP开发', startTime: '2024-02-01', endTime: '2024-05-31', progress: 35, status: '进行中' },
+  { id: 3, name: '数据分析平台', startTime: '2024-01-15', endTime: '2024-02-28', progress: 100, status: '已完成' },
+  { id: 4, name: '官网改版', startTime: '2024-03-01', endTime: '2024-04-15', progress: 0, status: '未开始' }
 ]
 
-// 项目动态
 const activityList = [
   {
     id: 1,
@@ -295,7 +233,6 @@ const activityList = [
   }
 ]
 
-// 工具函数
 const getStatusType = (status: string) => {
   switch (status) {
     case '已完成':
@@ -316,170 +253,199 @@ const getProgressColor = (progress: number) => {
   return '#d03050'
 }
 
-// 事件处理
-const handleQuickAction = (action: (typeof quickActions)[0]) => {
+const handleQuickAction = (action: (typeof quickActions)[number]) => {
   router.push(action.path)
 }
 </script>
 
-<style lang="scss" scoped>
-.workplace-container {
-  background: var(--n-color);
-  min-height: 100%;
+<style scoped lang="scss">
+.workplace {
+  display: flex;
+  flex-direction: column;
+  gap: var(--shell-gap);
+}
 
-  .user-card {
-    margin-bottom: 16px;
-    transition: all 0.3s;
+.workplace-hero {
+  border-radius: var(--shell-radius-xl);
+  background: linear-gradient(135deg, rgba(43, 92, 231, 0.18), rgba(14, 165, 233, 0.12));
+  border: 1px solid rgba(43, 92, 231, 0.2);
+  box-shadow: var(--shell-shadow);
+}
 
-    .user-info {
-      display: flex;
-      align-items: center;
-      padding: 16px;
+.workplace-hero__primary {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  padding-bottom: 12px;
+}
 
-      .user-avatar {
-        margin-right: 24px;
-      }
+.hero-greeting {
+  margin: 0;
+  font-size: 14px;
+  color: var(--shell-muted-text-color);
+}
 
-      .user-detail {
-        flex: 1;
+.hero-title {
+  margin: 4px 0 8px;
+  font-size: 24px;
+  font-weight: 600;
+}
 
-        .welcome {
-          font-size: 20px;
-          font-weight: 500;
-          color: var(--n-text-color);
-          margin: 0 0 8px;
-          display: flex;
-          align-items: center;
+.hero-meta {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  font-size: 13px;
+  color: var(--shell-muted-text-color);
+}
 
-          .role-tag {
-            margin-left: 12px;
-          }
-        }
+.hero-meta__weather,
+.hero-meta__date {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
 
-        .subtitle {
-          color: var(--n-text-color-3);
-          margin: 0;
-          display: flex;
-          align-items: center;
+.workplace-hero__stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 16px;
+  margin-top: 12px;
+}
 
-          .n-icon {
-            margin-right: 4px;
-          }
-        }
-      }
+.hero-stat {
+  padding: 12px 16px;
+  border-radius: var(--shell-radius-base);
+  background: rgba(255, 255, 255, 0.55);
+  color: #0f172a;
 
-      .user-stats {
-        display: flex;
-        gap: 32px;
-
-        .stat-item {
-          text-align: center;
-
-          .label {
-            font-size: 13px;
-            color: var(--n-text-color-3);
-            margin-bottom: 4px;
-            display: block;
-          }
-
-          .value {
-            font-size: 20px;
-            font-weight: 600;
-            color: var(--n-text-color);
-          }
-        }
-      }
-    }
+  .hero-stat__label {
+    margin: 0;
+    font-size: 13px;
+    opacity: 0.75;
   }
 
-  .quick-actions {
-    margin-bottom: 16px;
-
-    .action-card {
-      cursor: pointer;
-      transition: all 0.3s;
-
-      &:hover {
-        transform: translateY(-4px);
-      }
-
-      &.is-dark {
-        background: rgba(24, 24, 28, 0.9);
-      }
-
-      .action-content {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 8px;
-        padding: 16px;
-
-        .action-title {
-          font-size: 14px;
-          color: var(--n-text-color);
-        }
-      }
-    }
+  .hero-stat__value {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
   }
 
-  .project-overview {
-    .project-card,
-    .activity-card {
-      height: 100%;
-      transition: all 0.3s;
-
-      &.is-dark {
-        background: rgba(24, 24, 28, 0.9);
-      }
-    }
-
-    .activity-card {
-      :deep(.n-timeline) {
-        padding: 16px;
-      }
-    }
+  small {
+    font-size: 12px;
+    opacity: 0.85;
   }
 }
 
-// 响应式布局
-@media screen and (max-width: 1400px) {
-  .workplace-container {
-    .quick-actions {
-      .grid-item {
-        --n-span: 6 !important;
-      }
-    }
+.workplace-actions {
+  background: var(--shell-surface);
+  border-radius: var(--shell-radius-lg);
+  padding: 20px;
+  box-shadow: var(--shell-shadow);
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+
+  h3 {
+    margin: 0;
+    font-size: 18px;
   }
 }
 
-@media screen and (max-width: 768px) {
-  .workplace-container {
-    .user-info {
-      flex-direction: column;
-      text-align: center;
+.section-subtitle {
+  margin: 0;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--shell-muted-text-color);
+}
 
-      .user-avatar {
-        margin: 0 0 16px;
-      }
+.action-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
 
-      .user-stats {
-        margin-top: 16px;
-        width: 100%;
-        justify-content: space-around;
-      }
-    }
+.action-pill {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  border-radius: var(--shell-radius-base);
+  border: 1px solid var(--shell-border-color);
+  background: transparent;
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease;
 
-    .quick-actions {
-      .grid-item {
-        --n-span: 12 !important;
-      }
-    }
+  &:hover {
+    transform: translateY(-3px);
+    border-color: var(--color-primary);
+  }
+}
 
-    .project-overview {
-      .n-grid-item {
-        --n-span: 24 !important;
-      }
-    }
+.action-pill__icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: rgba(15, 23, 42, 0.05);
+  display: grid;
+  place-items: center;
+}
+
+.action-pill__title {
+  font-weight: 600;
+  color: var(--shell-text-color);
+  display: block;
+}
+
+.action-pill small {
+  font-size: 12px;
+  color: var(--shell-muted-text-color);
+}
+
+.workplace-panels {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--shell-gap);
+}
+
+.panel {
+  border-radius: var(--shell-radius-lg);
+  background: var(--shell-surface);
+  box-shadow: var(--shell-shadow);
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.panel-subtitle {
+  margin: 0;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--shell-muted-text-color);
+}
+
+@media (max-width: 768px) {
+  .workplace-hero__primary {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .hero-meta {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .action-grid {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   }
 }
 </style>

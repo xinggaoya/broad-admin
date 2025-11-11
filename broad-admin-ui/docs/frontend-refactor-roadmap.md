@@ -77,5 +77,6 @@ src
 - **主题令牌**：新增 `src/theme/tokens.ts`，统一 Shell/Sidebar/Motion/Spacing Token，`useThemeTokens` 负责将变量同步到 `documentElement` 与 `body data-*`，并在 `styles/tokens.css` 提供初始兜底。
 - **组件接入**：`AppShell`、`SideBar`、`HumBurger`、`ActionItems`、`Setting`、`TabBar` 均切换为 Token 驱动，补齐 `data-testid` / ARIA 属性，移动端遮罩、侧栏浮层使用 `--shell-overlay-color`。
 - **自动化**：新增 `playwright.config.ts` 与 `tests/e2e/app-shell.spec.ts`，覆盖「移动端抽屉」与「侧边栏皮肤切换」，包含网络拦截与截图回归示例。
+- **页面重构**：首批业务页（`views/index/main.vue`, `views/index/work-place.vue`）完成视觉/交互升级：引入分层面板、胶囊标签、渐变 Hero、快捷操作胶囊，配合 `layoutDensity`/`cornerStyle` Token 动态响应不同终端，后续将按模块逐步推进。
 
 > 所有方案与实现细节会保持在 `docs/` 下同步更新，确保与代码一致。

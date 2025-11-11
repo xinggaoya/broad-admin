@@ -1,90 +1,78 @@
 <template>
-  <div class="personal-container">
-    <div class="personal-content">
-      <!-- 左侧个人信息卡片 -->
-      <n-card class="personal-info-card" :content-style="{ padding: '20px' }">
-        <div class="info-wrapper">
-          <!-- 头像上传区域 -->
-          <div class="avatar-wrapper">
-            <Upload :show-file-list="false" @success="handleUpload">
-              <template #default>
-                <div
-                  class="avatar-container"
-                  @mouseenter="handleAvatarHover"
-                  @mouseleave="handleAvatarLeave"
-                >
-                  <n-avatar
-                    round
-                    :size="100"
-                    :src="avatar"
-                    :fallback-src="defaultAvatar"
-                    class="user-avatar"
-                    :class="{ 'avatar-hover': isAvatarHovered }"
-                  />
-                  <div class="avatar-overlay" :class="{ 'overlay-show': isAvatarHovered }">
-                    <n-icon size="24" color="#fff">
-                      <CameraOutline />
-                    </n-icon>
-                    <span class="upload-text">更换头像</span>
-                  </div>
+  <section class="personal-page">
+    <div class="personal-layout">
+      <n-card class="profile-card" :bordered="false">
+        <div class="profile-card__grid">
+          <Upload :show-file-list="false" @success="handleUpload">
+            <template #default>
+              <div
+                class="avatar-shell"
+                @mouseenter="handleAvatarHover"
+                @mouseleave="handleAvatarLeave"
+              >
+                <n-avatar
+                  round
+                  :size="110"
+                  :src="avatar"
+                  :fallback-src="defaultAvatar"
+                  class="user-avatar"
+                />
+                <div class="avatar-overlay" :class="{ 'is-visible': isAvatarHovered }">
+                  <n-icon size="20" color="#fff">
+                    <CameraOutline />
+                  </n-icon>
+                  <span>更换头像</span>
                 </div>
-              </template>
-            </Upload>
-          </div>
-
-          <!-- 用户基本信息 -->
-          <div class="user-info">
-            <h2 class="nickname">{{ userInfo.nickName || userInfo.userName }}</h2>
-            <div class="user-bio">
-              <n-input
-                v-model:value="userBio"
-                type="textarea"
-                placeholder="编辑个人简介..."
-                :autosize="{ minRows: 2, maxRows: 3 }"
-                class="bio-input"
-                @blur="handleBioUpdate"
-              />
-            </div>
-
-            <!-- 用户详细信息 -->
-            <div class="info-list">
-              <div class="info-item" v-for="(item, index) in userInfoList" :key="index">
+              </div>
+            </template>
+          </Upload>
+          <div class="profile-card__content">
+            <header class="profile-header">
+              <div>
+                <h2>{{ userInfo.nickName || userInfo.userName }}</h2>
+                <p>保持个人资料最新，帮助团队更好协作</p>
+              </div>
+              <n-button quaternary round size="small" @click="handleAddTag">
+                <template #icon>
+                  <n-icon><AddCircleOutline /></n-icon>
+                </template>
+                添加标签
+              </n-button>
+            </header>
+            <n-input
+              v-model:value="userBio"
+              type="textarea"
+              placeholder="编辑个人简介..."
+              :autosize="{ minRows: 2, maxRows: 3 }"
+              class="bio-input"
+              @blur="handleBioUpdate"
+            />
+            <div class="profile-meta">
+              <div class="meta-row" v-for="(item, index) in userInfoList" :key="index">
                 <n-icon :size="16" :color="item.color">
                   <component :is="item.icon" />
                 </n-icon>
-                <span class="info-label">{{ item.label }}：</span>
-                <span class="info-value">{{ item.value }}</span>
+                <span class="meta-label">{{ item.label }}</span>
+                <span class="meta-value">{{ item.value }}</span>
               </div>
             </div>
-
-            <!-- 用户标签 -->
-            <div class="user-tags">
-              <n-space>
-                <n-tag
-                  v-for="(tag, index) in userTags"
-                  :key="index"
-                  :type="tag.type"
-                  size="small"
-                  round
-                  class="user-tag"
-                >
-                  {{ tag.name }}
-                </n-tag>
-                <n-button quaternary circle size="small" @click="handleAddTag" class="add-tag-btn">
-                  <template #icon>
-                    <n-icon><AddCircleOutline /></n-icon>
-                  </template>
-                </n-button>
-              </n-space>
+            <div class="profile-tags">
+              <n-tag
+                v-for="(tag, index) in userTags"
+                :key="index"
+                :type="tag.type"
+                size="small"
+                round
+              >
+                {{ tag.name }}
+              </n-tag>
             </div>
           </div>
         </div>
       </n-card>
 
-      <!-- 右侧内容区域 -->
-      <div class="right-content">
-        <!-- 待办事项卡片 -->
-        <n-card class="todo-card" title="待办事项">
+      <div class="personal-panels">
+        <n-card class="todo-panel" title="待办事项">
           <template #header-extra>
             <n-button text @click="handleAddTodo">
               <template #icon>
@@ -99,13 +87,13 @@
                 v-for="(item, index) in todoItems"
                 :key="item.id"
                 class="todo-item"
-                :class="{ 'todo-completed': item.status === 1 }"
+                :class="{ 'is-complete': item.status === 1 }"
               >
                 <n-checkbox
                   :checked="item.status === 1"
                   @update:checked="handleTodoStatusChange(index)"
                 >
-                  <span class="todo-text">{{ item.title }}</span>
+                  <span>{{ item.title }}</span>
                 </n-checkbox>
                 <div class="todo-actions">
                   <n-button quaternary circle size="small" @click="handleEditTodo(index)">
@@ -121,14 +109,11 @@
                 </div>
               </div>
             </TransitionGroup>
-            <div v-if="todoItems.length === 0" class="empty-status">
-              <n-empty description="暂无待办事项" />
-            </div>
+            <n-empty v-if="todoItems.length === 0" description="暂无待办事项" />
           </div>
         </n-card>
 
-        <!-- 消息中心卡片 -->
-        <n-card class="message-card" title="消息中心">
+        <n-card class="message-panel" title="消息中心">
           <template #header-extra>
             <n-button text @click="handleViewAllMessages">
               查看全部
@@ -139,34 +124,30 @@
           </template>
           <div class="message-list">
             <TransitionGroup name="list">
-              <div
+              <button
                 v-for="(item, index) in messages"
                 :key="index"
+                type="button"
                 class="message-item"
-                :class="{ 'message-unread': item.status === 0 }"
+                :class="{ 'is-unread': item.status === 0 }"
                 @click="handleReadMessage(index)"
               >
-                <div class="message-status">
-                  <div class="status-dot" :class="{ 'dot-unread': item.status === 0 }" />
-                </div>
-                <div class="message-content">
-                  <div class="message-header">
-                    <h4 class="message-title">{{ item.title }}</h4>
-                    <span class="message-time">{{ item.time || '刚刚' }}</span>
+                <span class="message-dot" :class="{ 'is-unread': item.status === 0 }"></span>
+                <div class="message-body">
+                  <div class="message-head">
+                    <h4>{{ item.title }}</h4>
+                    <span>{{ item.time || '刚刚' }}</span>
                   </div>
-                  <p class="message-text">{{ item.content }}</p>
+                  <p>{{ item.content }}</p>
                 </div>
-              </div>
+              </button>
             </TransitionGroup>
-            <div v-if="messages.length === 0" class="empty-status">
-              <n-empty description="暂无消息" />
-            </div>
+            <n-empty v-if="messages.length === 0" description="暂无消息" />
           </div>
         </n-card>
       </div>
     </div>
 
-    <!-- 添加/编辑待办对话框 -->
     <n-modal
       v-model:show="showTodoModal"
       :title="todoModalTitle"
@@ -184,7 +165,6 @@
       />
     </n-modal>
 
-    <!-- 添加标签对话框 -->
     <n-modal
       v-model:show="showTagModal"
       title="添加标签"
@@ -202,7 +182,7 @@
         class="mt-4"
       />
     </n-modal>
-  </div>
+  </section>
 </template>
 
 <script lang="ts" setup name="PersonalCenterView">
@@ -237,6 +217,18 @@ const avatar = ref(userStore.avatar || '')
 const userInfo = ref<any>({})
 const userBio = ref('')
 const isAvatarHovered = ref(false)
+const displayName = computed(() => userInfo.value.nickName || userInfo.value.userName || '访客')
+const greeting = computed(() => {
+  const hour = new Date().getHours()
+  if (hour < 6) return '凌晨好'
+  if (hour < 9) return '早上好'
+  if (hour < 12) return '上午好'
+  if (hour < 14) return '中午好'
+  if (hour < 17) return '下午好'
+  if (hour < 19) return '傍晚好'
+  return '晚上好'
+})
+const weatherInfo = ref('今日晴朗，适合整理待办~')
 
 // 用户详细信息列表
 const userInfoList = ref<any[]>([])
@@ -267,6 +259,20 @@ const todoItems = ref<any[]>([])
 
 // 消息数据
 const messages = ref<any[]>([])
+
+const heroStats = computed(() => {
+  const unfinished = todoItems.value.filter((item) => item.status !== 1).length
+  const unread = messages.value.filter((msg) => msg.status === 0).length
+  return [
+    { label: '标签数量', value: `${userTags.value.length}`, helper: '个标签' },
+    {
+      label: '待办完成度',
+      value: `${unfinished}/${todoItems.value.length || 0}`,
+      helper: '未完成/总数'
+    },
+    { label: '未读消息', value: `${unread} 条`, helper: '需要处理' }
+  ]
+})
 
 // 获取用户信息
 const loadUserInfo = async () => {
@@ -570,271 +576,194 @@ onMounted(() => {
 })
 </script>
 
-<style lang="scss" scoped>
-.personal-container {
-  padding: 20px;
-  background-color: var(--body-color);
-  min-height: 100%;
-
-  .personal-content {
-    display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
-
-    // 左侧个人信息卡片
-    .personal-info-card {
-      width: 360px;
-      height: fit-content;
-
-      @media (max-width: 768px) {
-        width: 100%;
-      }
-
-      .info-wrapper {
-        .avatar-container {
-          position: relative;
-          width: 100px;
-          height: 100px;
-          margin: 0 auto 20px;
-          cursor: pointer;
-
-          .user-avatar {
-            border: 2px solid var(--primary-color);
-            transition: all 0.3s ease;
-          }
-
-          .avatar-hover {
-            filter: brightness(0.8);
-          }
-
-          .avatar-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            background-color: rgba(0, 0, 0, 0.5);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-
-            .upload-text {
-              color: #fff;
-              font-size: 12px;
-              margin-top: 4px;
-            }
-          }
-
-          .overlay-show {
-            opacity: 1;
-          }
-        }
-
-        .user-info {
-          text-align: center;
-
-          .nickname {
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin: 0 0 16px;
-            color: var(--text-color-1);
-          }
-
-          .user-bio {
-            margin-bottom: 20px;
-
-            .bio-input {
-              text-align: left;
-            }
-          }
-
-          .info-list {
-            text-align: left;
-            padding: 0 20px;
-
-            .info-item {
-              display: flex;
-              align-items: center;
-              margin-bottom: 12px;
-              color: var(--text-color-2);
-
-              .info-label {
-                margin: 0 8px;
-                color: var(--text-color-3);
-              }
-
-              .info-value {
-                flex: 1;
-                color: var(--text-color-1);
-              }
-            }
-          }
-
-          .user-tags {
-            margin-top: 20px;
-            padding: 0 20px;
-
-            .user-tag {
-              transition: all 0.3s ease;
-
-              &:hover {
-                transform: translateY(-2px);
-              }
-            }
-
-            .add-tag-btn {
-              transition: all 0.3s ease;
-
-              &:hover {
-                transform: rotate(180deg);
-              }
-            }
-          }
-        }
-      }
-    }
-
-    // 右侧内容区域
-    .right-content {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      min-width: 300px;
-
-      // 待办事项卡片
-      .todo-card {
-        .todo-list {
-          min-height: 80px;
-
-          .todo-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px;
-            border-radius: 4px;
-            transition: all 0.3s ease;
-
-            &:hover {
-              background-color: var(--hover-color);
-
-              .todo-actions {
-                opacity: 1;
-              }
-            }
-
-            .todo-text {
-              margin-left: 8px;
-              transition: all 0.3s ease;
-            }
-
-            &.todo-completed .todo-text {
-              text-decoration: line-through;
-              color: var(--text-color-3);
-            }
-
-            .todo-actions {
-              opacity: 0;
-              transition: opacity 0.3s ease;
-              display: flex;
-              gap: 8px;
-            }
-          }
-
-          .empty-status {
-            padding: 24px 0;
-          }
-        }
-      }
-
-      // 消息中心卡片
-      .message-card {
-        .message-list {
-          min-height: 80px;
-
-          .message-item {
-            display: flex;
-            padding: 16px;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-
-            &:hover {
-              background-color: var(--hover-color);
-            }
-
-            .message-status {
-              padding-right: 12px;
-              padding-top: 6px;
-
-              .status-dot {
-                width: 8px;
-                height: 8px;
-                border-radius: 50%;
-                background-color: var(--text-color-3);
-
-                &.dot-unread {
-                  background-color: var(--primary-color);
-                }
-              }
-            }
-
-            .message-content {
-              flex: 1;
-
-              .message-header {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: 8px;
-
-                .message-title {
-                  margin: 0;
-                  font-size: 14px;
-                  font-weight: 500;
-                  color: var(--text-color-1);
-                }
-
-                .message-time {
-                  font-size: 12px;
-                  color: var(--text-color-3);
-                }
-              }
-
-              .message-text {
-                margin: 0;
-                font-size: 13px;
-                color: var(--text-color-2);
-                line-height: 1.5;
-                display: -webkit-box;
-                -webkit-line-clamp: 2;
-                -webkit-box-orient: vertical;
-                overflow: hidden;
-              }
-            }
-
-            &.message-unread {
-              .message-title {
-                color: var(--primary-color);
-                font-weight: 600;
-              }
-            }
-          }
-
-          .empty-status {
-            padding: 24px 0;
-          }
-        }
-      }
-    }
-  }
+<style scoped lang="scss">
+.personal-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--shell-gap);
 }
 
-// 列表动画
+.personal-layout {
+  display: flex;
+  flex-direction: column;
+  gap: var(--shell-gap);
+}
+
+.profile-card {
+  border-radius: var(--shell-radius-xl);
+  background: var(--shell-surface);
+  box-shadow: var(--shell-shadow);
+}
+
+.profile-card__grid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.avatar-shell {
+  position: relative;
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 15px 30px rgba(15, 23, 42, 0.15);
+}
+
+.avatar-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: 12px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.avatar-overlay.is-visible {
+  opacity: 1;
+}
+
+.profile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.profile-header h2 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.profile-header p {
+  margin: 4px 0 0;
+  color: var(--shell-muted-text-color);
+}
+
+.bio-input {
+  margin-bottom: 16px;
+}
+
+.profile-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.meta-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--shell-border-color);
+}
+
+.meta-label {
+  color: var(--shell-muted-text-color);
+}
+
+.profile-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.personal-panels {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--shell-gap);
+}
+
+.todo-panel,
+.message-panel {
+  border-radius: var(--shell-radius-lg);
+  background: var(--shell-surface);
+  box-shadow: var(--shell-shadow);
+}
+
+.todo-list,
+.message-list {
+  max-height: 380px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.todo-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  border-radius: var(--shell-radius-base);
+  border: 1px solid var(--shell-border-color);
+}
+
+.todo-item.is-complete {
+  opacity: 0.6;
+  text-decoration: line-through;
+}
+
+.todo-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.message-item {
+  border: 1px solid var(--shell-border-color);
+  border-radius: var(--shell-radius-base);
+  padding: 12px;
+  background: transparent;
+  display: flex;
+  gap: 12px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.message-item.is-unread {
+  border-color: var(--color-primary);
+}
+
+.message-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--shell-border-color);
+  margin-top: 6px;
+}
+
+.message-dot.is-unread {
+  background: var(--color-primary);
+}
+
+.message-body {
+  flex: 1;
+}
+
+.message-body h4 {
+  margin: 0;
+  font-size: 14px;
+}
+
+.message-body span {
+  font-size: 12px;
+  color: var(--shell-muted-text-color);
+}
+
+.message-body p {
+  margin: 4px 0 0;
+  color: var(--shell-muted-text-color);
+  font-size: 13px;
+}
+
 .list-enter-active,
 .list-leave-active {
   transition: all 0.3s ease;
@@ -843,19 +772,22 @@ onMounted(() => {
 .list-enter-from,
 .list-leave-to {
   opacity: 0;
-  transform: translateX(30px);
+  transform: translateY(-10px);
 }
 
-// 响应式优化
-@media (max-width: 1024px) {
-  .personal-container {
-    .personal-content {
-      flex-direction: column;
+.mt-4 {
+  margin-top: 16px;
+}
 
-      .personal-info-card {
-        width: 100%;
-      }
-    }
+@media (max-width: 768px) {
+  .profile-card__grid {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .profile-header {
+    flex-direction: column;
+    gap: 8px;
   }
 }
 </style>
