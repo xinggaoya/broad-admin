@@ -8,12 +8,12 @@ spring:
       master:
         username: xinggao
         password: xinggaocode
-        url: jdbc:mysql://moncn.cn:8206/broad_base?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
+        url: jdbc:mysql://dev.moncn.cn:8206/broad_base?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
       slave:
         enabled: false
         username: xinggao
         password: xinggaocode
-        url: jdbc:mysql://moncn.cn:8206/broad_base?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
+        url: jdbc:mysql://dev.moncn.cn:8206/broad_base?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
       # 下面为连接池的补充设置，应用到上面所有数据源中
       # 初始化大小，最小，最大
       initial-size: 5
@@ -60,7 +60,7 @@ spring:
       # Redis数据库索引（默认为0）
       database: 8
       # Redis服务器地址
-      host: moncn.cn
+      host: dev.moncn.cn
       # Redis服务器连接端口
       port: 6379
       # Redis服务器连接密码（默认为空）
