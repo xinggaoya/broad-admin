@@ -32,6 +32,47 @@
       </div>
     </header>
 
+    <!-- 独立搜索区域 -->
+    <n-card size="small" class="search-card" style="margin-bottom: 16px;">
+      <template #header>
+        <span>搜索条件</span>
+      </template>
+      <template #default>
+        <n-form inline :label-width="80" :model="searchModel">
+          <n-form-item label="角色名称">
+            <n-input
+              v-model:value="searchModel.name"
+              placeholder="请输入角色名称"
+              clearable
+              @keydown.enter="handleSearchClick"
+            />
+          </n-form-item>
+          <n-form-item label="角色编号">
+            <n-input
+              v-model:value="searchModel.halfRules"
+              placeholder="请输入角色编号"
+              clearable
+              @keydown.enter="handleSearchClick"
+            />
+          </n-form-item>
+          <n-form-item label="状态">
+            <n-select
+              v-model:value="searchModel.status"
+              placeholder="请选择状态"
+              clearable
+              :options="sys_normal_disable.value"
+            />
+          </n-form-item>
+          <n-form-item>
+            <n-space>
+              <n-button type="primary" @click="handleSearchClick">搜索</n-button>
+              <n-button @click="handleResetClick">重置</n-button>
+            </n-space>
+          </n-form-item>
+        </n-form>
+      </template>
+    </n-card>
+
     <n-card :bordered="false" class="role-table-card">
       <TableMain
         ref="tableMainRef"
@@ -40,12 +81,6 @@
         :loading="tableLoading"
         row-key="id"
         :pagination="tablePagination"
-        :search-config="searchConfig"
-        :search-form="searchFormConfig"
-        v-model:search-model="searchModel"
-        sticky-toolbar
-        @search="handleSearch"
-        @reset="handleReset"
         @refresh="handleRefresh"
         @update:page="pagination.onChange"
         @update:page-size="pagination.onPageSizeChange"
@@ -191,7 +226,6 @@ import {
 import { useDict } from '@/utils/useDict'
 import { usePagination } from '@/hooks/useTable'
 import TableMain from '@/components/table/main/TableMain.vue'
-import type { SearchFormConfig } from '@/types/table'
 import { getRolePage, addRole, updateRole, delRole } from '@/api/system/role'
 import { getRoleMenu, addRoleMenu } from '@/api/system/roleMenu'
 import { getMenusTree } from '@/api/system/menu'
@@ -219,47 +253,11 @@ const searchModel = ref({
   status: null as string | null
 })
 
-const searchConfig = {
-  title: '筛选条件',
-  defaultCollapse: true
-}
-
-const searchFormConfig = computed<SearchFormConfig>(() => ({
-  cols: 24,
-  xGap: 16,
-  yGap: 12,
-  items: [
-    {
-      key: 'name',
-      label: '角色名称',
-      type: 'input',
-      placeholder: '请输入角色名称',
-      span: 6
-    },
-    {
-      key: 'halfRules',
-      label: '角色编号',
-      type: 'input',
-      placeholder: '请输入角色编号',
-      span: 6
-    },
-    {
-      key: 'status',
-      label: '状态',
-      type: 'select',
-      options: sys_normal_disable.value,
-      span: 6
-    }
-  ]
-}))
-
-async function loadTableData(override?: Record<string, any>) {
+// 简化的数据加载函数，与定时任务页面保持一致
+async function doRefresh() {
   tableLoading.value = true
   try {
-    const params = pagination.getPageInfo({
-      ...searchModel.value,
-      ...override
-    })
+    const params = pagination.getPageInfo(searchModel.value)
     const res = await getRolePage(params)
     if (res.code === 200) {
       tableData.value = res.rows || []
@@ -275,7 +273,7 @@ async function loadTableData(override?: Record<string, any>) {
   }
 }
 
-const pagination = usePagination(() => loadTableData())
+const pagination = usePagination(doRefresh)
 
 const tablePagination = computed(() => ({
   page: pagination.page,
@@ -292,24 +290,28 @@ const roleSummary = computed(() => {
   return { total, active }
 })
 
-const handleSearch = (params: Record<string, any>) => {
-  searchModel.value = { ...searchModel.value, ...params }
+const handleSearchClick = () => {
+  // 重置到第一页
   pagination.page = 1
-  loadTableData(params)
+  doRefresh()
+  message.success('搜索完成')
 }
 
-const handleReset = () => {
+const handleResetClick = () => {
+  // 清空搜索模型
   searchModel.value = {
     name: '',
     halfRules: '',
     status: null
   }
+  // 重置到第一页
   pagination.page = 1
-  loadTableData()
+  doRefresh()
+  message.success('重置成功')
 }
 
 const handleRefresh = () => {
-  loadTableData()
+  doRefresh()
 }
 
 const columns = [
@@ -453,7 +455,7 @@ const handleSubmit = async () => {
     if (res.code === 200) {
       message.success(editType.value === 'add' ? '新增成功' : '更新成功')
       showEditModal.value = false
-      loadTableData()
+      doRefresh()
     } else {
       message.error(res.message || '保存失败')
     }
@@ -479,7 +481,7 @@ const handleDelete = (row: RoleEntity) => {
           if (tableData.value.length === 1 && pagination.page > 1) {
             pagination.page--
           }
-          loadTableData()
+          doRefresh()
         } else {
           message.error(res.message || '删除失败')
         }
@@ -550,7 +552,7 @@ const handleMenuSubmit = async () => {
   }
 }
 
-loadTableData()
+doRefresh()
 </script>
 
 <style lang="scss" scoped>
@@ -614,6 +616,12 @@ loadTableData()
       justify-content: flex-end;
       align-items: center;
       gap: 12px;
+    }
+  }
+
+  .search-card {
+    :deep(.n-card__content) {
+      padding: 16px;
     }
   }
 

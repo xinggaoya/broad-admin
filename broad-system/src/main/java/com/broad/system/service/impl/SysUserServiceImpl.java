@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * 管理员表(SysUser)表服务实现类
@@ -44,7 +45,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         sysAdmin.setSalt(uid);
         boolean res = super.save(sysAdmin);
         // 设置管理员角色
-        if (res && !sysAdmin.getRoleIds().isEmpty()) {
+        if (res && sysAdmin.getRoleIds() != null && !sysAdmin.getRoleIds().isEmpty()) {
             userRoleService.insertUserRole(sysAdmin);
         }
         return res ? 1 : 0;
@@ -81,6 +82,21 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             userRoleService.insertUserRole(sysAdmin);
         }
         return res;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void resetPassword(Integer userId, String password) {
+        SysUser user = this.getById(userId);
+        if (ObjectUtils.isEmpty(user)) {
+            throw new ServiceException("用户不存在或已被删除");
+        }
+        String salt = UUID.randomUUID().toString();
+        SysUser update = new SysUser();
+        update.setId(userId);
+        update.setSalt(salt);
+        update.setPassword(SaSecureUtil.md5BySalt(password, salt));
+        baseMapper.updateById(update);
     }
 
     private void forceLogout(Long id) {

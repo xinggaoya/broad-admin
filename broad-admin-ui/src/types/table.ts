@@ -113,10 +113,6 @@ export interface TableMainProps {
   defaultExpandAll?: boolean
   stickyToolbar?: boolean
   toolbarConfig?: TableToolbarConfig
-  // 搜索相关配置
-  searchConfig?: SearchConfig
-  searchForm?: SearchFormConfig
-  searchModel?: Record<string, any>
 }
 
 // 表格主组件 Emits
@@ -129,12 +125,7 @@ export interface TableMainEmits {
   (e: 'update:expanded-row-keys', keys: Array<string | number>): void
   (e: 'update:filters', filters: Record<string, any>): void
   (e: 'filters-change', filters: Record<string, any>): void
-  // 搜索相关事件
-  (e: 'update:search-model', model: Record<string, any>): void
-  (e: 'search', params: Record<string, any>): void
-  (e: 'refresh', params: Record<string, any>): void
-  (e: 'reset'): void
-  (e: 'update:search-collapse', value: boolean): void
+  (e: 'refresh'): void
 }
 
 export interface TableMainExpose {
@@ -146,11 +137,6 @@ export interface TableMainExpose {
   saveConfig: () => void
   resetColumns: () => void
   saveColumns: () => void
-  search: (params?: Record<string, any>) => void
-  resetSearch: () => void
-  getSearchData: () => Record<string, any>
-  validateSearch: () => Promise<void> | undefined
   toggleFullscreen: () => void
   getTableRef: () => any
-  getSearchFormRef: () => any
 }

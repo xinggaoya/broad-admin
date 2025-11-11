@@ -24,7 +24,7 @@
     </header>
 
     <div class="sys-user-layout">
-      <aside class="dept-panel">
+      <n-card class="dept-panel" :bordered="false">
         <div class="dept-panel__header">
           <h3>部门列表</h3>
           <n-input-group size="small">
@@ -59,22 +59,64 @@
             />
           </n-spin>
         </div>
-      </aside>
+      </n-card>
 
       <n-card class="table-panel" :bordered="false">
+        <!-- 独立搜索区域 -->
+        <n-card size="small" class="search-card" style="margin-bottom: 16px;">
+          <template #header>
+            <span>搜索条件</span>
+          </template>
+          <template #default>
+            <n-form inline :label-width="80" :model="searchModel">
+              <n-form-item label="昵称">
+                <n-input
+                  v-model:value="searchModel.nickName"
+                  placeholder="请输入昵称"
+                  clearable
+                  @keydown.enter="handleSearchClick"
+                />
+              </n-form-item>
+              <n-form-item label="用户名">
+                <n-input
+                  v-model:value="searchModel.userName"
+                  placeholder="请输入用户名"
+                  clearable
+                  @keydown.enter="handleSearchClick"
+                />
+              </n-form-item>
+              <n-form-item label="手机号">
+                <n-input
+                  v-model:value="searchModel.mobile"
+                  placeholder="请输入手机号"
+                  clearable
+                  @keydown.enter="handleSearchClick"
+                />
+              </n-form-item>
+              <n-form-item label="状态">
+                <n-select
+                  v-model:value="searchModel.userStatus"
+                  placeholder="请选择状态"
+                  clearable
+                  :options="sys_normal_disable.value"
+                />
+              </n-form-item>
+              <n-form-item>
+                <n-space>
+                  <n-button type="primary" @click="handleSearchClick">搜索</n-button>
+                  <n-button @click="handleResetClick">重置</n-button>
+                </n-space>
+              </n-form-item>
+            </n-form>
+          </template>
+        </n-card>
+
         <TableMain
           :data="dataList"
           :columns="tableColumns"
           :loading="tableLoading"
           row-key="id"
           :pagination="pagination"
-          :search-config="searchConfig"
-          :search-form="searchForm"
-          v-model:search-model="searchModel"
-          @search="handleSearch"
-          @reset="handleReset"
-          @update:page="handlePageChange"
-          @update:page-size="handlePageSizeChange"
           @update:checked-row-keys="handleSelectionChange"
         >
           <template #footer>
@@ -114,6 +156,14 @@
                 placeholder="请输入用户名"
               />
             </n-form-item-gi>
+            <n-form-item-gi v-if="!userForm.id" :span="12" label="初始密码" path="password">
+              <n-input
+                v-model:value="userForm.password"
+                type="password"
+                show-password-on="click"
+                placeholder="请输入初始密码"
+              />
+            </n-form-item-gi>
             <n-form-item-gi :span="12" label="昵称" path="nickName">
               <n-input v-model:value="userForm.nickName" placeholder="请输入昵称" />
             </n-form-item-gi>
@@ -129,6 +179,7 @@
               <n-select
                 v-model:value="userForm.roleIds"
                 :options="roleData"
+                :loading="roleLoading"
                 placeholder="请选择角色"
                 multiple
                 filterable
@@ -209,15 +260,14 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, onMounted, h, reactive } from 'vue'
+import { ref, computed, onMounted, h } from 'vue'
 import {
   useMessage,
-  useDialog,
   NAvatar,
-  NTag,
   NSpace,
   NButton,
   NPopconfirm,
+  NSwitch,
   type DataTableColumns
 } from 'naive-ui'
 import {
@@ -226,9 +276,16 @@ import {
   ChevronDownOutline,
   RefreshOutline
 } from '@vicons/ionicons5'
-import { getUserPage, getUserRole, addUser, updateUser, delUser } from '@/api/system/user'
-import { getRolePage } from '@/api/system/role'
-import { getDeptPage } from '@/api/system/dept'
+import {
+  getUserPage,
+  getUserMeta,
+  addUser,
+  updateUser,
+  delUser,
+  getUserInfo,
+  resetUserPasswordApi,
+  updateUserStatusApi
+} from '@/api/system/user'
 import { useDict } from '@/utils/useDict'
 import { usePagination } from '@/hooks/useTable'
 import TableMain from '@/components/table/main/TableMain.vue'
@@ -239,7 +296,6 @@ import type { SearchConfig, SearchFormConfig } from '@/types/table'
 
 // 状态定义
 const message = useMessage()
-const dialog = useDialog()
 const { sys_normal_disable } = useDict('sys_normal_disable')
 
 // 弹窗标题
@@ -268,6 +324,21 @@ interface SearchForm {
   deptId?: string | number
 }
 
+interface DeptMetaNode {
+  id: number
+  label: string
+  children?: DeptMetaNode[]
+}
+
+interface DeptTreeNode {
+  key: number
+  value: number
+  label: string
+  children?: DeptTreeNode[]
+}
+
+type RoleOption = { label: string; value: number; disabled?: boolean }
+
 interface UserForm {
   id?: number
   userName: string
@@ -276,15 +347,24 @@ interface UserForm {
   roleIds: number[]
   email: string
   mobile: string
-  userStatus: string // 改为字符串类型
+  userStatus: string
+  password?: string
   avatar?: string
   deptName?: string
 }
 
-const dataList = ref<UserForm[]>([])
-const departmentData = ref<any[]>([])
-const roleData = ref<Array<{ label: string; value: number; disabled?: boolean }>>([])
-const selectedRows = ref<UserForm[]>([])
+type UserTableItem = UserForm & { deptName?: string }
+
+interface PasswordForm {
+  id: number | null
+  password: string
+  password_two: string
+}
+
+const dataList = ref<UserTableItem[]>([])
+const departmentData = ref<DeptTreeNode[]>([])
+const roleData = ref<RoleOption[]>([])
+const selectedRows = ref<UserTableItem[]>([])
 
 // 表单对象
 const userFormRef = ref()
@@ -300,18 +380,21 @@ const searchModel = ref<SearchForm>({
   deptId: undefined
 })
 
-const userForm = ref<UserForm>({
+const createEmptyUserForm = (): UserForm => ({
   userName: '',
   nickName: '',
   deptId: null,
   roleIds: [],
   email: '',
   mobile: '',
-  userStatus: '0'
+  userStatus: '0',
+  password: ''
 })
 
-const updatePassWordForm = ref({
-  id: 0,
+const userForm = ref<UserForm>(createEmptyUserForm())
+
+const updatePassWordForm = ref<PasswordForm>({
+  id: null,
   password: '',
   password_two: ''
 })
@@ -379,6 +462,14 @@ const userRules = {
   nickName: { required: true, message: '请输入昵称', trigger: 'blur' },
   deptId: { required: true, message: '请选择部门', trigger: 'change', type: 'number' },
   roleIds: { required: true, type: 'array', message: '请选择角色', trigger: 'change' },
+  password: {
+    validator: (_rule: any, value: string) => {
+      if (userForm.value.id) return true
+      return !!value && value.length >= 6 && value.length <= 32
+    },
+    message: '请输入6-32位初始密码',
+    trigger: 'blur'
+  },
   email: {
     required: true,
     message: '请输入邮箱',
@@ -452,15 +543,18 @@ const tableColumns = ref<DataTableColumns>([
     key: 'userStatus',
     width: 100,
     render: (row) => {
-      const user = row as unknown as UserForm
+      const user = row as unknown as UserTableItem
       return h(
-        NTag,
+        NSwitch,
         {
-          type: user.userStatus === '0' ? 'success' : 'error',
-          round: true
+          size: 'small',
+          round: true,
+          value: user.userStatus === '0',
+          'on-update:value': (value: boolean) => handleStatusToggle(user, value)
         },
         {
-          default: () => (user.userStatus === '0' ? '正常' : '停用')
+          checked: () => '启用',
+          unchecked: () => '停用'
         }
       )
     }
@@ -523,21 +617,56 @@ const tableColumns = ref<DataTableColumns>([
   }
 ])
 
+function mapDeptOptions(nodes: DeptMetaNode[] = []): DeptTreeNode[] {
+  return nodes.map((node) => ({
+    key: node.id,
+    value: node.id,
+    label: node.label,
+    children: node.children && node.children.length ? mapDeptOptions(node.children) : []
+  }))
+}
+
+async function ensureMetaReady() {
+  if (departmentData.value.length === 0 || roleData.value.length === 0) {
+    await loadMeta()
+  }
+}
+
 // 方法定义
 function doRefresh() {
   tableLoading.value = true
   getUserPage(pagination.getPageInfo(searchModel.value))
-    .then((res) => {
-      dataList.value = res.rows || []
-      pagination.setTotalSize(res.total || 0)
-    })
-    .catch((error) => {
-      console.error('获取用户数据失败:', error)
-      message.error('获取用户数据失败')
-    })
-    .finally(() => {
+    .then((res: any) => {
+      dataList.value = res.rows
+      pagination.setTotalSize(res.total)
       tableLoading.value = false
     })
+    .catch(console.log)
+}
+
+function handleSearchClick() {
+  // 重置到第一页
+  pagination.page = 1
+  doRefresh()
+  selectedRows.value = []
+  message.success('搜索完成')
+}
+
+function handleResetClick() {
+  // 清空搜索模型
+  searchModel.value = {
+    nickName: '',
+    userName: '',
+    mobile: '',
+    email: '',
+    userStatus: null,
+    deptId: undefined
+  }
+  // 重置到第一页
+  pagination.page = 1
+  doRefresh()
+  selectedRows.value = []
+  message.success('重置成功')
 }
 
 function handleSearch(params: Record<string, any>) {
@@ -546,23 +675,12 @@ function handleSearch(params: Record<string, any>) {
   // 重置到第一页
   pagination.page = 1
   doRefresh()
+  selectedRows.value = []
   message.success('搜索完成')
 }
 
 function handleReset() {
-  // 清空搜索模型
-  Object.assign(searchModel.value, {
-    nickName: '',
-    userName: '',
-    mobile: '',
-    email: '',
-    userStatus: null,
-    deptId: undefined
-  })
-  // 重置到第一页
-  pagination.page = 1
-  doRefresh()
-  message.success('重置成功')
+  handleResetClick()
 }
 
 // 分页处理
@@ -579,99 +697,93 @@ function handlePageSizeChange(pageSize: number) {
 
 // 选择处理
 function handleSelectionChange(keys: Array<string | number>) {
-  selectedRows.value = dataList.value.filter((item) => keys.includes(item.id!))
+  const normalized = keys.map((key) => Number(key))
+  selectedRows.value = dataList.value.filter((item) => item.id && normalized.includes(Number(item.id)))
 }
 
-async function loadRoles() {
+async function loadMeta() {
+  deptLoading.value = true
   roleLoading.value = true
   try {
-    const res = await getRolePage({})
-    if (res.rows && Array.isArray(res.rows)) {
-      roleData.value = res.rows.map((item: any) => ({
-        label: item.name,
-        value: item.id,
-        disabled: item.status === '1' // 如果角色状态为1则禁用
+    const res = await getUserMeta()
+    departmentData.value = mapDeptOptions(res.data?.deptTree || [])
+    roleData.value = (res.data?.roleOptions || [])
+      .filter((item: any) => item.value !== null && item.value !== undefined)
+      .map((item: any) => ({
+        label: item.label,
+        value: Number(item.value),
+        disabled: item.status === '1'
       }))
-    } else {
-      console.warn('角色数据格式不正确:', res)
-      message.warning('获取角色列表数据格式不正确')
-    }
   } catch (error) {
-    console.error('获取角色列表失败:', error)
-    message.error('获取角色列表失败')
+    console.error('获取部门或角色数据失败:', error)
+    message.error('加载部门或角色信息失败')
   } finally {
+    deptLoading.value = false
     roleLoading.value = false
   }
 }
 
 async function handleAddUser() {
-  // 先加载角色列表
-  if (roleData.value.length === 0) {
-    await loadRoles()
-  }
-
+  await ensureMetaReady()
   title.value = '新增用户'
-  userForm.value = {
-    userName: '',
-    nickName: '',
-    deptId: null,
-    roleIds: [],
-    email: '',
-    mobile: '',
-    userStatus: '0'
-  }
+  userForm.value = createEmptyUserForm()
   showModelUpdate.value = true
 }
 
-async function handleEdit(row: UserForm) {
-  // 先加载角色列表
-  if (roleData.value.length === 0) {
-    await loadRoles()
+async function handleEdit(row: UserTableItem) {
+  await ensureMetaReady()
+  if (!row.id) {
+    message.warning('无法识别该用户')
+    return
   }
-
   title.value = '编辑用户'
-  userForm.value = { ...row }
-
-  // 获取用户角色
-  if (row.id) {
-    submitLoading.value = true
-    try {
-      const res = await getUserRole(row.id)
-      if (res.data) {
-        userForm.value.roleIds = Array.isArray(res.data) ? res.data : [res.data]
+  submitLoading.value = true
+  try {
+    const res = await getUserInfo(row.id)
+    if (res.data) {
+      userForm.value = {
+        ...res.data,
+        deptId: res.data.deptId ?? null,
+        roleIds: Array.isArray(res.data.roleIds) ? res.data.roleIds : [],
+        password: ''
       }
-    } catch (error) {
-      console.error('获取用户角色失败:', error)
-      message.error('获取用户角色失败')
-    } finally {
-      submitLoading.value = false
     }
+    showModelUpdate.value = true
+  } catch (error) {
+    console.error('获取用户详情失败:', error)
+    message.error('获取用户详情失败')
+  } finally {
+    submitLoading.value = false
   }
-
-  showModelUpdate.value = true
 }
 
-function handleDelete(row: UserForm) {
+async function handleDelete(row: UserTableItem) {
   if (!row.id) return
-  delUser(row.id).then(() => {
+  try {
+    await delUser(row.id)
     message.success('删除成功')
     doRefresh()
-  })
+  } catch (error) {
+    console.error('删除用户失败:', error)
+  }
 }
 
-function handleBatchDelete() {
+async function handleBatchDelete() {
   if (!selectedRows.value.length) {
     message.warning('请选择要删除的用户')
     return
   }
 
-  const ids = selectedRows.value.map((row: UserForm) => row.id).filter(Boolean)
+  const ids = selectedRows.value.map((row: UserTableItem) => row.id).filter(Boolean)
   if (ids.length) {
-    delUser(ids.join(',')).then(() => {
-      message.success('删除成功')
+    try {
+      await delUser(ids as number[])
+      message.success('批量删除成功')
       selectedRows.value = []
       doRefresh()
-    })
+    } catch (error) {
+      console.error('批量删除失败:', error)
+    }
   }
 }
 
@@ -680,10 +792,10 @@ function handleExport() {
   message.info('导出功能开发中')
 }
 
-function handleResetPassword(row: UserForm) {
+function handleResetPassword(row: UserTableItem) {
   if (!row.id) return
   updatePassWordForm.value = {
-    id: row.id,
+    id: row.id ?? null,
     password: '',
     password_two: ''
   }
@@ -698,11 +810,13 @@ async function handleSubmit() {
     await formRef.validate()
     submitLoading.value = true
 
-    if (userForm.value.id) {
-      await updateUser(userForm.value)
+    const payload = { ...userForm.value }
+    if (payload.id) {
+      delete payload.password
+      await updateUser(payload)
       message.success('更新成功')
     } else {
-      await addUser(userForm.value)
+      await addUser(payload)
       message.success('添加成功')
     }
     showModelUpdate.value = false
@@ -718,7 +832,14 @@ async function handleUpdatePassWordSubmit() {
 
   try {
     await formRef.validate()
-    // TODO: 实现密码修改
+    if (!updatePassWordForm.value.id) {
+      message.warning('未选择用户')
+      return
+    }
+    await resetUserPasswordApi({
+      id: updatePassWordForm.value.id,
+      password: updatePassWordForm.value.password
+    })
     message.success('密码修改成功')
     showUpdatePasswordModel.value = false
   } catch (error) {
@@ -726,70 +847,84 @@ async function handleUpdatePassWordSubmit() {
   }
 }
 
-function onCheckedKeys(keys: string[], _event: MouseEvent) {
+async function handleStatusToggle(row: UserTableItem, enabled: boolean) {
+  if (!row.id) return
+  const previous = row.userStatus
+  row.userStatus = enabled ? '0' : '1'
+  try {
+    await updateUserStatusApi({
+      id: row.id,
+      userStatus: row.userStatus
+    })
+    message.success(enabled ? '已启用该用户' : '已停用该用户')
+  } catch (error) {
+    row.userStatus = previous
+    console.error('更新状态失败:', error)
+    message.error('更新用户状态失败')
+  }
+}
+
+function onCheckedKeys(keys: Array<string | number>, _event: MouseEvent) {
   if (keys.length) {
-    searchModel.value.deptId = keys[0]
+    searchModel.value.deptId = Number(keys[0])
     handleSearch(searchModel.value)
   }
 }
 
 // 初始化
-onMounted(() => {
-  // 加载部门树
-  deptLoading.value = true
-  getDeptPage({})
-    .then(({ data }) => {
-      // 处理部门树数据,添加key和value字段用于级联选择
-      const processDeptData = (depts: any[]): any[] => {
-        return depts.map((dept) => ({
-          ...dept,
-          key: dept.deptId,
-          value: dept.deptId,
-          label: dept.deptName,
-          children: dept.children ? processDeptData(dept.children) : []
-        }))
-      }
-      departmentData.value = processDeptData(data || [])
-    })
-    .finally(() => {
-      deptLoading.value = false
-    })
-
-  // 加载角色列表
-  loadRoles()
-
-  // 加载用户列表
+onMounted(async () => {
+  await loadMeta()
   doRefresh()
 })
 </script>
 
 <style lang="scss" scoped>
-.sys-user-container {
-  .dept-tree-card {
-    height: 100%;
+.sys-user-page {
+  .sys-user-layout {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
 
-    .dept-tree-content {
-      height: calc(100vh - 300px);
-      overflow: auto;
+  .dept-panel {
+    width: 280px;
+    flex-shrink: 0;
+    border-radius: var(--shell-radius-lg);
+    background: var(--shell-surface);
+    box-shadow: var(--shell-shadow);
+  }
 
-      .dept-tree {
-        padding: 8px;
-      }
+  .dept-panel__header {
+    padding: 16px;
+    border-bottom: 1px solid var(--divider-color);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    h3 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--shell-text-color);
     }
   }
 
-  .table-title {
-    h3 {
-      margin: 0 0 4px 0;
-      font-size: 18px;
-      font-weight: 600;
-      color: var(--text-color);
-    }
+  .dept-panel__body {
+    padding: 16px;
+    max-height: 600px;
+    overflow: auto;
+  }
 
-    p {
-      margin: 0;
-      font-size: 14px;
-      color: var(--text-color-2);
+  .table-panel {
+    flex: 1;
+    border-radius: var(--shell-radius-lg);
+    background: var(--shell-surface);
+    box-shadow: var(--shell-shadow);
+  }
+
+  .search-card {
+    :deep(.n-card__content) {
+      padding: 16px;
     }
   }
 
@@ -806,6 +941,51 @@ onMounted(() => {
 
   :deep(.n-button) {
     padding: 0 16px;
+  }
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--shell-surface);
+  border-radius: var(--shell-radius-lg);
+  padding: 20px;
+  box-shadow: var(--shell-shadow);
+  margin-bottom: var(--shell-gap);
+}
+
+.page-header h2 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.header-subtitle {
+  margin: 0;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--shell-muted-text-color);
+}
+
+.header-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .page-header {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .sys-user-page .sys-user-layout {
+    flex-direction: column;
+  }
+
+  .dept-panel {
+    width: 100%;
   }
 }
 </style>

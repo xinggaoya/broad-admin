@@ -1,81 +1,94 @@
 <template>
   <div class="table-custom-page">
-    <!-- 使用融合搜索功能的 TableMain 组件 -->
-    <TableMain
-      :data="tableData"
-      :columns="tableColumns"
-      :loading="tableLoading"
-      :pagination="pagination"
-      :search-config="searchConfig"
-      :search-form="searchForm"
-      v-model:search-model="searchModel"
-      @search="handleSearch"
-      @reset="handleReset"
-      @update:page="handlePageChange"
-      @update:page-size="handlePageSizeChange"
-    >
-      <!-- 表格标题 -->
-      <template #header>
-        <div class="table-title">
-          <h3>用户管理</h3>
-          <p>基于重构后的表格组件，融合搜索功能</p>
-        </div>
-      </template>
+    <!-- 页面头部 -->
+    <header class="page-header">
+      <div>
+        <p class="header-subtitle">模板演示</p>
+        <h2>自定义表格</h2>
+      </div>
+      <div class="header-actions">
+        <n-button tertiary round size="small" :loading="tableLoading" @click="doRefresh">
+          <template #icon>
+            <n-icon><RefreshOutline /></n-icon>
+          </template>
+          刷新
+        </n-button>
+        <AddButton @add="handleAddUser" v-auth="['sys:user:add']" />
+        <DeleteButton @delete="onDeleteItem" />
+        <ExportButton type="info" @export="handleExport" />
+      </div>
+    </header>
 
-      <!-- 表格操作按钮 -->
-      <template #header-extra>
-        <n-space>
-          <AddButton @add="handleAddUser" v-auth="['sys:user:add']" />
-          <DeleteButton @delete="onDeleteItem" />
-          <ExportButton type="info" @export="handleExport" />
-        </n-space>
-      </template>
-
-      <!-- 自定义搜索表单（可选，如果需要更复杂的搜索表单） -->
-      <template #search-form>
-        <n-form ref="customFormRef" :label-width="100" :model="searchModel" label-placement="left">
-          <n-grid :cols="24" :x-gap="16" :y-gap="16">
-            <n-form-item-gi :span="6" label="姓名" path="name">
-              <n-input v-model:value="searchModel.name" placeholder="请输入姓名" clearable />
-            </n-form-item-gi>
-            <n-form-item-gi :span="6" label="年龄" path="age">
+    <n-card class="table-panel" :bordered="false">
+      <!-- 独立搜索区域 -->
+      <n-card size="small" class="search-card" style="margin-bottom: 16px;">
+        <template #header>
+          <span>搜索条件</span>
+        </template>
+        <template #default>
+          <n-form inline :label-width="80" :model="searchModel">
+            <n-form-item label="姓名">
+              <n-input
+                v-model:value="searchModel.name"
+                placeholder="请输入姓名"
+                clearable
+                @keydown.enter="handleSearchClick"
+              />
+            </n-form-item>
+            <n-form-item label="年龄">
               <n-input-number
                 v-model:value="searchModel.age"
                 placeholder="请输入年龄"
                 clearable
                 style="width: 100%"
+                @keydown.enter="handleSearchClick"
               />
-            </n-form-item-gi>
-            <n-form-item-gi :span="6" label="性别" path="sex">
+            </n-form-item>
+            <n-form-item label="性别">
               <n-select
                 v-model:value="searchModel.sex"
                 placeholder="请选择性别"
                 :options="sexOptions"
                 clearable
               />
-            </n-form-item-gi>
-            <n-form-item-gi :span="6" label="状态" path="status">
+            </n-form-item>
+            <n-form-item label="状态">
               <n-select
                 v-model:value="searchModel.status"
                 placeholder="请选择状态"
                 :options="statusOptions"
                 clearable
               />
-            </n-form-item-gi>
-          </n-grid>
-        </n-form>
-      </template>
+            </n-form-item>
+            <n-form-item>
+              <n-space>
+                <n-button type="primary" @click="handleSearchClick">搜索</n-button>
+                <n-button @click="handleResetClick">重置</n-button>
+              </n-space>
+            </n-form-item>
+          </n-form>
+        </template>
+      </n-card>
 
-      <!-- 表格底部统计信息 -->
-      <template #footer>
-        <div class="table-footer">
-          <n-space justify="space-between">
-            <span>共 {{ pagination.total }} 条数据</span>
-            <span>当前页显示 {{ tableData.length }} 条</span>
-          </n-space>
-        </div>
-      </template>
-    </TableMain>
+      <TableMain
+        :data="tableData"
+        :columns="tableColumns"
+        :loading="tableLoading"
+        :pagination="pagination"
+        @update:page="handlePageChange"
+        @update:page-size="handlePageSizeChange"
+      >
+        <!-- 表格底部统计信息 -->
+        <template #footer>
+          <div class="table-footer">
+            <n-space justify="space-between">
+              <span>共 {{ pagination.total }} 条数据</span>
+              <span>当前页显示 {{ tableData.length }} 条</span>
+            </n-space>
+          </div>
+        </template>
+      </TableMain>
+    </n-card>
   </div>
 </template>
 
@@ -84,18 +97,16 @@ import { usePagination } from '@/hooks/useTable'
 import { useMessage } from 'naive-ui'
 import { onMounted, ref, reactive } from 'vue'
 import { data, columns } from '@/views/template/list/data'
-import { Download as DownloadIcon } from '@vicons/ionicons5'
+import { RefreshOutline } from '@vicons/ionicons5'
 import AddButton from '@/components/table/button/AddButton.vue'
 import DeleteButton from '@/components/table/button/DeleteButton.vue'
 import ExportButton from '@/components/table/button/ExportButton.vue'
 import TableMain from '@/components/table/main/TableMain.vue'
-import type { SearchConfig, SearchFormConfig } from '@/types/table'
 
 // 表格列配置 - 使用 ref 并创建新数组引用
 const tableColumns = ref([...columns])
 const tableData = ref(data)
 const tableLoading = ref(false)
-const customFormRef = ref()
 const message = useMessage()
 const pagination = usePagination(doRefresh)
 
@@ -107,16 +118,6 @@ const searchModel = ref({
   status: ''
 })
 
-// 搜索配置
-const searchConfig: SearchConfig = {
-  show: true,
-  title: '搜索条件',
-  defaultCollapse: true,
-  resetOnSearch: true,
-  autoSearch: false, // 手动触发搜索
-  searchDelay: 300
-}
-
 // 选项数据
 const sexOptions = [
   { label: '男', value: '男' },
@@ -127,47 +128,6 @@ const statusOptions = [
   { label: '启用', value: '1' },
   { label: '禁用', value: '0' }
 ]
-
-// 搜索表单配置（使用配置方式，也可以使用上面的自定义模板）
-const searchForm: SearchFormConfig = {
-  items: [
-    {
-      key: 'name',
-      label: '姓名',
-      type: 'input',
-      placeholder: '请输入姓名',
-      span: 6
-    },
-    {
-      key: 'age',
-      label: '年龄',
-      type: 'number',
-      placeholder: '请输入年龄',
-      span: 6
-    },
-    {
-      key: 'sex',
-      label: '性别',
-      type: 'select',
-      placeholder: '请选择性别',
-      options: sexOptions,
-      span: 6
-    },
-    {
-      key: 'status',
-      label: '状态',
-      type: 'select',
-      placeholder: '请选择状态',
-      options: statusOptions,
-      span: 6
-    }
-  ],
-  cols: 24,
-  xGap: 16,
-  yGap: 16,
-  labelWidth: 80,
-  labelPlacement: 'left'
-}
 
 // 数据刷新函数
 function doRefresh() {
@@ -240,10 +200,7 @@ function handleExport() {
 }
 
 // 搜索处理
-function handleSearch(params: Record<string, any>) {
-  console.log('搜索参数:', params)
-  // 更新搜索模型
-  Object.assign(searchModel.value, params)
+function handleSearchClick() {
   // 重置到第一页
   pagination.page = 1
   doRefresh()
@@ -251,15 +208,14 @@ function handleSearch(params: Record<string, any>) {
 }
 
 // 重置处理
-function handleReset() {
-  console.log('重置搜索条件')
+function handleResetClick() {
   // 清空搜索模型
-  Object.assign(searchModel.value, {
+  searchModel.value = {
     name: '',
     age: null,
     sex: '',
     status: ''
-  })
+  }
   // 重置到第一页
   pagination.page = 1
   doRefresh()
@@ -286,18 +242,15 @@ onMounted(async () => {
 
 <style lang="scss" scoped>
 .table-custom-page {
-  .table-title {
-    h3 {
-      margin: 0 0 4px 0;
-      font-size: 18px;
-      font-weight: 600;
-      color: var(--text-color);
-    }
+  .table-panel {
+    border-radius: var(--shell-radius-lg);
+    background: var(--shell-surface);
+    box-shadow: var(--shell-shadow);
+  }
 
-    p {
-      margin: 0;
-      font-size: 14px;
-      color: var(--text-color-2);
+  .search-card {
+    :deep(.n-card__content) {
+      padding: 16px;
     }
   }
 
@@ -306,6 +259,43 @@ onMounted(async () => {
     font-size: 14px;
     color: var(--text-color-2);
     border-top: 1px solid var(--divider-color);
+  }
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--shell-surface);
+  border-radius: var(--shell-radius-lg);
+  padding: 20px;
+  box-shadow: var(--shell-shadow);
+  margin-bottom: var(--shell-gap);
+}
+
+.page-header h2 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.header-subtitle {
+  margin: 0;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--shell-muted-text-color);
+}
+
+.header-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .page-header {
+    flex-direction: column;
+    gap: 12px;
   }
 }
 </style>

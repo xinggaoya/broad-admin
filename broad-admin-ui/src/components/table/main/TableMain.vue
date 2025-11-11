@@ -1,48 +1,10 @@
 <template>
   <div class="table-main-wrapper" :class="{ fullscreen: isFullscreen }">
-    <!-- 搜索区域 -->
-    <n-card v-if="searchConfig?.show !== false && searchForm" size="small" class="search-card">
-      <template #header>
-        <n-space align="center" justify="space-between">
-          <div class="search-title">
-            <slot name="search-title">{{ searchConfig?.title || '搜索' }}</slot>
-          </div>
-          <n-space>
-            <SearchButton @search="handleSearch" :loading="searchConfig?.loading || loading" />
-            <ResetButton @reset="handleReset" />
-            <n-button type="tertiary" ghost @click="handleSearchCollapse" size="small">
-              <template #icon>
-                <n-icon>
-                  <ArrowUpIcon v-if="searchCollapse" />
-                  <ArrowDownIcon v-else />
-                </n-icon>
-              </template>
-              {{ !searchCollapse ? '展开' : '收起' }}
-            </n-button>
-          </n-space>
-        </n-space>
-      </template>
-      <template #default>
-        <n-collapse-transition :show="searchCollapse">
-          <div class="search-form-container">
-            <slot name="search-form">
-              <SearchForm
-                v-if="searchForm"
-                ref="searchFormRef"
-                :config="searchForm"
-                v-model="internalSearchModel"
-              />
-            </slot>
-          </div>
-        </n-collapse-transition>
-      </template>
-    </n-card>
-
     <!-- 表格主体 -->
     <div class="table-card-shell" ref="fullscreenContainerRef">
       <n-card class="table-main-container" :bordered="false">
         <!-- 表格头部 -->
-        <template #header>
+        <template #header v-if="$slots.header || $slots['header-extra'] || toolbarVisible">
           <div class="table-header">
             <div class="header-left">
               <slot name="header" />
@@ -201,14 +163,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import type { DataTableColumns, DataTableBaseColumn } from 'naive-ui'
 import {
   Refresh as RefreshIcon,
   Expand as FullscreenIcon,
   Contract as FullscreenExitIcon,
-  ChevronUp as ArrowUpIcon,
-  ChevronDown as ArrowDownIcon,
   Resize as DensityIcon
 } from '@vicons/ionicons5'
 import type {
@@ -219,9 +179,6 @@ import type {
 } from '@/types/table'
 import SortableTable from './SortableTable.vue'
 import TableConfigPanel from './TableConfig.vue'
-import SearchForm from '../search/SearchForm.vue'
-import SearchButton from '../button/SearchButton.vue'
-import ResetButton from '../button/ResetButton.vue'
 
 // Props 定义
 const props = withDefaults(defineProps<TableMainProps>(), {
@@ -240,7 +197,6 @@ const props = withDefaults(defineProps<TableMainProps>(), {
   indent: 16,
   expandable: true,
   defaultExpandAll: false,
-  searchModel: () => ({}),
   stickyToolbar: false,
   toolbarConfig: () => ({})
 })
@@ -251,73 +207,7 @@ const emit = defineEmits<TableMainEmits>()
 // 内部列状态管理
 const internalColumns = ref<DataTableColumns>([])
 
-// 搜索相关状态
-const searchFormRef = ref()
-const internalSearchModel = ref<Record<string, any>>({})
-const searchCollapse = ref(props.searchConfig?.defaultCollapse !== false)
-const fallbackRowKeySymbol = Symbol('table-row-key')
-let fallbackRowKeySequence = 0
-let rowKeyWarningLogged = false
-
-// 初始化搜索模型
-const initSearchModel = () => {
-  if (props.searchForm && props.searchForm.items) {
-    const model: Record<string, any> = {}
-    props.searchForm.items.forEach((item) => {
-      model[item.key] = props.searchModel[item.key] ?? item.defaultValue ?? null
-    })
-    internalSearchModel.value = { ...model, ...props.searchModel }
-  } else {
-    internalSearchModel.value = { ...props.searchModel }
-  }
-}
-
-// 监听搜索模型变化
-watch(
-  () => props.searchModel,
-  (newModel) => {
-    if (newModel && typeof newModel === 'object') {
-      internalSearchModel.value = { ...internalSearchModel.value, ...newModel }
-    }
-  },
-  { deep: true }
-)
-
-// 监听内部搜索模型变化
-watch(
-  internalSearchModel,
-  (newModel) => {
-    emit('update:search-model', { ...newModel })
-  },
-  { deep: true }
-)
-
-// 监听搜索表单配置变化
-watch(
-  () => props.searchForm,
-  () => {
-    initSearchModel()
-  },
-  { immediate: true, deep: true }
-)
-
-// 初始化内部列
-const initInternalColumns = () => {
-  internalColumns.value = [...props.columns]
-}
-
-// 监听 props.columns 变化
-watch(
-  () => props.columns,
-  (newColumns) => {
-    if (newColumns && newColumns.length > 0) {
-      internalColumns.value = [...newColumns]
-    }
-  },
-  { immediate: true, deep: true }
-)
-
-// 组件引用
+// 表单引用
 const tableRef = ref()
 const configPanelRef = ref()
 const sortableTableRef = ref()
@@ -329,6 +219,9 @@ const virtualScroll = ref(false)
 const flexHeight = ref(false)
 const hasWindow = typeof window !== 'undefined'
 const stickyToolbar = computed(() => props.stickyToolbar)
+const fallbackRowKeySymbol = Symbol('table-row-key')
+let fallbackRowKeySequence = 0
+let rowKeyWarningLogged = false
 
 // 表格配置
 const tableConfig = ref<TableConfig>({
@@ -419,19 +312,43 @@ const paginationConfig = computed(() => {
   }
 
   if (typeof props.pagination === 'object' && props.pagination !== null) {
-    return {
+    const config = {
       showSizePicker: true,
       showQuickJumper: true,
       pageSizes: [10, 20, 50, 100],
       ...props.pagination
     }
+
+    // 确保远程分页时有正确的字段映射
+    if (props.remote) {
+      return {
+        ...config,
+        page: config.page || 1,
+        pageSize: config.pageSize || 10,
+        itemCount: config.total || 0
+      }
+    }
+
+    return config
   }
 
-  return {
+  const defaultConfig = {
     showSizePicker: true,
     showQuickJumper: true,
     pageSizes: [10, 20, 50, 100]
   }
+
+  // 确保远程分页时有正确的字段映射
+  if (props.remote) {
+    return {
+      ...defaultConfig,
+      page: 1,
+      pageSize: 10,
+      itemCount: 0
+    }
+  }
+
+  return defaultConfig
 })
 
 // 计算表格最大高度
@@ -441,61 +358,12 @@ const computedMaxHeight = computed(() => {
   }
 
   if (isFullscreen.value) {
-    return typeof window !== 'undefined' ? window.innerHeight - 200 : undefined
+    return typeof window !== 'undefined' ? window.innerHeight - 120 : undefined
   }
 
   // 自动计算高度
   return undefined
 })
-
-const resolveSearchParams = () => {
-  const formData = searchFormRef.value?.getFormData?.()
-  if (formData && typeof formData === 'object') {
-    return { ...formData }
-  }
-  return { ...internalSearchModel.value }
-}
-
-// 搜索相关方法
-const handleSearch = (params?: Record<string, any>) => {
-  const searchParams = params ?? resolveSearchParams()
-  emit('search', searchParams)
-
-  // 如果配置了重置页码，则重置到第一页
-  if (props.searchConfig?.resetOnSearch !== false) {
-    emit('update:page', 1)
-  }
-}
-
-const handleReset = () => {
-  // 重置搜索表单
-  if (searchFormRef.value) {
-    searchFormRef.value.reset()
-  } else {
-    // 如果没有表单组件，则重置内部模型
-    const model: Record<string, any> = {}
-    if (props.searchForm?.items) {
-      props.searchForm.items.forEach((item) => {
-        model[item.key] = item.defaultValue ?? null
-      })
-    }
-    internalSearchModel.value = model
-  }
-
-  emit('reset')
-
-  // 如果配置了自动搜索，则触发搜索
-  if (props.searchConfig?.autoSearch !== false) {
-    nextTick(() => {
-      handleSearch()
-    })
-  }
-}
-
-const handleSearchCollapse = () => {
-  searchCollapse.value = !searchCollapse.value
-  emit('update:search-collapse', searchCollapse.value)
-}
 
 // 表格相关方法
 const updateConfig = (config: TableConfig) => {
@@ -538,9 +406,7 @@ const handleFiltersChange = (filters: any) => {
 const handleRefresh = () => {
   // 触发数据刷新
   emit('update:page', 1)
-  const searchParams = resolveSearchParams()
-  emit('refresh', searchParams)
-  handleSearch(searchParams)
+  emit('refresh')
 }
 
 const handleDensitySelect = (size: string | number) => {
@@ -631,6 +497,22 @@ watch(
   { immediate: true }
 )
 
+// 初始化内部列
+const initInternalColumns = () => {
+  internalColumns.value = [...props.columns]
+}
+
+// 监听 props.columns 变化
+watch(
+  () => props.columns,
+  (newColumns) => {
+    if (newColumns && newColumns.length > 0) {
+      internalColumns.value = [...newColumns]
+    }
+  },
+  { immediate: true, deep: true }
+)
+
 // 生命周期
 onMounted(() => {
   // 监听全屏事件
@@ -645,9 +527,6 @@ onMounted(() => {
 
   // 自动调整表格
   autoAdjustTable()
-
-  // 初始化搜索模型
-  initSearchModel()
 })
 
 onUnmounted(() => {
@@ -675,18 +554,11 @@ defineExpose({
   resetColumns: () => sortableTableRef.value?.reset(),
   saveColumns: () => sortableTableRef.value?.save(),
 
-  // 搜索方法
-  search: handleSearch,
-  resetSearch: handleReset,
-  getSearchData: () => searchFormRef.value?.getFormData() || internalSearchModel.value,
-  validateSearch: () => searchFormRef.value?.validate(),
-
   // 全屏方法
   toggleFullscreen,
 
   // 获取表格实例
-  getTableRef: () => tableRef.value,
-  getSearchFormRef: () => searchFormRef.value
+  getTableRef: () => tableRef.value
 })
 </script>
 
@@ -698,24 +570,6 @@ defineExpose({
 
   .table-card-shell {
     width: 100%;
-  }
-
-  .search-card {
-    :deep(.n-card__content) {
-      padding: 0;
-    }
-
-    .search-title {
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--text-color);
-    }
-
-    .search-form-container {
-      padding: 16px;
-      background-color: var(--card-color);
-      border-radius: 0 0 3px 3px;
-    }
   }
 
   .table-main-container {
@@ -770,6 +624,7 @@ defineExpose({
     .table-content {
       position: relative;
       transition: all 0.3s ease;
+      min-height: 400px;
 
       &.fullscreen {
         position: fixed;
@@ -780,6 +635,13 @@ defineExpose({
         z-index: 9999;
         background: var(--card-color);
         padding: 16px;
+        display: flex;
+        flex-direction: column;
+
+        :deep(.n-data-table) {
+          flex: 1;
+          min-height: 0;
+        }
       }
     }
 
@@ -791,12 +653,6 @@ defineExpose({
 
   // 响应式设计
   @media (max-width: 768px) {
-    .search-card {
-      .search-form-container {
-        padding: 12px;
-      }
-    }
-
     .table-main-container {
       .table-header {
         flex-direction: column;
@@ -819,12 +675,29 @@ defineExpose({
 
 // 全屏时的样式调整
 .table-main-wrapper.fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9998;
+  background: var(--body-color);
+  padding: 0;
+
+  .table-card-shell {
+    width: 100%;
+    height: 100%;
+  }
+
   .table-main-container {
+    height: 100%;
     box-shadow: none;
+    border-radius: 0;
   }
 
   .table-content {
-    height: calc(100vh - 160px);
+    height: calc(100vh - 80px); // 减去工具栏高度
+    padding: 16px;
     overflow: auto;
   }
 }

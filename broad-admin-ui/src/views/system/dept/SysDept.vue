@@ -70,6 +70,39 @@
 
       <main class="dept-table">
         <n-card :bordered="false" class="table-wrapper">
+          <!-- 独立搜索区域 -->
+          <n-card size="small" class="search-card" style="margin-bottom: 16px;">
+            <template #header>
+              <span>搜索条件</span>
+            </template>
+            <template #default>
+              <n-form inline :label-width="80" :model="searchModel">
+                <n-form-item label="部门名称">
+                  <n-input
+                    v-model:value="searchModel.deptName"
+                    placeholder="请输入部门名称"
+                    clearable
+                    @keydown.enter="handleSearchClick"
+                  />
+                </n-form-item>
+                <n-form-item label="状态">
+                  <n-select
+                    v-model:value="searchModel.status"
+                    placeholder="请选择状态"
+                    clearable
+                    :options="sys_normal_disable.value"
+                  />
+                </n-form-item>
+                <n-form-item>
+                  <n-space>
+                    <n-button type="primary" @click="handleSearchClick">搜索</n-button>
+                    <n-button @click="handleResetClick">重置</n-button>
+                  </n-space>
+                </n-form-item>
+              </n-form>
+            </template>
+          </n-card>
+
           <TableMain
             ref="tableMainRef"
             :columns="columns"
@@ -80,12 +113,7 @@
             sticky-toolbar
             :default-expand-all="false"
             v-model:expanded-row-keys="expandedRowKeys"
-            :search-config="searchConfig"
-            :search-form="searchFormConfig"
-            v-model:search-model="searchModel"
             :toolbar-config="{ column: true, density: true, refresh: true, fullscreen: true }"
-            @search="handleSearch"
-            @reset="handleReset"
             @refresh="handleRefresh"
           >
             <template #header>
@@ -203,7 +231,6 @@ import {
 import TableMain from '@/components/table/main/TableMain.vue'
 import { useDict } from '@/utils/useDict'
 import { useTableMain } from '@/hooks/useTableMain'
-import type { SearchFormConfig } from '@/types/table'
 import { getDeptPage, addDept, updateDept, deleteDept } from '@/api/system/dept'
 
 interface DeptEntity {
@@ -240,33 +267,6 @@ const searchModel = ref({
   deptName: '',
   status: null as string | null
 })
-
-const searchConfig = {
-  title: '条件筛选',
-  defaultCollapse: true
-}
-
-const searchFormConfig = computed<SearchFormConfig>(() => ({
-  cols: 24,
-  xGap: 16,
-  yGap: 12,
-  items: [
-    {
-      key: 'deptName',
-      label: '部门名称',
-      type: 'input',
-      placeholder: '输入部门名称',
-      span: 8
-    },
-    {
-      key: 'status',
-      label: '状态',
-      type: 'select',
-      options: sys_normal_disable.value,
-      span: 8
-    }
-  ]
-}))
 
 const flattenDeptData = computed(() => {
   const result: DeptEntity[] = []
@@ -348,13 +348,12 @@ const syncRowExpandedKeys = () => {
     : []
 }
 
-const loadTableData = async (override?: Record<string, any>) => {
+const loadTableData = async () => {
   tableLoading.value = true
   try {
     const payload = cleanParams({
       ...searchModel.value,
-      parentId: activeTreeKey.value ?? undefined,
-      ...override
+      parentId: activeTreeKey.value ?? undefined
     })
     const res = await getDeptPage(payload)
     if (res.code === 200) {
@@ -408,12 +407,11 @@ const toggleExpandRows = () => {
   syncTreeExpandedKeys()
 }
 
-const handleSearch = (params: Record<string, any>) => {
-  searchModel.value = { ...searchModel.value, ...params }
-  loadTableData(params)
+const handleSearchClick = () => {
+  loadTableData()
 }
 
-const handleReset = () => {
+const handleResetClick = () => {
   searchModel.value = {
     deptName: '',
     status: null
@@ -691,6 +689,11 @@ loadTableData()
   }
 
   .dept-table {
+    .search-card {
+      background: linear-gradient(135deg, #f5f7ff 0%, #fff 100%);
+      border: 1px solid rgba(82, 106, 255, 0.12);
+    }
+
     .table-wrapper {
       min-height: 640px;
     }

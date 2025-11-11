@@ -48,4 +48,12 @@ public interface SysUserService extends IService<SysUser> {
      */
     int updateAdmin(SysUser sysAdmin);
 
+    /**
+     * 重置密码
+     *
+     * @param userId   用户ID
+     * @param password 新密码
+     */
+    void resetPassword(Integer userId, String password);
+
 }

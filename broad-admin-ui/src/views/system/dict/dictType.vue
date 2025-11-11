@@ -22,37 +22,75 @@
       </div>
     </header>
 
-    <TableMain
-      :columns="columns"
-      :data="tableData"
-      :loading="loading"
-      :pagination="pagination"
-      row-key="dictId"
-      sticky-toolbar
-      :search-config="searchConfig"
-      :search-form="searchFormConfig"
-      v-model:search-model="searchModel"
-      @search="handleSearch"
-      @reset="handleReset"
-      @refresh="handleRefresh"
-    >
-      <template #header>
-        <div class="table-header">
-          <h3>字典类型列表</h3>
-          <p>支持快速检索字典名称、类型与启用状态。</p>
-        </div>
-      </template>
-      <template #header-extra>
-        <n-space>
-          <n-button type="primary" round size="small" @click="handleAdd" v-auth="['sys:dict:add']">
-            <template #icon>
-              <n-icon><AddOutline /></n-icon>
-            </template>
-            新增
-          </n-button>
-        </n-space>
-      </template>
-    </TableMain>
+    <n-card class="table-panel" :bordered="false">
+      <!-- 独立搜索区域 -->
+      <n-card size="small" class="search-card" style="margin-bottom: 16px;">
+        <template #header>
+          <span>搜索条件</span>
+        </template>
+        <template #default>
+          <n-form inline :label-width="80" :model="searchModel">
+            <n-form-item label="字典名称">
+              <n-input
+                v-model:value="searchModel.dictName"
+                placeholder="请输入字典名称"
+                clearable
+                @keydown.enter="handleSearchClick"
+              />
+            </n-form-item>
+            <n-form-item label="字典类型">
+              <n-input
+                v-model:value="searchModel.dictType"
+                placeholder="请输入字典类型"
+                clearable
+                @keydown.enter="handleSearchClick"
+              />
+            </n-form-item>
+            <n-form-item label="状态">
+              <n-select
+                v-model:value="searchModel.status"
+                placeholder="请选择状态"
+                clearable
+                :options="sys_normal_disable.value"
+              />
+            </n-form-item>
+            <n-form-item>
+              <n-space>
+                <n-button type="primary" @click="handleSearchClick">搜索</n-button>
+                <n-button @click="handleResetClick">重置</n-button>
+              </n-space>
+            </n-form-item>
+          </n-form>
+        </template>
+      </n-card>
+
+      <TableMain
+        :columns="columns"
+        :data="tableData"
+        :loading="loading"
+        :pagination="pagination"
+        row-key="dictId"
+        sticky-toolbar
+        @refresh="handleRefresh"
+      >
+        <template #header>
+          <div class="table-header">
+            <h3>字典类型列表</h3>
+            <p>支持快速检索字典名称、类型与启用状态。</p>
+          </div>
+        </template>
+        <template #header-extra>
+          <n-space>
+            <n-button type="primary" round size="small" @click="handleAdd" v-auth="['sys:dict:add']">
+              <template #icon>
+                <n-icon><AddOutline /></n-icon>
+              </template>
+              新增
+            </n-button>
+          </n-space>
+        </template>
+      </TableMain>
+    </n-card>
 
     <n-modal
       v-model:show="showModal"
@@ -130,7 +168,6 @@ import { usePagination } from '@/hooks/useTable'
 import { useDict } from '@/utils/useDict'
 import { getDictTypePage, addDictType, updateDictType, detectDictType } from '@/api/system/dictType'
 import TableMain from '@/components/table/main/TableMain.vue'
-import type { SearchFormConfig } from '@/types/table'
 
 // 组件通信
 const emit = defineEmits(['select-dict'])
@@ -165,38 +202,6 @@ const searchModel = ref({
   status: null as string | null
 })
 
-const searchConfig = {
-  title: '筛选条件',
-  defaultCollapse: true
-}
-
-const searchFormConfig = computed<SearchFormConfig>(() => ({
-  cols: 24,
-  xGap: 16,
-  items: [
-    {
-      key: 'dictName',
-      label: '字典名称',
-      type: 'input',
-      placeholder: '请输入字典名称',
-      span: 6
-    },
-    {
-      key: 'dictType',
-      label: '字典类型',
-      type: 'input',
-      placeholder: '请输入字典类型',
-      span: 6
-    },
-    {
-      key: 'status',
-      label: '状态',
-      type: 'select',
-      options: sys_normal_disable.value,
-      span: 6
-    }
-  ]
-}))
 
 // 表单校验规则
 const rules = {
@@ -319,20 +324,24 @@ const loadTableData = async () => {
 }
 
 // 搜索和重置
-const handleSearch = (params: Record<string, any>) => {
-  searchModel.value = { ...searchModel.value, ...params }
+const handleSearchClick = () => {
+  // 重置到第一页
   pagination.page = 1
   loadTableData()
+  message.success('搜索完成')
 }
 
-const handleReset = () => {
+const handleResetClick = () => {
+  // 清空搜索模型
   searchModel.value = {
     dictName: '',
     dictType: '',
     status: null
   }
+  // 重置到第一页
   pagination.page = 1
   loadTableData()
+  message.success('重置成功')
 }
 
 // 刷新
@@ -451,6 +460,18 @@ onMounted(() => {
     .header-actions {
       display: flex;
       gap: 12px;
+    }
+  }
+
+  .table-panel {
+    border-radius: var(--shell-radius-lg);
+    background: var(--shell-surface);
+    box-shadow: var(--shell-shadow);
+  }
+
+  .search-card {
+    :deep(.n-card__content) {
+      padding: 16px;
     }
   }
 

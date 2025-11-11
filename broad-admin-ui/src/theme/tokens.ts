@@ -229,7 +229,7 @@ export function createThemeCssVars(ctx: TokenContext) {
     '--tabbar-border-color': isDark ? 'rgba(148, 163, 184, 0.18)' : 'rgba(15, 23, 42, 0.08)',
     '--tabbar-pill-bg': isDark ? 'rgba(15, 23, 42, 0.55)' : 'rgba(15, 23, 42, 0.04)',
     '--tabbar-pill-text': surfaces.muted,
-    '--tabbar-pill-active-text': isDark ? '#f8fafc' : '#0f172a',
+    '--tabbar-pill-active-text': isDark ? '#f8fafc' : '#ffffff',
     '--tabbar-pill-active-bg': ctx.themeColor.primaryColor,
     '--tabbar-pill-shadow': tabShadow,
     '--tabbar-height': `${tabHeight}px`
