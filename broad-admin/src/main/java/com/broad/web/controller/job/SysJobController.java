@@ -2,7 +2,6 @@ package com.broad.web.controller.job;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.broad.common.annotation.Log;
 import com.broad.common.constant.Constants;
 import com.broad.common.enums.BusinessType;
@@ -16,13 +15,16 @@ import com.broad.job.entity.SysJob;
 import com.broad.job.service.ISysJobService;
 import com.broad.job.util.CronUtils;
 import com.broad.job.util.ScheduleUtils;
+import com.broad.web.controller.job.model.SysJobMetaVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.quartz.SchedulerException;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -33,10 +35,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/job")
 @Tag(name = "定时任务管理")
+@Validated
+@RequiredArgsConstructor
 public class SysJobController extends BaseController {
 
-    @Autowired
-    private ISysJobService jobService;
+    private final ISysJobService jobService;
 
     /**
      * 查询定时任务列表
@@ -52,13 +55,25 @@ public class SysJobController extends BaseController {
     }
 
     /**
+     * 获取前端所需的元数据（例如触发策略）
+     *
+     * @return 元数据
+     */
+    @SaCheckPermission("job:list")
+    @GetMapping("/meta")
+    @Operation(summary = "获取定时任务表单元数据")
+    public ResultData meta() {
+        return success(SysJobMetaVO.defaultMeta());
+    }
+
+    /**
      * 导出定时任务列表
      *
      * @param response the response
      * @param sysJob   the sys job
      */
     @SaCheckPermission("job:export")
-    @Log(description = "导出定时任务数据", businessType = BusinessType.EXPORT)
+    @Log(title = "定时任务", description = "导出定时任务数据", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, SysJob sysJob) {
         List<SysJob> list = jobService.list(new LambdaQueryWrapper<>(sysJob));
@@ -74,6 +89,7 @@ public class SysJobController extends BaseController {
      */
     @SaCheckPermission("job:list")
     @GetMapping(value = "/{jobId}")
+    @Operation(summary = "获取定时任务详情")
     public ResultData getInfo(@PathVariable("jobId") Long jobId) {
         return success(jobService.selectJobById(jobId));
     }
@@ -87,23 +103,12 @@ public class SysJobController extends BaseController {
      * @throws TaskException      the task exception
      */
     @SaCheckPermission("job:add")
-    @Log(description = "新增定时任务", businessType = BusinessType.INSERT)
+    @Log(title = "定时任务", description = "新增定时任务", businessType = BusinessType.INSERT)
     @PostMapping
-    public ResultData add(@RequestBody SysJob job) throws SchedulerException, TaskException {
-        if (!CronUtils.isValid(job.getCronExpression())) {
-            return error("新增任务'" + job.getJobName() + "'失败，Cron表达式不正确");
-        } else if (StringUtils.containsIgnoreCase(job.getInvokeTarget(), Constants.LOOKUP_RMI)) {
-            return error("新增任务'" + job.getJobName() + "'失败，目标字符串不允许'rmi'调用");
-        } else if (StringUtils.containsAnyIgnoreCase(job.getInvokeTarget(),
-                new String[] { Constants.LOOKUP_LDAP, Constants.LOOKUP_LDAPS })) {
-            return error("新增任务'" + job.getJobName() + "'失败，目标字符串不允许'ldap(s)'调用");
-        } else if (StringUtils.containsAnyIgnoreCase(job.getInvokeTarget(),
-                new String[] { Constants.HTTP, Constants.HTTPS })) {
-            return error("新增任务'" + job.getJobName() + "'失败，目标字符串不允许'http(s)'调用");
-        } else if (StringUtils.containsAnyIgnoreCase(job.getInvokeTarget(), Constants.JOB_ERROR_STR)) {
-            return error("新增任务'" + job.getJobName() + "'失败，目标字符串存在违规");
-        } else if (!ScheduleUtils.whiteList(job.getInvokeTarget())) {
-            return error("新增任务'" + job.getJobName() + "'失败，目标字符串不在白名单内");
+    public ResultData add(@Valid @RequestBody SysJob job) throws SchedulerException, TaskException {
+        String errorMessage = validateJob(job, "新增");
+        if (StringUtils.isNotBlank(errorMessage)) {
+            return error(errorMessage);
         }
         return toResult(jobService.insertJob(job));
     }
@@ -117,23 +122,12 @@ public class SysJobController extends BaseController {
      * @throws TaskException      the task exception
      */
     @SaCheckPermission("job:update")
-    @Log(description = "修改定时任务", businessType = BusinessType.UPDATE)
+    @Log(title = "定时任务", description = "修改定时任务", businessType = BusinessType.UPDATE)
     @PutMapping
-    public ResultData edit(@RequestBody SysJob job) throws SchedulerException, TaskException {
-        if (!CronUtils.isValid(job.getCronExpression())) {
-            return error("修改任务'" + job.getJobName() + "'失败，Cron表达式不正确");
-        } else if (StringUtils.containsIgnoreCase(job.getInvokeTarget(), Constants.LOOKUP_RMI)) {
-            return error("修改任务'" + job.getJobName() + "'失败，目标字符串不允许'rmi'调用");
-        } else if (StringUtils.containsAnyIgnoreCase(job.getInvokeTarget(),
-                new String[] { Constants.LOOKUP_LDAP, Constants.LOOKUP_LDAPS })) {
-            return error("修改任务'" + job.getJobName() + "'失败，目标字符串不允许'ldap(s)'调用");
-        } else if (StringUtils.containsAnyIgnoreCase(job.getInvokeTarget(),
-                new String[] { Constants.HTTP, Constants.HTTPS })) {
-            return error("修改任务'" + job.getJobName() + "'失败，目标字符串不允许'http(s)'调用");
-        } else if (StringUtils.containsAnyIgnoreCase(job.getInvokeTarget(), Constants.JOB_ERROR_STR)) {
-            return error("修改任务'" + job.getJobName() + "'失败，目标字符串存在违规");
-        } else if (!ScheduleUtils.whiteList(job.getInvokeTarget())) {
-            return error("修改任务'" + job.getJobName() + "'失败，目标字符串不在白名单内");
+    public ResultData edit(@Valid @RequestBody SysJob job) throws SchedulerException, TaskException {
+        String errorMessage = validateJob(job, "修改");
+        if (StringUtils.isNotBlank(errorMessage)) {
+            return error(errorMessage);
         }
         return toResult(jobService.updateJob(job));
     }
@@ -146,8 +140,9 @@ public class SysJobController extends BaseController {
      * @throws SchedulerException the scheduler exception
      */
     @SaCheckPermission("job:update")
-    @Log(description = "修改定时任务状态", businessType = BusinessType.UPDATE)
+    @Log(title = "定时任务", description = "修改定时任务状态", businessType = BusinessType.UPDATE)
     @PutMapping("/changeStatus")
+    @Operation(summary = "修改定时任务状态")
     public ResultData changeStatus(@RequestBody SysJob job) throws SchedulerException {
         SysJob newJob = jobService.selectJobById(job.getJobId());
         newJob.setStatus(job.getStatus());
@@ -162,8 +157,9 @@ public class SysJobController extends BaseController {
      * @throws SchedulerException the scheduler exception
      */
     @SaCheckPermission("job:update")
-    @Log(description = "执行定时任务", businessType = BusinessType.UPDATE)
+    @Log(title = "定时任务", description = "执行定时任务", businessType = BusinessType.UPDATE)
     @PutMapping("/run")
+    @Operation(summary = "定时任务立即执行一次")
     public ResultData run(@RequestBody SysJob job) throws SchedulerException {
         jobService.run(job);
         return success();
@@ -177,10 +173,42 @@ public class SysJobController extends BaseController {
      * @throws SchedulerException the scheduler exception
      */
     @SaCheckPermission("job:delete")
-    @Log(description = "删除定时任务", businessType = BusinessType.DELETE)
+    @Log(title = "定时任务", description = "删除定时任务", businessType = BusinessType.DELETE)
     @DeleteMapping("/{jobIds}")
+    @Operation(summary = "批量删除定时任务")
     public ResultData remove(@PathVariable Long[] jobIds) throws SchedulerException {
         jobService.deleteJobByIds(jobIds);
         return success();
+    }
+
+    /**
+     * 统一校验任务配置
+     *
+     * @param job         任务
+     * @param actionLabel 操作文案
+     * @return 违规描述
+     */
+    private String validateJob(SysJob job, String actionLabel) {
+        String prefix = actionLabel + "任务'" + job.getJobName() + "'失败，";
+        if (!CronUtils.isValid(job.getCronExpression())) {
+            return prefix + "Cron表达式不正确";
+        }
+        String invokeTarget = job.getInvokeTarget();
+        if (StringUtils.containsIgnoreCase(invokeTarget, Constants.LOOKUP_RMI)) {
+            return prefix + "目标字符串不允许'rmi'调用";
+        }
+        if (StringUtils.containsAnyIgnoreCase(invokeTarget, Constants.LOOKUP_LDAP, Constants.LOOKUP_LDAPS)) {
+            return prefix + "目标字符串不允许'ldap(s)'调用";
+        }
+        if (StringUtils.containsAnyIgnoreCase(invokeTarget, Constants.HTTP, Constants.HTTPS)) {
+            return prefix + "目标字符串不允许'http(s)'调用";
+        }
+        if (StringUtils.containsAnyIgnoreCase(invokeTarget, Constants.JOB_ERROR_STR)) {
+            return prefix + "目标字符串存在违规";
+        }
+        if (!ScheduleUtils.whiteList(invokeTarget)) {
+            return prefix + "目标字符串不在白名单内";
+        }
+        return null;
     }
 }

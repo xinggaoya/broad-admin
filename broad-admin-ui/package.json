@@ -16,6 +16,7 @@
     "date-fns": "^4.1.0",
     "echarts": "^6.0.0",
     "ky": "^1.14.0",
+    "path-browserify": "^1.0.1",
     "pinia": "^3.0.4",
     "quill": "2.0.3",
     "screenfull": "^6.0.2",

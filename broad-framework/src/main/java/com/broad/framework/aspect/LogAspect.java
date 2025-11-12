@@ -3,7 +3,6 @@ package com.broad.framework.aspect;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson2.JSON;
-import com.alibaba.fastjson2.JSONObject;
 import com.broad.common.annotation.Log;
 import com.broad.common.constant.ThreadPoolConstant;
 import com.broad.common.enums.LogType;
@@ -20,6 +19,7 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.scheduling.annotation.Async;
@@ -27,6 +27,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Map;
 
@@ -43,6 +44,9 @@ public class LogAspect {
     @Autowired
     private SysUserLogService sysUserLogService;
 
+    private static final int MAX_CONTENT_LENGTH = 2000;
+    private static final String DEFAULT_OPERATOR = "system";
+
     /**
      * 处理完请求后执行
      *
@@ -50,7 +54,7 @@ public class LogAspect {
      */
     @AfterReturning(pointcut = "@annotation(controllerLog)", returning = "jsonResult")
     public void doAfterReturning(JoinPoint joinPoint, Log controllerLog, Object jsonResult) {
-        handleLog(joinPoint, controllerLog, null, jsonResult);
+        handleLog(joinPoint, controllerLog, null, jsonResult, resolveRequest());
     }
 
     /**
@@ -61,35 +65,52 @@ public class LogAspect {
      */
     @AfterThrowing(value = "@annotation(controllerLog)", throwing = "e")
     public void doAfterThrowing(JoinPoint joinPoint, Log controllerLog, Exception e) {
-        handleLog(joinPoint, controllerLog, e, null);
+        handleLog(joinPoint, controllerLog, e, null, resolveRequest());
     }
 
     @Async(ThreadPoolConstant.ASYNC_POOL)
-    protected void handleLog(final JoinPoint joinPoint, Log controllerLog, final Exception e, Object jsonResult) {
+    protected void handleLog(final JoinPoint joinPoint, Log controllerLog, final Exception e, Object jsonResult,
+            HttpServletRequest request) {
         try {
             // 获取当前的用户
-            String username = StpUtil.getLoginIdAsString();
+            String username = DEFAULT_OPERATOR;
+            Long adminId = null;
+            try {
+                if (StpUtil.isLogin()) {
+                    username = StpUtil.getLoginIdAsString();
+                    adminId = StpUtil.getLoginIdAsLong();
+                }
+            } catch (Exception ex) {
+                log.debug("获取登录用户信息失败：{}", ex.getMessage());
+            }
 
             // *========数据库日志=========*//
             SysUserLog operLog = new SysUserLog();
             operLog.setStatus(LogType.SUCCESS.ordinal());
             // 请求的地址
-            String ip = IpUtils.getIpAddr(ServletUtils.getRequest());
+            String ip = request != null ? IpUtils.getIpAddr(request) : StringUtils.EMPTY;
             operLog.setOperIp(ip);
-            operLog.setOperUrl(StringUtils.substring(ServletUtils.getRequest().getRequestURI(), 0, 255));
+            if (request != null) {
+                operLog.setOperUrl(StringUtils.substring(request.getRequestURI(), 0, 255));
+                operLog.setRequestMethod(request.getMethod());
+            } else {
+                operLog.setOperUrl(StringUtils.EMPTY);
+                operLog.setRequestMethod(HttpMethod.GET.name());
+            }
             operLog.setOperName(username);
-            operLog.setAdminId(Integer.valueOf(username));
+            if (adminId != null) {
+                operLog.setAdminId(adminId.intValue());
+            }
 
             if (e != null) {
                 operLog.setStatus(LogType.FAIL.ordinal());
-                operLog.setErrorMsg(StringUtils.substring(e.getMessage(), 0, 2000));
+                operLog.setErrorMsg(StringUtils.substring(e.getMessage(), 0, MAX_CONTENT_LENGTH));
             }
             // 设置方法名称
             String className = joinPoint.getTarget().getClass().getName();
             String methodName = joinPoint.getSignature().getName();
             operLog.setMethod(className + "." + methodName + "()");
             // 设置请求方式
-            operLog.setRequestMethod(ServletUtils.getRequest().getMethod());
             // 处理设置注解上的参数
             getControllerMethodDescription(joinPoint, controllerLog, operLog, jsonResult);
             // 保存数据库
@@ -116,7 +137,7 @@ public class LogAspect {
         // 设置action动作
         operLog.setBusinessType(log.businessType().ordinal());
         // 设置标题
-        operLog.setLogDescription(log.title());
+        operLog.setLogDescription(resolveLogDescription(joinPoint, log));
         // 设置操作人类别
         operLog.setLogMethodType(String.valueOf(log.operatorType()));
         // 是否需要保存request，参数和值
@@ -126,7 +147,7 @@ public class LogAspect {
         }
         // 是否需要保存response，参数和值
         if (log.isSaveResponseData() && StringUtils.isNotNull(jsonResult)) {
-            operLog.setJsonResult(StringUtils.substring(JSON.toJSONString(jsonResult), 0, 2000));
+            operLog.setJsonResult(StringUtils.substring(JSON.toJSONString(jsonResult), 0, MAX_CONTENT_LENGTH));
         }
     }
 
@@ -138,9 +159,9 @@ public class LogAspect {
      */
     private void setRequestValue(JoinPoint joinPoint, SysUserLog operLog) throws Exception {
         String requestMethod = operLog.getRequestMethod();
-        if (HttpMethod.PUT.name().equals(requestMethod) || HttpMethod.POST.name().equals(requestMethod)) {
+        if (HttpMethod.PUT.name().equalsIgnoreCase(requestMethod) || HttpMethod.POST.name().equalsIgnoreCase(requestMethod)) {
             String params = argsArrayToString(joinPoint.getArgs());
-            operLog.setOperParam(StringUtils.substring(params, 0, 2000));
+            operLog.setOperParam(StringUtils.substring(params, 0, MAX_CONTENT_LENGTH));
         }
     }
 
@@ -156,6 +177,7 @@ public class LogAspect {
                         Object jsonObj = JSON.toJSON(o);
                         params.append(jsonObj.toString()).append(" ");
                     } catch (Exception e) {
+                        log.debug("序列化参数失败：{}", e.getMessage());
                     }
                 }
             }
@@ -188,5 +210,27 @@ public class LogAspect {
         }
         return o instanceof MultipartFile || o instanceof HttpServletRequest || o instanceof HttpServletResponse
                 || o instanceof BindingResult;
+    }
+
+    private HttpServletRequest resolveRequest() {
+        try {
+            return ServletUtils.getRequest();
+        } catch (Exception ex) {
+            return null;
+        }
+    }
+
+    private String resolveLogDescription(JoinPoint joinPoint, Log log) {
+        String description = StringUtils.defaultIfBlank(log.description(), log.title());
+        if (StringUtils.isNotBlank(description)) {
+            return description;
+        }
+        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
+        Method method = signature.getMethod();
+        Operation operation = method.getAnnotation(Operation.class);
+        if (operation != null && StringUtils.isNotBlank(operation.summary())) {
+            return operation.summary();
+        }
+        return method.getName();
     }
 }

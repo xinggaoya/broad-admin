@@ -1,32 +1,48 @@
 import { request } from '@/api/request'
 
-export const getJobList = (data: any) => {
+export const getJobList = (data: Record<string, any>) => {
   return request.get({
     url: '/job/list',
-    data,
+    data
   })
 }
 
-export const getJobRun = (data: any) => {
+export const getJobMeta = () => {
+  return request.get({
+    url: '/job/meta'
+  })
+}
+
+export const getJobRun = (data: Record<string, any>) => {
   return request.put({
     url: '/job/run',
-    data,
+    data
   })
 }
-export const addJob = (data: any) => {
+
+export const addJob = (data: Record<string, any>) => {
   return request.post({
     url: '/job',
-    data,
+    data
   })
 }
-export const jobUpdate = (data: any) => {
+
+export const jobUpdate = (data: Record<string, any>) => {
   return request.put({
     url: '/job',
-    data,
+    data
   })
 }
-export const jobDelete = (data: any) => {
+
+export const jobDelete = (jobIds: number | string) => {
   return request.delete({
-    url: '/job/' + data,
+    url: `/job/${jobIds}`
+  })
+}
+
+export const changeJobStatus = (data: Record<string, any>) => {
+  return request.put({
+    url: '/job/changeStatus',
+    data
   })
 }
