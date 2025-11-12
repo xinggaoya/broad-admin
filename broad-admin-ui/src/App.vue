@@ -28,21 +28,17 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { storeToRefs } from 'pinia'
 import { darkTheme, zhCN, dateZhCN } from 'naive-ui'
 import { useAppConfigStore } from '@/store/modules/app-config'
+import { useThemePresetStore } from '@/store/modules/theme-preset'
 import { ThemeMode } from '@/store/types'
 import { useThemeTokens } from '@/theme/useThemeTokens'
 
 const appConfig = useAppConfigStore()
+const themePresetStore = useThemePresetStore()
 const theme = computed(() => (appConfig.theme === ThemeMode.DARK ? darkTheme : null))
-const themeOverrides = computed(() => ({
-  common: {
-    primaryColor: appConfig.themeColor.primaryColor,
-    primaryColorHover: appConfig.themeColor.primaryColorHover,
-    primaryColorPressed: appConfig.themeColor.primaryColorPressed,
-    primaryColorSuppl: appConfig.themeColor.primaryColorSuppl
-  }
-}))
+const { naiveThemeOverrides: themeOverrides } = storeToRefs(themePresetStore)
 const themeVars = useThemeTokens()
 </script>
 

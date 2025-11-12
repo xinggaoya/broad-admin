@@ -8,7 +8,7 @@ import {
   SideTheme
 } from '@/store/types'
 
-interface SurfacePalette {
+export interface SurfacePalette {
   page: string
   surface: string
   card: string
@@ -19,7 +19,7 @@ interface SurfacePalette {
   shadow: string
 }
 
-interface SidebarPalette {
+export interface SidebarPalette {
   surface: string
   text: string
   muted: string
@@ -234,4 +234,16 @@ export function createThemeCssVars(ctx: TokenContext) {
     '--tabbar-pill-shadow': tabShadow,
     '--tabbar-height': `${tabHeight}px`
   }
+}
+
+export function getSurfacePalette(theme: ThemeMode) {
+  return surfacePalette[theme]
+}
+
+export function getSidebarPalette(sideTheme: SideTheme, theme: ThemeMode) {
+  return sidebarPalette[sideTheme][theme]
+}
+
+export function getStatePalette(theme: ThemeMode) {
+  return statePalette[theme]
 }

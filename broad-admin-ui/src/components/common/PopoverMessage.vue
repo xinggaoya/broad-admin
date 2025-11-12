@@ -3,73 +3,89 @@
     :content-style="{ padding: '0px' }"
     :footer-style="{ padding: '0px' }"
     :bordered="false"
-    :segmented="true"
-    class="w-80"
+    :segmented="{ footer: true }"
+    class="message-popover"
   >
-    <n-spin v-if="loading" />
-    <n-scrollbar v-else-if="messages.length > 0" style="max-height: 400px">
-      <div
-        v-for="item in messages"
-        :key="item.id"
-        class="p-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 hover:border-gray-300 transition-colors"
-        @click="handleMessageClick(item)"
-      >
-        <n-flex align="flex-start">
-          <n-icon size="24" color="#1890ff" class="mt-1">
-            <NotificationsCircle />
-          </n-icon>
-          <div class="flex-1 min-w-0">
-            <div class="flex items-center justify-between">
-              <div class="font-medium text-gray-900 truncate">{{ item.title }}</div>
-              <n-badge v-if="item.status === 0" dot type="error" />
+    <div class="message-panel">
+      <n-spin :show="loading" size="small">
+        <n-scrollbar v-if="messages.length" class="message-scroll">
+          <article
+            v-for="item in messages"
+            :key="item.id"
+            class="message-card"
+            :class="{ 'message-card--unread': item.status === 0 }"
+            @click="handleMessageClick(item)"
+          >
+            <div class="message-card__icon">
+              <n-icon size="20">
+                <NotificationsCircle />
+              </n-icon>
             </div>
-            <n-ellipsis :line-clamp="2" class="text-gray-500 text-sm mt-1">
-              {{ item.content }}
-            </n-ellipsis>
-            <div class="text-xs text-gray-400 mt-2">
-              {{ formatTime(item.createTime) }}
+            <div class="message-card__content">
+              <header class="message-card__header">
+                <span class="message-card__title" :title="item.title">{{ item.title }}</span>
+                <n-badge v-if="item.status === 0" dot type="error" />
+              </header>
+              <n-ellipsis :line-clamp="2" class="message-card__body">
+                {{ item.content }}
+              </n-ellipsis>
+              <time class="message-card__time">{{ formatTime(item.createTime) }}</time>
             </div>
-          </div>
-        </n-flex>
-      </div>
-    </n-scrollbar>
-    <n-empty v-else description="暂无消息" class="py-10" />
+          </article>
+        </n-scrollbar>
+        <n-empty v-else description="暂无消息" class="message-empty" size="small" />
+      </n-spin>
+    </div>
 
     <template #footer>
-      <n-space style="padding: 7px 0" justify="space-between" class="w-full">
-        <n-button text @click="markAllAsRead">
+      <div class="message-footer">
+        <n-button text size="small" class="message-footer__btn" @click="markAllAsRead">
           <template #icon>
             <n-icon><Checkmark /></n-icon>
           </template>
           全部已读
         </n-button>
-        <n-button text @click="$emit('viewAll')">
+        <n-button text size="small" class="message-footer__btn" @click="$emit('viewAll')">
           <template #icon>
             <n-icon><MailOpen /></n-icon>
           </template>
           查看全部
         </n-button>
-      </n-space>
+      </div>
     </template>
   </n-card>
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, watch } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { NotificationsCircle, Checkmark, MailOpen } from '@vicons/ionicons5'
 import { useUserStore } from '@/store/modules/user'
 import { getMessageList, markAsRead } from '@/api/message'
 import { formatTime } from '@/utils'
 
-const emit = defineEmits(['clear', 'viewAll', 'read'])
+interface MessageItem {
+  id: number
+  title: string
+  content: string
+  status: number
+  createTime: string
+}
+
+const emit = defineEmits<{
+  (e: 'clear'): void
+  (e: 'viewAll'): void
+  (e: 'read', messageId: number): void
+}>()
 
 const userStore = useUserStore()
-const messages = ref<any[]>([])
+const messages = ref<MessageItem[]>([])
 const loading = ref(false)
 
-// 加载消息列表
 async function loadMessages() {
-  if (!userStore.userId) return
+  if (!userStore.userId) {
+    messages.value = []
+    return
+  }
 
   loading.value = true
   try {
@@ -84,54 +100,142 @@ async function loadMessages() {
   }
 }
 
-// 处理消息点击
-async function handleMessageClick(message: any) {
-  if (message.status === 0) {
-    try {
-      await markAsRead(message.id)
-      message.status = 1
-      emit('read', message.id)
-    } catch (error) {
-      console.error('标记已读失败:', error)
-    }
+async function handleMessageClick(message: MessageItem) {
+  if (message.status !== 0) return
+  try {
+    await markAsRead(message.id)
+    message.status = 1
+    emit('read', message.id)
+  } catch (error) {
+    console.error('标记已读失败:', error)
   }
 }
 
-// 全部标记为已读
 async function markAllAsRead() {
-  const unreadIds = messages.value.filter(m => m.status === 0).map(m => m.id)
-  if (unreadIds.length === 0) return
+  const unreadIds = messages.value.filter((item) => item.status === 0).map((item) => item.id)
+  if (!unreadIds.length) return
 
   try {
-    for (const id of unreadIds) {
-      await markAsRead(id)
-    }
-    messages.value.forEach(m => {
-      if (m.status === 0) m.status = 1
-    })
+    await Promise.all(unreadIds.map((id) => markAsRead(id)))
+    messages.value = messages.value.map((item) => ({ ...item, status: 1 }))
     emit('clear')
   } catch (error) {
     console.error('全部标记已读失败:', error)
   }
 }
 
-// 暴露方法给父组件
-defineExpose({
-  loadMessages
-})
+defineExpose({ loadMessages })
 
-// 监听userId变化
-watch(() => userStore.userId, () => {
-  loadMessages()
-})
+watch(
+  () => userStore.userId,
+  () => {
+    loadMessages()
+  },
+  { immediate: true }
+)
 
-// 初始加载
 onMounted(() => {
   loadMessages()
 })
 </script>
 
 <style scoped>
+.message-popover {
+  width: 320px;
+  background: var(--shell-panel-bg);
+  border-radius: var(--shell-radius-lg);
+  box-shadow: var(--shell-shadow);
+}
+
+.message-panel {
+  padding: 4px 0;
+}
+
+.message-scroll {
+  max-height: 360px;
+}
+
+.message-empty {
+  padding: 32px 0;
+}
+
+.message-card {
+  display: flex;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--shell-panel-border);
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.message-card:last-of-type {
+  border-bottom: none;
+}
+
+.message-card:hover {
+  background: var(--shell-control-bg);
+  border-color: var(--shell-control-border);
+}
+
+.message-card--unread .message-card__title {
+  color: var(--color-primary);
+}
+
+.message-card__icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--shell-control-bg);
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.message-card__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.message-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.message-card__title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--shell-text-color);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.message-card__body {
+  margin-top: 4px;
+  color: var(--shell-muted-text-color);
+}
+
+.message-card__time {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--shell-muted-text-color);
+}
+
+.message-footer {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 4px;
+}
+
+.message-footer__btn {
+  color: var(--shell-text-color);
+}
+
 :deep(.n-scrollbar-content) {
   padding: 0 !important;
 }

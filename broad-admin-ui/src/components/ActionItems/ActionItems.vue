@@ -1,43 +1,61 @@
 <template>
   <div class="action-items-wrapper">
-    <span v-if="appConfig.actionBar.isShowSearch" class="action-item" @click="onShowSearch">
+    <button
+      v-if="appConfig.actionBar.isShowSearch"
+      class="action-item"
+      type="button"
+      aria-label="全局搜索"
+      @click="onShowSearch"
+    >
       <n-icon size="18">
         <SearchIcon />
       </n-icon>
-    </span>
-    <n-popover :width="320" placement="bottom" trigger="click">
+    </button>
+
+    <n-popover v-if="appConfig.actionBar.isShowMessage" :width="320" placement="bottom" trigger="click">
       <template #trigger>
-        <n-badge
-          v-if="appConfig.actionBar.isShowMessage"
-          :value="badgeValue"
-          :max="99"
-          class="badge-action-item"
-        >
-          <n-icon size="18">
-            <NotificationsIcon />
-          </n-icon>
-        </n-badge>
-        <div v-else></div>
+        <button class="action-item action-item--badge" type="button" aria-label="查看消息">
+          <n-badge :value="badgeValue" :max="99">
+            <n-icon size="18">
+              <NotificationsIcon />
+            </n-icon>
+          </n-badge>
+        </button>
       </template>
       <PopoverMessage
+        ref="popoverMessageRef"
         @clear="handleClear"
         @read="handleRead"
         @viewAll="goToMessagePage"
-        ref="popoverMessageRef"
       />
     </n-popover>
-    <span v-if="appConfig.actionBar.isShowRefresh" class="action-item" @click="onRefrehRoute">
+
+    <button
+      v-if="appConfig.actionBar.isShowRefresh"
+      class="action-item"
+      type="button"
+      aria-label="刷新页面"
+      @click="onRefrehRoute"
+    >
       <n-icon size="18">
         <RefreshIcon />
       </n-icon>
-    </span>
-    <span v-if="appConfig.actionBar.isShowFullScreen" class="action-item" @click="onScreenFull">
+    </button>
+
+    <button
+      v-if="appConfig.actionBar.isShowFullScreen"
+      class="action-item"
+      type="button"
+      aria-label="切换全屏"
+      @click="onScreenFull"
+    >
       <n-icon size="18">
         <ExpandIcon />
       </n-icon>
-    </span>
+    </button>
+
     <button
-      class="action-item action-item--button"
+      class="action-item"
       type="button"
       aria-label="打开系统设置"
       data-testid="action-open-settings"
@@ -47,6 +65,7 @@
         <SettingIcon />
       </n-icon>
     </button>
+
     <SearchContent ref="searchContentRef" />
     <Setting ref="settingRef" />
   </div>
@@ -84,18 +103,26 @@ const router = useRouter()
 const route = useRoute()
 
 // 监听未读数量变化
-watch(() => messageStore.unreadCount, (val) => {
-  badgeValue.value = val
-}, { immediate: true })
+watch(
+  () => messageStore.unreadCount,
+  (val) => {
+    badgeValue.value = val
+  },
+  { immediate: true }
+)
 
 // 监听用户ID变化，加载消息
-watch(() => userStore.userId, (userId) => {
-  if (userId) {
-    messageStore.loadMessages(userId.toString())
-  } else {
-    messageStore.clearMessages()
-  }
-}, { immediate: true })
+watch(
+  () => userStore.userId,
+  (userId) => {
+    if (userId) {
+      messageStore.loadMessages(userId.toString())
+    } else {
+      messageStore.clearMessages()
+    }
+  },
+  { immediate: true }
+)
 
 function onShowSearch() {
   searchContentRef.value?.onShow()
@@ -144,35 +171,40 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .action-items-wrapper {
-  position: relative;
-  height: 100%;
   display: flex;
   align-items: center;
+  gap: 6px;
   z-index: 1;
+}
 
-  .action-item {
-    min-width: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.action-item {
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--shell-radius-base);
+  border: 1px solid transparent;
+  background: transparent;
+  color: inherit;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 
-    &:hover {
-      cursor: pointer;
-      color: var(--primary-color-hover);
-    }
-  }
-
-  .action-item--button {
-    border: none;
-    background: transparent;
-    padding: 0;
-    color: inherit;
-  }
-
-  .badge-action-item {
+  &:hover {
     cursor: pointer;
-    margin-right: 30px;
+    border-color: var(--shell-control-border);
+    background: var(--shell-control-bg);
+    color: var(--color-primary);
   }
+
+  &:focus-visible {
+    outline: none;
+    border-color: var(--shell-control-border);
+    box-shadow: 0 0 0 2px var(--shell-control-border);
+  }
+}
+
+.action-item--badge {
+  padding: 0 4px;
 }
 </style>
 <style lang="scss" scoped>
