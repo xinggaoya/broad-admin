@@ -10,7 +10,6 @@ import com.broad.system.service.SysMessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.validation.Valid;
 import java.util.List;
 
 /**
@@ -20,7 +19,7 @@ import java.util.List;
  * @since 2024-03-06
  */
 @RestController
-@RequestMapping("sysMessage")
+@RequestMapping("/sysMessage")
 public class SysMessageController extends BaseController {
 
     /**
@@ -73,5 +72,33 @@ public class SysMessageController extends BaseController {
     @Log(description = "删除消息", businessType = BusinessType.DELETE)
     public ResultData delete(@RequestParam("idList") List<Long> idList) {
         return toResult(this.sysMessageService.removeByIds(idList));
+    }
+
+    /**
+     * 发送通知给指定用户（管理员功能）
+     *
+     * @param message 消息对象
+     * @return 操作结果
+     */
+    @PostMapping("/send")
+    @SaCheckPermission("system:message:send")
+    @Log(description = "发送通知", businessType = BusinessType.INSERT)
+    public ResultData sendNotification(@RequestBody SysMessage message) {
+        boolean success = this.sysMessageService.createAndSendNotification(message);
+        return success ? ResultData.ok() : ResultData.error("发送通知失败");
+    }
+
+    /**
+     * 广播通知给所有在线用户（管理员功能）
+     *
+     * @param message 消息对象
+     * @return 发送成功的用户数
+     */
+    @PostMapping("/broadcast")
+    @SaCheckPermission("system:message:broadcast")
+    @Log(description = "广播通知", businessType = BusinessType.INSERT)
+    public ResultData broadcastNotification(@RequestBody SysMessage message) {
+        int count = this.sysMessageService.broadcastNotification(message);
+        return ResultData.ok("广播成功，共通知 " + count + " 个在线用户");
     }
 } 

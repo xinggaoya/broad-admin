@@ -164,3 +164,30 @@ export function getWebSocketUrl() {
   }
   return url
 }
+
+// 格式化时间（几天前、几小时前、几分钟前、刚刚）
+export function formatTime(time: string | Date): string {
+  if (!time) return ''
+  const date = new Date(time)
+  const now = new Date()
+  const diff = now.getTime() - date.getTime()
+
+  // 1分钟内
+  if (diff < 60000) {
+    return '刚刚'
+  }
+  // 1小时内
+  if (diff < 3600000) {
+    return Math.floor(diff / 60000) + '分钟前'
+  }
+  // 24小时内
+  if (diff < 86400000) {
+    return Math.floor(diff / 3600000) + '小时前'
+  }
+  // 7天内
+  if (diff < 604800000) {
+    return Math.floor(diff / 86400000) + '天前'
+  }
+
+  return date.toLocaleDateString()
+}

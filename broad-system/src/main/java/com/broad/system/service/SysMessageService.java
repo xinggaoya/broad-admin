@@ -36,4 +36,20 @@ public interface SysMessageService extends IService<SysMessage> {
      * @return 未读消息数量
      */
     int getUnreadCount(String userId);
+
+    /**
+     * 创建并发送通知（保存到数据库并通过WebSocket推送）
+     *
+     * @param message 消息对象
+     * @return 是否创建成功
+     */
+    boolean createAndSendNotification(SysMessage message);
+
+    /**
+     * 发送广播通知（给所有在线用户）
+     *
+     * @param message 消息对象
+     * @return 发送成功数量
+     */
+    int broadcastNotification(SysMessage message);
 } 

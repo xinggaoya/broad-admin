@@ -5,11 +5,12 @@
         <SearchIcon />
       </n-icon>
     </span>
-    <n-popover :width="300" placement="bottom" trigger="click">
+    <n-popover :width="320" placement="bottom" trigger="click">
       <template #trigger>
         <n-badge
           v-if="appConfig.actionBar.isShowMessage"
           :value="badgeValue"
+          :max="99"
           class="badge-action-item"
         >
           <n-icon size="18">
@@ -18,7 +19,12 @@
         </n-badge>
         <div v-else></div>
       </template>
-      <PopoverMessage @clear="badgeValue = 0" />
+      <PopoverMessage
+        @clear="handleClear"
+        @read="handleRead"
+        @viewAll="goToMessagePage"
+        ref="popoverMessageRef"
+      />
     </n-popover>
     <span v-if="appConfig.actionBar.isShowRefresh" class="action-item" @click="onRefrehRoute">
       <n-icon size="18">
@@ -47,7 +53,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useMessage } from 'naive-ui'
 import screenfull from 'screenfull'
 import { useRoute, useRouter } from 'vue-router'
@@ -60,17 +66,36 @@ import {
   RefreshOutline as RefreshIcon
 } from '@vicons/ionicons5'
 import { useAppConfigStore } from '@/store/modules/app-config'
+import { useMessageStore } from '@/store/modules/message'
+import { useUserStore } from '@/store/modules/user'
 import { useDebounceFn } from '@vueuse/core'
 import PopoverMessage from '@/components/common/PopoverMessage.vue'
 import SearchContent from './SearchContent.vue'
 
 const searchContentRef = ref<SearchContentType>()
 const settingRef = ref()
-const badgeValue = ref(3)
+const popoverMessageRef = ref()
+const badgeValue = ref(0)
 const appConfig = useAppConfigStore()
+const messageStore = useMessageStore()
+const userStore = useUserStore()
 const message = useMessage()
 const router = useRouter()
 const route = useRoute()
+
+// 监听未读数量变化
+watch(() => messageStore.unreadCount, (val) => {
+  badgeValue.value = val
+}, { immediate: true })
+
+// 监听用户ID变化，加载消息
+watch(() => userStore.userId, (userId) => {
+  if (userId) {
+    messageStore.loadMessages(userId.toString())
+  } else {
+    messageStore.clearMessages()
+  }
+}, { immediate: true })
 
 function onShowSearch() {
   searchContentRef.value?.onShow()
@@ -95,6 +120,26 @@ function onRefrehRoute() {
 function onShowSetting() {
   settingRef.value.openDrawer()
 }
+
+function handleClear() {
+  badgeValue.value = 0
+}
+
+function handleRead(messageId: number) {
+  // 单个消息标记为已读时更新徽章
+  badgeValue.value = Math.max(0, badgeValue.value - 1)
+}
+
+function goToMessagePage() {
+  router.push('/system/message')
+}
+
+// 初始加载
+onMounted(() => {
+  if (userStore.userId) {
+    messageStore.loadMessages(userStore.userId.toString())
+  }
+})
 </script>
 
 <style lang="scss" scoped>
