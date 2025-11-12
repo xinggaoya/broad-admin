@@ -117,6 +117,7 @@
           :loading="tableLoading"
           row-key="id"
           :pagination="pagination"
+          :scroll-x="tableScrollX"
           @update:checked-row-keys="handleSelectionChange"
         >
           <template #footer>
@@ -617,6 +618,17 @@ const tableColumns = ref<DataTableColumns>([
   }
 ])
 
+const tableScrollX = computed(() => {
+  const total = tableColumns.value.reduce((sum, column) => {
+    const width = (column as any).width
+    const minWidth = (column as any).minWidth
+    if (typeof width === 'number') return sum + width
+    if (typeof minWidth === 'number') return sum + minWidth
+    return sum + 140
+  }, 0)
+  return Math.max(total, 960)
+})
+
 function mapDeptOptions(nodes: DeptMetaNode[] = []): DeptTreeNode[] {
   return nodes.map((node) => ({
     key: node.id,
@@ -880,14 +892,18 @@ onMounted(async () => {
 
 <style lang="scss" scoped>
 .sys-user-page {
+  width: 100%;
+  min-width: 0;
   .sys-user-layout {
     display: flex;
+    flex-wrap: wrap;
     gap: 16px;
     align-items: flex-start;
   }
 
   .dept-panel {
-    width: 280px;
+    flex: 0 0 280px;
+    max-width: 100%;
     flex-shrink: 0;
     border-radius: var(--shell-radius-lg);
     background: var(--shell-surface);
@@ -916,7 +932,8 @@ onMounted(async () => {
   }
 
   .table-panel {
-    flex: 1;
+    flex: 1 1 520px;
+    min-width: 0;
     border-radius: var(--shell-radius-lg);
     background: var(--shell-surface);
     box-shadow: var(--shell-shadow);
@@ -941,6 +958,15 @@ onMounted(async () => {
 
   :deep(.n-button) {
     padding: 0 16px;
+  }
+
+  :deep(.n-form.n-form--inline) {
+    flex-wrap: wrap;
+    gap: 12px 16px;
+  }
+
+  :deep(.n-form-item) {
+    margin-right: 0;
   }
 }
 
@@ -985,6 +1011,11 @@ onMounted(async () => {
   }
 
   .dept-panel {
+    width: 100%;
+    flex: 1 1 auto;
+  }
+
+  .table-panel {
     width: 100%;
   }
 }

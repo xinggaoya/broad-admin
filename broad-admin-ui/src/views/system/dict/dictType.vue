@@ -1,6 +1,6 @@
 <template>
-  <section class="dict-type-page">
-    <header class="page-header">
+  <section :class="['dict-type-page', { 'dict-type-page--compact': compact }]">
+    <header v-if="!compact" class="page-header">
       <div>
         <p class="header-subtitle">系统管理</p>
         <h2>字典管理</h2>
@@ -160,7 +160,7 @@
 </template>
 
 <script lang="ts" setup>
-import { h, ref, reactive, onMounted, computed } from 'vue'
+import { h, ref, reactive, onMounted, computed, toRef } from 'vue'
 import { useMessage, useDialog, NButton, NPopconfirm, NSpace, NTag } from 'naive-ui'
 import { AddOutline, RefreshOutline } from '@vicons/ionicons5'
 import type { FormInst } from 'naive-ui'
@@ -170,6 +170,13 @@ import { getDictTypePage, addDictType, updateDictType, detectDictType } from '@/
 import TableMain from '@/components/table/main/TableMain.vue'
 
 // 组件通信
+const props = defineProps({
+  compact: {
+    type: Boolean,
+    default: false
+  }
+})
+const compact = toRef(props, 'compact')
 const emit = defineEmits(['select-dict'])
 
 // 组件实例
@@ -486,6 +493,19 @@ onMounted(() => {
       color: var(--text-color-3);
       font-size: 13px;
     }
+  }
+}
+
+.dict-type-page--compact {
+  gap: 12px;
+
+  .table-panel {
+    box-shadow: none;
+    background: transparent;
+  }
+
+  .search-card {
+    margin-bottom: 12px;
   }
 }
 </style>

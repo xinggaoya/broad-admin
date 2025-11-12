@@ -113,6 +113,7 @@
             sticky-toolbar
             :default-expand-all="false"
             v-model:expanded-row-keys="expandedRowKeys"
+            :scroll-x="deptTableScrollX"
             :toolbar-config="{ column: true, density: true, refresh: true, fullscreen: true }"
             @refresh="handleRefresh"
           >
@@ -507,6 +508,17 @@ const columns = [
   }
 ]
 
+const deptTableScrollX = computed(() => {
+  const total = columns.reduce((sum, column) => {
+    const width = (column as any).width
+    const minWidth = (column as any).minWidth
+    if (typeof width === 'number') return sum + width
+    if (typeof minWidth === 'number') return sum + minWidth
+    return sum + 140
+  }, 0)
+  return Math.max(total, 960)
+})
+
 const showEditModal = ref(false)
 const editType = ref<'add' | 'edit'>('add')
 const submitLoading = ref(false)
@@ -601,6 +613,8 @@ loadTableData()
   display: flex;
   flex-direction: column;
   gap: 16px;
+  width: 100%;
+  min-width: 0;
 
   .page-header {
     display: flex;
@@ -636,11 +650,14 @@ loadTableData()
 
   .dept-content {
     display: grid;
-    grid-template-columns: 280px 1fr;
+    grid-template-columns: minmax(260px, 320px) minmax(0, 1fr);
     gap: 16px;
+    align-items: flex-start;
   }
 
   .dept-sidebar {
+    min-width: 0;
+
     .dept-tree-card {
       height: 100%;
 
@@ -689,6 +706,8 @@ loadTableData()
   }
 
   .dept-table {
+    min-width: 0;
+
     .search-card {
       background: linear-gradient(135deg, #f5f7ff 0%, #fff 100%);
       border: 1px solid rgba(82, 106, 255, 0.12);
@@ -723,6 +742,11 @@ loadTableData()
   .sys-dept-page {
     .dept-content {
       grid-template-columns: 1fr;
+    }
+
+    .dept-sidebar,
+    .dept-table {
+      width: 100%;
     }
   }
 }

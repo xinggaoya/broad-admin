@@ -1,12 +1,19 @@
 <template>
   <div class="dict-data">
     <n-space justify="space-between" class="action-row">
-      <n-button type="default" @click="handleBack">
-        <template #icon>
-          <n-icon><ArrowBackOutline /></n-icon>
-        </template>
-        返回字典类型
-      </n-button>
+      <template v-if="!isCompact">
+        <n-button type="default" @click="handleBack">
+          <template #icon>
+            <n-icon><ArrowBackOutline /></n-icon>
+          </template>
+          返回字典类型
+        </n-button>
+      </template>
+      <template v-else>
+        <n-tag type="success" size="small" round :bordered="false">
+          当前类型：{{ props.dictType }}
+        </n-tag>
+      </template>
       <n-space>
         <n-button type="primary" @click="handleAdd" v-auth="['sys:dict:add']">
           <template #icon>
@@ -129,8 +136,8 @@
 </template>
 
 <script lang="ts" setup>
-import { h, ref, onMounted, watch } from 'vue'
-import { useMessage, useDialog } from 'naive-ui'
+import { h, ref, onMounted, watch, computed } from 'vue'
+import { useMessage, NButton, NPopconfirm, NTag } from 'naive-ui'
 import { AddOutline, RefreshOutline, ArrowBackOutline } from '@vicons/ionicons5'
 import type { FormInst } from 'naive-ui'
 import { usePagination } from '@/hooks/useTable'
@@ -140,12 +147,13 @@ import { getDict, addDict, updateDict, detectDict } from '@/api/system/dict'
 // 组件通信
 const props = defineProps<{
   dictType: string
+  compact?: boolean
 }>()
 const emit = defineEmits(['back'])
+const isCompact = computed(() => props.compact === true)
 
 // 组件实例
 const message = useMessage()
-const dialog = useDialog()
 const formRef = ref<FormInst | null>(null)
 
 // 字典数据
@@ -216,16 +224,15 @@ const columns = [
   {
     title: '字典样式',
     key: 'listClass',
-    render: (row: any) => {
-      return h(
-        'n-tag',
+    render: (row: any) =>
+      h(
+        NTag,
         {
           type: row.listClass,
           bordered: false
         },
         { default: () => row.dictLabel }
       )
-    }
   },
   {
     title: '状态',
@@ -233,7 +240,7 @@ const columns = [
     render: (row: any) => {
       const status = sys_normal_disable.value.find((item) => item.value === row.status)
       return h(
-        'n-tag',
+        NTag,
         {
           type: row.status === '0' ? 'success' : 'error',
           round: true,
@@ -249,20 +256,23 @@ const columns = [
     title: '操作',
     key: 'actions',
     fixed: 'right',
-    render: (row: any) => {
-      return h('n-space', null, {
-        default: () => [
+    render: (row: any) =>
+      h(
+        'div',
+        { class: 'dict-operations' },
+        [
           h(
-            'n-button',
+            NButton,
             {
               text: true,
               type: 'primary',
+              size: 'small',
               onClick: () => handleEdit(row)
             },
             { default: () => '编辑' }
           ),
           h(
-            'n-popconfirm',
+            NPopconfirm,
             {
               onPositiveClick: () => handleDelete(row)
             },
@@ -270,18 +280,18 @@ const columns = [
               default: () => '确认删除该字典数据吗？',
               trigger: () =>
                 h(
-                  'n-button',
+                  NButton,
                   {
                     text: true,
-                    type: 'error'
+                    type: 'error',
+                    size: 'small'
                   },
                   { default: () => '删除' }
                 )
             }
           )
         ]
-      })
-    }
+      )
   }
 ]
 
@@ -461,6 +471,22 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .dict-data {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  .action-row {
+    flex-wrap: wrap;
+    gap: 8px 12px;
+    align-items: center;
+  }
+
+  .dict-operations {
+    display: inline-flex;
+    gap: 8px;
+    align-items: center;
+  }
+
   :deep(.action-card) {
     margin-bottom: 16px;
     border-radius: 8px;
