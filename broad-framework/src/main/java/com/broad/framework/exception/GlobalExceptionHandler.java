@@ -7,8 +7,10 @@ import com.broad.common.constant.HttpStatus;
 import com.broad.common.exception.ServiceException;
 import com.broad.common.exception.user.UserException;
 import com.broad.common.web.entity.ResultData;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.Objects;
@@ -21,6 +23,7 @@ import java.util.Objects;
  * @Description:
  */
 @RestControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
 
     /**
@@ -30,8 +33,9 @@ public class GlobalExceptionHandler {
      * @return result data
      */
     @ExceptionHandler
+    @ResponseStatus(org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR)
     public ResultData handlerException(Exception e) {
-        e.printStackTrace();
+        log.error("系统异常", e);
         return ResultData.error("系统异常,请联系管理员");
     }
 
@@ -42,6 +46,7 @@ public class GlobalExceptionHandler {
      * @return result data
      */
     @ExceptionHandler(value = NotLoginException.class)
+    @ResponseStatus(org.springframework.http.HttpStatus.UNAUTHORIZED)
     public ResultData handlerNotLoginException(NotLoginException e) {
         String message;
         if (e.getType().equals(NotLoginException.NOT_TOKEN)) {
@@ -67,6 +72,7 @@ public class GlobalExceptionHandler {
      * @return result data
      */
     @ExceptionHandler(value = DisableServiceException.class)
+    @ResponseStatus(org.springframework.http.HttpStatus.UNAUTHORIZED)
     public ResultData handleSaTokenException(DisableServiceException e) {
         return new ResultData(HttpStatus.UNAUTHORIZED, "此账号已被禁用，请联系管理员");
     }
@@ -78,6 +84,7 @@ public class GlobalExceptionHandler {
      * @return result data
      */
     @ExceptionHandler(value = UserException.class)
+    @ResponseStatus(org.springframework.http.HttpStatus.BAD_REQUEST)
     public ResultData handlerUserException(UserException e) {
         return new ResultData(HttpStatus.ERROR, e.getCode());
     }
@@ -89,8 +96,8 @@ public class GlobalExceptionHandler {
      * @return result data
      */
     @ExceptionHandler(value = NotPermissionException.class)
+    @ResponseStatus(org.springframework.http.HttpStatus.FORBIDDEN)
     public ResultData handlerNotPermissionException(NotPermissionException e) {
-        // 判断场景值，定制化异常信息
         return new ResultData(HttpStatus.FORBIDDEN, "无该操作权限，请联系管理员");
     }
 
@@ -101,6 +108,7 @@ public class GlobalExceptionHandler {
      * @return result data
      */
     @ExceptionHandler(value = ServiceException.class)
+    @ResponseStatus(org.springframework.http.HttpStatus.BAD_REQUEST)
     public ResultData handlerServiceException(ServiceException e) {
         return ResultData.error(e.getMessage());
     }
@@ -112,6 +120,7 @@ public class GlobalExceptionHandler {
      * @return result data
      */
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
+    @ResponseStatus(org.springframework.http.HttpStatus.BAD_REQUEST)
     public ResultData handlerMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         return ResultData.error(Objects.requireNonNull(e.getBindingResult().getFieldError()).getDefaultMessage());
     }

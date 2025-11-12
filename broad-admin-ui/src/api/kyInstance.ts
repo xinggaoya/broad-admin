@@ -12,9 +12,21 @@ const beforeRequest = (request: Request) => {
 }
 
 const afterResponse = async (request: Request, _options: Options, response: Response) => {
-  if (response.status === 500) {
-    message.error('服务器异常，请稍后重试…')
-    throw new Error('服务器错误')
+  if (!response.ok) {
+    if (response.status === 401) {
+      message.error('未认证或登录已过期')
+      throw new Error('未认证')
+    }
+    if (response.status === 403) {
+      message.error('无权限访问')
+      throw new Error('无权限')
+    }
+    if (response.status === 500) {
+      message.error('服务器异常，请稍后重试…')
+      throw new Error('服务器错误')
+    }
+    message.error('请求失败')
+    throw new Error('请求失败')
   }
   return response
 }

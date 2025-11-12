@@ -3,6 +3,7 @@ package com.broad.system.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.broad.common.constant.CacheConstants;
 import com.broad.common.utils.StringUtils;
+import com.broad.common.utils.TreeUtils;
 import com.broad.system.entity.SysMenu;
 import com.broad.system.mapper.SysMenuMapper;
 import com.broad.system.service.SysMenuService;
@@ -80,12 +81,11 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
      * @return list
      */
     private List<SysMenu> buildTree(List<SysMenu> list) {
-        List<SysMenu> treeMenus = new ArrayList<>();
-        for (SysMenu menuNode : getRootNode(list)) {
-            buildChildTree(menuNode, list);
-            treeMenus.add(menuNode);
+        List<SysMenu> roots = TreeUtils.build(list, SysMenu::getMenuId, SysMenu::getParentId, SysMenu::setChildren, 0);
+        for (SysMenu r : roots) {
+            concatUrl(r);
         }
-        return treeMenus;
+        return roots;
     }
 
     /**
@@ -95,22 +95,17 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
      * @param menuList
      * @return
      */
-    private SysMenu buildChildTree(SysMenu pNode, List<SysMenu> menuList) {
-        List<SysMenu> childMenus = new ArrayList<>();
-        for (SysMenu menuNode : menuList) {
-            if (menuNode.getParentId().equals(pNode.getMenuId())) {
-                // 将父节点的url拼接到子节点的url上
-                String menuUrl;
-                if (StringUtils.isNotBlank(menuNode.getMenuUrl())) {
-                    menuUrl = pNode.getMenuUrl().concat(menuNode.getMenuUrl());
-                    menuNode.setMenuUrl(menuUrl);
-                }
-                SysMenu sysMenu = buildChildTree(menuNode, menuList);
-                childMenus.add(sysMenu);
-            }
+    private void concatUrl(SysMenu p) {
+        List<SysMenu> cs = p.getChildren();
+        if (cs == null || cs.isEmpty()) {
+            return;
         }
-        pNode.setChildren(childMenus);
-        return pNode;
+        for (SysMenu c : cs) {
+            if (StringUtils.isNotBlank(c.getMenuUrl()) && StringUtils.isNotBlank(p.getMenuUrl())) {
+                c.setMenuUrl(p.getMenuUrl().concat(c.getMenuUrl()));
+            }
+            concatUrl(c);
+        }
     }
 
     /**
@@ -119,15 +114,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
      * @param menuList
      * @return
      */
-    private List<SysMenu> getRootNode(List<SysMenu> menuList) {
-        List<SysMenu> rootMenuLists = new ArrayList<>();
-        for (SysMenu menuNode : menuList) {
-            if (menuNode.getParentId() == 0) {
-                rootMenuLists.add(menuNode);
-            }
-        }
-        return rootMenuLists;
-    }
+    
 
     /**
      * 处理树形结构

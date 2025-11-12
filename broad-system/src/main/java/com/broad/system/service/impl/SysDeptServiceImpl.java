@@ -3,6 +3,7 @@ package com.broad.system.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.broad.common.utils.TreeUtils;
 import com.broad.system.entity.SysDept;
 import com.broad.system.mapper.SysDeptMapper;
 import com.broad.system.service.SysDeptService;
@@ -23,7 +24,8 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
 
     @Override
     public List<SysDept> selectAll(SysDept sysDept) {
-        return buildTree(this.baseMapper.selectList(new LambdaQueryWrapper<>(sysDept)));
+        List<SysDept> list = this.baseMapper.selectList(new LambdaQueryWrapper<>(sysDept));
+        return TreeUtils.build(list, SysDept::getDeptId, SysDept::getParentId, SysDept::setChildren, 0L);
     }
 
     @Override
@@ -36,54 +38,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
     }
 
 
-    /**
-     * 构建树形结构
-     *
-     * @param list the list
-     * @return list
-     */
-    private List<SysDept> buildTree(List<SysDept> list) {
-        List<SysDept> treeMenus = new ArrayList<>();
-        for (SysDept menuNode : getRootNode(list)) {
-            buildChilTree(menuNode, list);
-            treeMenus.add(menuNode);
-        }
-        return treeMenus;
-    }
-
-    /**
-     * 构建子树形结构
-     *
-     * @param pNode
-     * @param menuList
-     * @return
-     */
-    private SysDept buildChilTree(SysDept pNode, List<SysDept> menuList) {
-        List<SysDept> chilMenus = new ArrayList<>();
-        for (SysDept menuNode : menuList) {
-            if (menuNode.getParentId().equals(pNode.getDeptId())) {
-                chilMenus.add(buildChilTree(menuNode, menuList));
-            }
-        }
-        pNode.setChildren(chilMenus);
-        return pNode;
-    }
-
-    /**
-     * 获取根节点
-     *
-     * @param menuList
-     * @return
-     */
-    private List<SysDept> getRootNode(List<SysDept> menuList) {
-        List<SysDept> rootMenuLists = new ArrayList<>();
-        for (SysDept menuNode : menuList) {
-            if (menuNode.getParentId() == 0) {
-                rootMenuLists.add(menuNode);
-            }
-        }
-        return rootMenuLists;
-    }
+    
 
 
     @Override

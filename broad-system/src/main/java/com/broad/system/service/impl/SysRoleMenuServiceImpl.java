@@ -38,6 +38,7 @@ public class SysRoleMenuServiceImpl extends ServiceImpl<SysRoleMenuMapper, SysRo
      * @return 所有数据 list
      */
     @Override
+    @org.springframework.cache.annotation.Cacheable(key = "#userId + '_perm_codes'", unless = "#result == null")
     public List<String> findRoleMenuCodeByUserId(Integer userId) {
         return menuService.findMenuByUserId(userId)
                 .stream()

@@ -24,6 +24,12 @@ mvn test
 
 # Package for deployment
 mvn clean package
+
+# Run a single test class
+mvn test -Dtest=TreeUtilsTest
+
+# Run a single test method
+mvn test -Dtest=TreeUtilsTest#testBuildTree
 ```
 
 ### Frontend (Vue 3 + TypeScript)
@@ -43,9 +49,10 @@ pnpm build
 # Preview production build
 pnpm preview
 
-# E2E Testing
+# E2E Testing with Playwright
 pnpm test:e2e
 pnpm test:e2e:ui
+pnpm test:e2e:update  # Update test snapshots
 ```
 
 ### Docker Deployment
@@ -110,6 +117,66 @@ docker build -t broad-admin .
 - Composition API with `<script setup>` syntax
 - Path alias `@/` points to `src/` directory
 
+## Table Component Architecture (Refactored)
+
+The table system has been refactored to follow the **Single Responsibility Principle**, separating core table functionality from search functionality:
+
+### Core Components
+- **TableMain**: Professional table component (handles only table core functionality)
+- **TableSearchCard**: Independent search card component
+- **SortableTable**: Column configuration component
+- **TableConfigPanel**: Table configuration panel
+
+### Button Components
+- **AddButton, EditButton, DeleteButton**: Action buttons with consistent styling
+- **ExportButton**: Data export functionality
+- **SearchButton, ResetButton**: Search control buttons
+
+### Usage Pattern
+```vue
+<template>
+  <div class="page">
+    <!-- Page Header -->
+    <header class="page-header">
+      <h2>用户管理</h2>
+      <div class="header-actions">
+        <AddButton @add="handleAdd" />
+      </div>
+    </header>
+
+    <!-- Search Area (Optional) -->
+    <TableSearchCard
+      v-model="searchModel"
+      :fields="searchFields"
+      :loading="tableLoading"
+      @search="handleSearch"
+      @reset="handleReset"
+    />
+
+    <!-- Table Main -->
+    <n-card class="table-panel">
+      <TableMain
+        :data="tableData"
+        :columns="tableColumns"
+        :loading="tableLoading"
+        :pagination="pagination"
+        row-key="id"
+        @update:checked-row-keys="handleSelectionChange"
+        @update:page="handlePageChange"
+        @update:page-size="handlePageSizeChange"
+        @refresh="handleRefresh"
+      />
+    </n-card>
+  </div>
+</template>
+```
+
+### Migration from Old Table Components
+1. Remove `search-config` and `search-form` props from TableMain
+2. Extract search functionality to separate TableSearchCard component
+3. Use simplified field configuration format
+4. Maintain existing data loading patterns with `usePagination` hook
+
 ## Configuration Management
 
 ### Application Configuration
@@ -126,8 +193,13 @@ docker build -t broad-admin .
 - `broad-admin-ui/vite.config.ts`: Frontend build configuration with auto-import and proxy setup
 - `broad-admin-ui/package.json`: Frontend dependencies with E2E testing via Playwright
 
+### Environment Variables
+- **VITE_BASE_AXIOS_URL**: API base URL (default: `/api`)
+- **VITE_BASE_WEBSOCKET_URL**: WebSocket base URL (default: `/api`)
+- Development proxy configured to forward `/api` to `localhost:9010`
+
 ### Database Setup
-1. Import SQL schemas from `/sql` directory
+1. Import SQL schemas from `/sql` directory (`broad_base.sql`, `message.sql`, `personal_center.sql`)
 2. Configure MySQL connection in `application-druid.yml` (dev.moncn.cn for development)
 3. Ensure Redis is running for caching and sessions
 
@@ -147,6 +219,18 @@ docker build -t broad-admin .
 - SVG icon system via `vite-plugin-svg-icons`
 - TypeScript strict mode enabled
 - Path aliases: `@/` for `src/` directory
+
+### Auto-Import Configuration
+The project uses automatic imports for:
+- Vue 3 Composition APIs (ref, reactive, computed, etc.)
+- Naive UI components (n-button, n-input, etc.)
+- Common Vue Router APIs (useRouter, useRoute)
+- Pinia store functions
+
+Manual imports still required for:
+- Custom components and composables
+- Third-party libraries
+- Type definitions
 
 ## Security Features
 
@@ -170,3 +254,34 @@ docker build -t broad-admin .
 - MyBatis Plus query optimization and automatic pagination
 - Frontend code splitting and lazy loading
 - Vite build optimization with modern compiler
+
+## Testing
+
+### Backend Testing
+- Unit tests using JUnit 5
+- Test files located in `src/test/java` directories
+- Run single tests with Maven: `mvn test -Dtest=ClassName#methodName`
+
+### Frontend Testing
+- E2E testing with Playwright
+- Test files in `broad-admin-ui/tests/` directory
+- UI test runner: `pnpm test:e2e:ui`
+- Snapshot updates: `pnpm test:e2e:update`
+
+## Recent Architectural Changes
+
+### Message Management System
+- WebSocket real-time notifications
+- Message broadcasting and read/unread tracking
+- Online user management with force logout functionality
+
+### User Management Refactor
+- Enhanced search functionality with independent search cards
+- Improved form validation with password field validation (6-32 characters)
+- Better UI components using NSwitch for status toggles
+- Unified data loading through `getUserMeta` interface
+
+### System Route Refactoring
+- Complete route and component restructuring
+- Visual and interaction upgrades
+- Modern design principles implementation

@@ -34,6 +34,8 @@ CREATE TABLE IF NOT EXISTS `sys_message` (
   KEY `idx_user_id` (`user_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='系统消息表';
 
+ALTER TABLE `sys_message` ADD INDEX `idx_user_id_status` (`user_id`, `status`);
+
 -- 添加用户表的bio字段
 ALTER TABLE `sys_user` ADD COLUMN `bio` varchar(500) DEFAULT NULL COMMENT '个人简介' AFTER `avatar`;
 

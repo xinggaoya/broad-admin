@@ -7,6 +7,8 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.interceptor.KeyGenerator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import java.util.HashMap;
+import java.util.Map;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.cache.RedisCacheWriter;
@@ -20,6 +22,8 @@ import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.time.Duration;
+import com.broad.common.constant.CacheConstants;
+import com.broad.common.constant.Constants;
 
 /**
  * Redis配置类
@@ -84,17 +88,22 @@ public class RedisConfig {
 
     @Bean
     public CacheManager cacheManager(RedisConnectionFactory connectionFactory) {
-        // 创建缓存配置
-        RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig()
-                .entryTtl(Duration.ofHours(1)) // 设置缓存有效期为1小时
+        RedisCacheConfiguration defaultConfig = RedisCacheConfiguration.defaultCacheConfig()
+                .entryTtl(Duration.ofHours(1))
                 .serializeKeysWith(
                         RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
                 .serializeValuesWith(RedisSerializationContext.SerializationPair
                         .fromSerializer(new GenericJackson2JsonRedisSerializer()))
                 .disableCachingNullValues();
 
+        Map<String, RedisCacheConfiguration> initialConfigs = new HashMap<>();
+        initialConfigs.put(Constants.SYS_DICT_KEY, defaultConfig.entryTtl(Duration.ofHours(1)));
+        initialConfigs.put(CacheConstants.ROUTE_KEY, defaultConfig.entryTtl(Duration.ofHours(1)));
+        initialConfigs.put(CacheConstants.ROLE_KEY, defaultConfig.entryTtl(Duration.ofMinutes(5)));
+
         return RedisCacheManager.builder(connectionFactory)
-                .cacheDefaults(config)
+                .cacheDefaults(defaultConfig)
+                .withInitialCacheConfigurations(initialConfigs)
                 .build();
     }
 

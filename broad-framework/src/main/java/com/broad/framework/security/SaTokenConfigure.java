@@ -39,6 +39,8 @@ public class SaTokenConfigure implements WebMvcConfigurer {
             "/v3/api-docs/**",
             "/favicon.ico",
             "/upload/**",
-            "/"
+            "/",
+            "/captchaImage",
+            "/sysAdmin/login"
     };
 }
